@@ -1,8 +1,6 @@
 package com.unizar.unozar.core.entities;
 
 import java.time.LocalDateTime;
-import java.util.UUID;
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -14,7 +12,6 @@ import org.hibernate.annotations.GenericGenerator;
 @Entity
 @Table(name = "PLAYER")
 public class Player{
-  // This specification requires Hibernate 5
   @Id
   @GeneratedValue( generator = "system-uuid" )
   @GenericGenerator( name = "system-uuid", strategy = "uuid" )
@@ -48,13 +45,14 @@ public class Player{
     this.email = email;
     this.alias = alias;
     this.password = password;
-    session = -1;
+    session = -601;
     private_wins = 0;
     private_total = 0;
     public_wins = 0;
     public_total = 0;
   }
   
+  // Retrieves the total number of today's seconds
   private int getTodaySeconds(){
     LocalDateTime localDate = LocalDateTime.now();
     int hours = localDate.getHour();
@@ -97,6 +95,15 @@ public class Player{
   // Increments the number of private games played
   public void addPrivateTotal(){
     private_total++;
+  }
+  
+  // Retrieves all the statistics separated by commas
+  public String getStats(){
+    String private_t = Integer.toString(private_total);
+    String private_w = Integer.toString(private_wins);
+    String public_t = Integer.toString(public_total);
+    String public_w = Integer.toString(public_wins);
+    return private_t + "," + private_w + "," + public_t + "," + public_w;
   }
 
   /////////////////////////
@@ -165,16 +172,5 @@ public class Player{
 
   public void setPrivateTotal(int private_total){
     this.private_total = private_total;
-  }
-  
-  // Updates the player data with another player's data
-  public void setData(Player newPlayer){
-    this.alias = newPlayer.getAlias();
-    this.email = newPlayer.getEmail();
-    this.password = newPlayer.getPassword();
-    this.public_wins = newPlayer.getPublicWins();
-    this.public_total = newPlayer.getPublicTotal();
-    this.private_wins = newPlayer.getPrivateWins();
-    this.private_total = newPlayer.getPrivateTotal();
   }
 }

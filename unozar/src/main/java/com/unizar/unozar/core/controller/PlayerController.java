@@ -1,7 +1,6 @@
 package com.unizar.unozar.core.controller;
 
 import java.util.Optional;
-import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -16,7 +15,7 @@ import com.unizar.unozar.core.repository.PlayerRepository;
 public class PlayerController{
   @Autowired 
   PlayerRepository playerRepository;
-  
+
   @PostMapping("/player/createPlayer")
   public String createPlayer(@RequestBody String email, 
       @RequestBody String alias, @RequestBody String password){
@@ -33,8 +32,8 @@ public class PlayerController{
   @PostMapping("/player/updatePlayerEmail")
   public String updatePlayerEmail(@RequestBody String encodedSession, 
       @RequestBody String newEmail){
-    UUID code = UUID.fromString(encodedSession.substring(0, 35));
-    Optional<Player> optionalP = playerRepository.findById(code);
+    String id = encodedSession.substring(0, 35);
+    Optional<Player> optionalP = playerRepository.findById(id);
     if (optionalP.isPresent()){
       Player player = optionalP.get();
       int session;
@@ -66,8 +65,8 @@ public class PlayerController{
   @PostMapping("/player/updatePlayerPassword")
   public String updatePlayerPassword(@RequestBody String encodedSession, 
       @RequestBody String newPassword){
-    UUID code = UUID.fromString(encodedSession.substring(0, 35));
-    Optional<Player> optionalP = playerRepository.findById(code);
+    String id = encodedSession.substring(0, 35);
+    Optional<Player> optionalP = playerRepository.findById(id);
     if (optionalP.isPresent()){
       Player player = optionalP.get();
       int session;
@@ -93,8 +92,8 @@ public class PlayerController{
   
   @PostMapping("/player/deletePlayer")
   public String deletePlayer(@RequestBody String encodedSession){
-    UUID code = UUID.fromString(encodedSession.substring(0, 35));
-    Optional<Player> optionalP = playerRepository.findById(code);
+    String id = encodedSession.substring(0, 35);
+    Optional<Player> optionalP = playerRepository.findById(id);
     if (optionalP.isPresent()){
       Player p = optionalP.get();
       int session;
@@ -107,7 +106,7 @@ public class PlayerController{
       if ((p.getSession()== session) && (p.checkSession())){
         try{
           // Deletes the player
-          playerRepository.deleteById(code);
+          playerRepository.deleteById(id);
           return "200"; // OK
         }catch(Exception e){
           // Cannot delete player, might be there isn't such a player
@@ -156,8 +155,8 @@ public class PlayerController{
   
   @GetMapping("/player/getStatistics")
   public String getStatistics(@RequestBody String encodedSession){
-    UUID code = UUID.fromString(encodedSession.substring(0, 35));
-    Optional<Player> optionalP = playerRepository.findById(code);
+    String id = encodedSession.substring(0, 35);
+    Optional<Player> optionalP = playerRepository.findById(id);
     if (optionalP.isPresent()){
       Player player = optionalP.get();
       int session;
@@ -169,12 +168,37 @@ public class PlayerController{
       }
       if ((player.getSession() == session) && (player.checkSession())){
         // Got it, retrieving the statistics.
-        String privateTotal = Integer.toString(player.getPrivateTotal());
-        String privateWins = Integer.toString(player.getPrivateWins());
-        String publicTotal = Integer.toString(player.getPublicTotal());
-        String publicWins = Integer.toString(player.getPublicWins());
-        return privateTotal + "," + privateWins + "," 
-            + publicTotal + "," + publicWins;
+        String stats = player.getStats(); // publicW,publicT,privateW,privateT
+        String newSession = Integer.toString(player.updateSession());
+        return stats + "," + player.getId() + newSession;
+      }else{
+        // Session incorrect or expired
+        return "400"; // BAD_REQUEST
+      }
+    }else{
+      // Player not found with that UUID
+      return "404"; // NOT_FOUND
+    }
+  }
+  
+  @GetMapping("/player/getAlias")
+  public String getAlias(@RequestBody String encodedSession){
+    String id = encodedSession.substring(0, 35);
+    Optional<Player> optionalP = playerRepository.findById(id);
+    if (optionalP.isPresent()){
+      Player player = optionalP.get();
+      int session;
+      try{
+        session = Integer.parseInt(encodedSession.substring(36));
+      }catch(NumberFormatException e){
+        // Bad session format
+        return "400"; // BAD_REQUEST
+      }
+      if ((player.getSession() == session) && (player.checkSession())){
+        // Got it, retrieving the statistics.
+        String alias = player.getAlias();
+        String newSession = Integer.toString(player.updateSession());
+        return alias + "," + player.getId() + newSession;
       }else{
         // Session incorrect or expired
         return "400"; // BAD_REQUEST

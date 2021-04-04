@@ -8,21 +8,23 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
+import org.hibernate.annotations.GenericGenerator;
+
 @Entity
 @Table(name = "GAME")
 public class Game {
-  // This specification requires Hibernate 5
   @Id
-  @GeneratedValue
-  private UUID code;
+  @GeneratedValue(generator = "system-uuid")
+  @GenericGenerator(name = "system-uuid", strategy = "uuid")
+  private String id;
   
-  @Column(name = "MAX_PLAYERS", nullable = false, unique = false)
+  @Column(name = "MAX_PLAYERS")
   private int maxPlayers;
   
-  @Column(name = "NUM_BOTS", nullable = false, unique = false)
+  @Column(name = "NUM_BOTS")
   private int numBots;
   
-  @Column(name = "PLAYERS", nullable = false, unique = false)
+  @Column(name = "PLAYERS")
   private UUID players[];
   
   public Game(int maxPlayers, int numBots, UUID player){
@@ -44,5 +46,4 @@ public class Game {
     }
     return false;
   }
-  
 }
