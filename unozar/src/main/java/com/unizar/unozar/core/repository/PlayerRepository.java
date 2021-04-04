@@ -1,14 +1,15 @@
 package com.unizar.unozar.core.repository;
 
+import java.util.Optional;
 import java.util.UUID;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import com.unizar.unozar.core.entities.User;
+import com.unizar.unozar.core.entities.Player;
 
-public interface UserRepository extends JpaRepository<User, UUID> {
+public interface PlayerRepository extends JpaRepository<Player, UUID> {
   // Functions to interact with Users from the database
 
-  User findByEmail(String email);
+  Optional<Player> findByEmail(String email);
 
 }
