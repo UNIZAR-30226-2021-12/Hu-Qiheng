@@ -51,7 +51,7 @@ public class PlayerController{
         }else{
           player.setEmail(newEmail);
           int newSession = player.updateSession();
-          return (player.getCode().toString()+newSession); // encodedSession
+          return (player.getId()+newSession); // encodedSession
         }
       }else{
         // Session incorrect or expired
@@ -80,7 +80,7 @@ public class PlayerController{
       if ((player.getSession() == session) && (player.checkSession())){
         player.setPassword(newPassword);
         int newSession = player.updateSession();
-        return (player.getCode().toString()+newSession); // encodedSession
+        return (player.getId()+newSession); // encodedSession
       }else{
         // Session incorrect or expired
         return "400"; // BAD_REQUEST
@@ -128,7 +128,7 @@ public class PlayerController{
     try{
       // Retrieves the player's code whose account is linked to the email given
       Optional<Player> player = playerRepository.findByEmail(email);
-      return player.get().getCode().toString();
+      return player.get().getId();
     }catch(Exception e){
       // User not found
       return "404"; // NOT_FOUND
@@ -143,7 +143,7 @@ public class PlayerController{
       Player player = optionalP.get();
       if (player.getPassword() == password){
         int newSession = player.updateSession();
-        return (player.getCode().toString()+newSession); // encodedSession
+        return (player.getId()+newSession); // encodedSession
       }else{
         // Failed to authenticate
         return "403"; // FORBIDDEN

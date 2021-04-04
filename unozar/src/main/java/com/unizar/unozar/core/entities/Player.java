@@ -9,36 +9,39 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
+import org.hibernate.annotations.GenericGenerator;
+
 @Entity
 @Table(name = "PLAYER")
 public class Player{
   // This specification requires Hibernate 5
   @Id
-  @GeneratedValue
-  private UUID code;
+  @GeneratedValue( generator = "system-uuid" )
+  @GenericGenerator( name = "system-uuid", strategy = "uuid" )
+  private String id;
   
-  @Column(name = "EMAIL", nullable = false, unique = true)
+  @Column(name = "EMAIL", unique = true)
   private String email;
 
-  @Column(name = "ALIAS", nullable = false, unique = false)
+  @Column(name = "ALIAS")
   private String alias;
 
-  @Column(name = "PASSWORD", nullable = false, unique = false)
+  @Column(name = "PASSWORD")
   private String password;
 
-  @Column(name = "SESSION", nullable = false, unique = false)
+  @Column(name = "SESSION")
   private int session;
   
-  @Column(name = "PRIVATE_WINS", nullable = false, unique = false)
+  @Column(name = "PRIVATE_WINS")
   private int private_wins;
 
-  @Column(name = "PRIVATE_TOTAL", nullable = false, unique = false)
+  @Column(name = "PRIVATE_TOTAL")
   private int private_total;
 
-  @Column(name = "PUBLIC_WINS", nullable = false, unique = false)
+  @Column(name = "PUBLIC_WINS")
   private int public_wins;
 
-  @Column(name = "PUBLIC_TOTAL", nullable = false, unique = false)
+  @Column(name = "PUBLIC_TOTAL")
   private int public_total;
   
   public Player(String email, String alias, String password){
@@ -100,8 +103,8 @@ public class Player{
   // Getters and Setters //
   /////////////////////////
   
-  public UUID getCode(){
-    return code; 
+  public String getId(){
+    return id; 
   }
     
   public String getAlias(){
