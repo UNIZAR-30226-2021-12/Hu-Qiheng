@@ -2,93 +2,56 @@ package com.unizar.unozar.core.controller;
 
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.unizar.unozar.core.controller.resources.AuthenticationRequest;
-import com.unizar.unozar.core.controller.resources.DeletePlayerRequest;
-import com.unizar.unozar.core.controller.resources.GetAliasRequest;
-import com.unizar.unozar.core.controller.resources.RegisterRequest;
-import com.unizar.unozar.core.controller.resources.StatisticsRequest;
-import com.unizar.unozar.core.controller.resources.UpdateEmailRequest;
-import com.unizar.unozar.core.controller.resources.UpdatePasswordRequest;
+import com.unizar.unozar.core.controller.resources.BasicPlayerRequest;
+import com.unizar.unozar.core.controller.resources.CreatePlayerRequest;
+import com.unizar.unozar.core.controller.resources.UpdatePlayerRequest;
+import com.unizar.unozar.core.DTO.PlayerDTO;
 import com.unizar.unozar.core.service.PlayerService;
 
 @RestController
+@RequestMapping(value = "/player", consumes = MediaType.APPLICATION_JSON_VALUE,
+    produces = MediaType.APPLICATION_JSON_VALUE)
 public class PlayerController{
 
-  private final PlayerService unozarService;
+  private final PlayerService playerService;
   
-  public PlayerController(PlayerService unozarService){
-    this.unozarService = unozarService;
+  public PlayerController(PlayerService playerService){
+    this.playerService = playerService;
   }
   
-  @PostMapping(value = "/player/createPlayer", 
-      consumes = MediaType.APPLICATION_JSON_VALUE,
-      produces = MediaType.APPLICATION_JSON_VALUE)
-  public ResponseEntity<String>
-      createPlayer(@RequestBody RegisterRequest request){
-    return ResponseEntity.ok(unozarService.createPlayer(request));
+  @PostMapping(value = "/createPlayer")
+  public ResponseEntity<PlayerDTO>
+      createPlayer(@RequestBody CreatePlayerRequest request){
+    return ResponseEntity.ok(playerService.createPlayer(request));
   }
   
-  @PostMapping(value = "/player/updatePlayerEmail", 
-      consumes = MediaType.APPLICATION_JSON_VALUE,
-      produces = MediaType.APPLICATION_JSON_VALUE)
-  public ResponseEntity<String> 
-      updatePlayerEmail(@RequestBody UpdateEmailRequest request){
-    return ResponseEntity.ok(unozarService.updatePlayerEmail(request));
+  @PatchMapping(value = "/{id}")
+  public ResponseEntity<PlayerDTO> 
+      updatePlayer(@RequestBody UpdatePlayerRequest request){
+    return ResponseEntity.ok(playerService.updatePlayer(request));
   }
   
-  @PostMapping(value = "/player/updatePlayerPassword",
-      consumes = MediaType.APPLICATION_JSON_VALUE,
-      produces = MediaType.APPLICATION_JSON_VALUE)
-  public ResponseEntity<String>
-      updatePlayerPassword(@RequestBody UpdatePasswordRequest request){
-    return ResponseEntity.ok(unozarService.updatePlayerPassword(request));
+  @DeleteMapping(value = "/deletePlayer")
+  public ResponseEntity<Void> 
+      deletePlayer(@RequestBody BasicPlayerRequest request){
+    playerService.deletePlayer(request);
+    return ResponseEntity.ok().build();
   }
   
-  @PostMapping(value = "/player/deletePlayer",
-      consumes = MediaType.APPLICATION_JSON_VALUE,
-      produces = MediaType.APPLICATION_JSON_VALUE)
-  public ResponseEntity<String> 
-      deletePlayer(@RequestBody DeletePlayerRequest request){
-    return ResponseEntity.ok(unozarService.deletePlayer(request));
-  }
-  
-  @PostMapping(value = "/player/authentication",
-      consumes = MediaType.APPLICATION_JSON_VALUE,
-      produces = MediaType.APPLICATION_JSON_VALUE)
-  public ResponseEntity<String>
+  @PostMapping(value = "/authentication")
+  public ResponseEntity<PlayerDTO>
       authentication(@RequestBody AuthenticationRequest request){
-    return ResponseEntity.ok(unozarService.authentication(request));
+    return ResponseEntity.ok(playerService.authentication(request));
   }
   
-  @GetMapping(value = "/player/findByEmail/{email}",
-      consumes = MediaType.APPLICATION_JSON_VALUE,
-      produces = MediaType.APPLICATION_JSON_VALUE)
-  public ResponseEntity<String>
-      findByEmail(@PathVariable String email){
-    return ResponseEntity.ok(unozarService.findByEmail(email));
-  }
-  
-  @GetMapping(value = "/player/getStatistics",
-      consumes = MediaType.APPLICATION_JSON_VALUE,
-      produces = MediaType.APPLICATION_JSON_VALUE)
-  public ResponseEntity<String>
-      getStatistics(@RequestBody StatisticsRequest request){
-    return ResponseEntity.ok(unozarService.getStatistics(request));
-  }
-  
-  @GetMapping(value = "/player/getAlias",
-      consumes = MediaType.APPLICATION_JSON_VALUE,
-      produces = MediaType.APPLICATION_JSON_VALUE)
-  public ResponseEntity<String>
-      getAlias(@RequestBody GetAliasRequest request){
-    return ResponseEntity.ok(unozarService.getAlias(request));
-  }
-  
-
 }

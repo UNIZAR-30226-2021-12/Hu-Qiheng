@@ -2,27 +2,34 @@ package com.unizar.unozar.core.controller.resources;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-public class RegisterRequest {
+public class UpdatePlayerRequest{
 
   @JsonProperty
   private String email;
   
   @JsonProperty
-  private String alias;
+  private String alias;  
   
   @JsonProperty
   private String password;
-
-  public String getEmail(){
+  
+  @JsonProperty
+  private String token;
+  
+  public String getEmail() {
     return email;
   }
-  
-  public String getAlias(){
+
+  public String getAlias() {
     return alias;
   }
-  
-  public String getPassword(){
+
+  public String getPassword() {
     return password;
   }
-  
+
+  public String getToken() {
+    return token;
+  }
+
 }

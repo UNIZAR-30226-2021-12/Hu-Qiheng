@@ -1,0 +1,30 @@
+server:
+  port:8080
+
+# ===============================
+# = SQL CONNECTION
+# ===============================
+# Connection url for the database "postgres"
+spring:
+  datasource:
+    url: ${DB_URL:jdbc:postgresql://localhost:5432/unozar}
+    username: postgres
+    password: example
+
+# ===============================
+# = SPRING JPA
+# ===============================
+# Fix Postgres JPA error
+  jpa:
+    properties:
+      hibernate:
+        jdbc.lob.non_contextual_creation: true
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+    hibernate:
+      ddl-auto: update
+
+springdoc:
+  api-docs:
+    path: /docs/swagger
+  swagger-ui:
+    path: /swagger-doc.html

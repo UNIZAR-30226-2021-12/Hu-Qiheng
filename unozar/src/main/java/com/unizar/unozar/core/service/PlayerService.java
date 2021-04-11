@@ -1,31 +1,19 @@
 package com.unizar.unozar.core.service;
 
+import com.unizar.unozar.core.DTO.PlayerDTO;
 import com.unizar.unozar.core.controller.resources.AuthenticationRequest;
-import com.unizar.unozar.core.controller.resources.DeletePlayerRequest;
-import com.unizar.unozar.core.controller.resources.GetAliasRequest;
-import com.unizar.unozar.core.controller.resources.RegisterRequest;
-import com.unizar.unozar.core.controller.resources.StatisticsRequest;
-import com.unizar.unozar.core.controller.resources.UpdateEmailRequest;
-import com.unizar.unozar.core.controller.resources.UpdatePasswordRequest;
+import com.unizar.unozar.core.controller.resources.BasicPlayerRequest;
+import com.unizar.unozar.core.controller.resources.CreatePlayerRequest;
+import com.unizar.unozar.core.controller.resources.UpdatePlayerRequest;
 
 public interface PlayerService {
 
-  public String createPlayer(RegisterRequest request);
+  public PlayerDTO createPlayer(CreatePlayerRequest request);
 
-  public String updatePlayerEmail(UpdateEmailRequest request);
+  public PlayerDTO updatePlayer(UpdatePlayerRequest request);
 
-  public String updatePlayerPassword(UpdatePasswordRequest request);
+  public Void deletePlayer(BasicPlayerRequest request);
 
-  public String deletePlayer(DeletePlayerRequest request);
-
-  public String findByEmail(String email);
-
-  public String authentication(AuthenticationRequest request);
-
-  public String getStatistics(StatisticsRequest request);
-
-  public String getAlias(GetAliasRequest request);
-
-
+  public PlayerDTO authentication(AuthenticationRequest request);
 
 }
