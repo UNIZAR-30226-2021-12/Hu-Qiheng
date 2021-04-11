@@ -14,7 +14,7 @@ import com.unizar.unozar.core.repository.GameRepository;
 import com.unizar.unozar.core.repository.PlayerRepository;
 
 @RestController
-public class UnozarController{
+public class UnozarControllerOld{
   @Autowired 
   PlayerRepository playerRepository;
 
