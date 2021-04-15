@@ -9,11 +9,17 @@ import com.unizar.unozar.core.controller.resources.UpdatePlayerRequest;
 public interface PlayerService {
 
   public PlayerDTO createPlayer(CreatePlayerRequest request);
+  
 
-  public PlayerDTO updatePlayer(UpdatePlayerRequest request);
+  public PlayerDTO readPlayer(String id);
+  
+  
+  public PlayerDTO updatePlayer(String id, UpdatePlayerRequest request);
 
+  
   public Void deletePlayer(BasicPlayerRequest request);
 
+  
   public PlayerDTO authentication(AuthenticationRequest request);
 
 }

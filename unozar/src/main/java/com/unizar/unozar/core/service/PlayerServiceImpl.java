@@ -25,16 +25,33 @@ public class PlayerServiceImpl implements PlayerService{
     PlayerDTO player = new PlayerDTO(toCreate);
     return player;
   }
-
-  public PlayerDTO updatePlayer(UpdatePlayerRequest request) {
+  
+  public PlayerDTO readPlayer(String id){
+    Optional<Player> toFind = playerRepository.findById(id);
+    if (toFind.isPresent()){
+      Player toRead = toFind.get();
+      return (new PlayerDTO(toRead));
+    }
     return null;
   }
 
-  public Void deletePlayer(BasicPlayerRequest request) {
+  public PlayerDTO updatePlayer(String id, UpdatePlayerRequest request){
+    Optional<Player> toFind = playerRepository.findById(id);
+    if (toFind.isPresent()){
+      Player toRead = toFind.get();
+      return (new PlayerDTO(toRead));
+    }
     return null;
   }
 
-  public PlayerDTO authentication(AuthenticationRequest request) {
+  public Void deletePlayer(BasicPlayerRequest request){
+    
+    playerRepository.deleteById(request.getId());
+    return null;
+  }
+
+  public PlayerDTO authentication(AuthenticationRequest request){
+    
     return null;
   }
 

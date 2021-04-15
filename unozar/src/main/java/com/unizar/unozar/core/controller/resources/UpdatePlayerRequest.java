@@ -16,19 +16,19 @@ public class UpdatePlayerRequest{
   @JsonProperty
   private String token;
   
-  public String getEmail() {
+  public String getEmail(){
     return email;
   }
 
-  public String getAlias() {
+  public String getAlias(){
     return alias;
   }
 
-  public String getPassword() {
+  public String getPassword(){
     return password;
   }
 
-  public String getToken() {
+  public String getToken(){
     return token;
   }
 

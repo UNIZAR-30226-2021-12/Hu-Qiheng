@@ -11,11 +11,11 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.unizar.unozar.core.DTO.PlayerDTO;
 import com.unizar.unozar.core.controller.resources.AuthenticationRequest;
 import com.unizar.unozar.core.controller.resources.BasicPlayerRequest;
 import com.unizar.unozar.core.controller.resources.CreatePlayerRequest;
 import com.unizar.unozar.core.controller.resources.UpdatePlayerRequest;
-import com.unizar.unozar.core.DTO.PlayerDTO;
 import com.unizar.unozar.core.service.PlayerService;
 
 @RestController
@@ -35,10 +35,17 @@ public class PlayerController{
     return ResponseEntity.ok(playerService.createPlayer(request));
   }
   
+  @GetMapping(value = "/{id}")
+  public ResponseEntity<PlayerDTO>
+      readPlayer(@PathVariable String id){
+    return ResponseEntity.ok(playerService.readPlayer(id));
+  }
+  
   @PatchMapping(value = "/{id}")
   public ResponseEntity<PlayerDTO> 
-      updatePlayer(@RequestBody UpdatePlayerRequest request){
-    return ResponseEntity.ok(playerService.updatePlayer(request));
+      updatePlayer(@PathVariable String id, 
+      @RequestBody UpdatePlayerRequest request){
+    return ResponseEntity.ok(playerService.updatePlayer(id, request));
   }
   
   @DeleteMapping(value = "/deletePlayer")
