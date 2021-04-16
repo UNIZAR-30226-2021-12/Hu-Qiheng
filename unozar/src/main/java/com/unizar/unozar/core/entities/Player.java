@@ -1,6 +1,5 @@
 package com.unizar.unozar.core.entities;
 
-import java.time.LocalDateTime;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -52,31 +51,6 @@ public class Player{
     public_total = 0;
   }
   
-  // Retrieves the total number of today's seconds
-  private int getTodaySeconds(){
-    LocalDateTime localDate = LocalDateTime.now();
-    int hours = localDate.getHour();
-    int minutes = localDate.getMinute();
-    int seconds = localDate.getSecond();
-    int newSession = hours * 3600 + minutes * 60 + seconds;
-    return newSession;
-  }
-  
-  // Creates a new session for the user, based on today's seconds in total
-  public int updateSession(){
-    session = getTodaySeconds();
-    return session;
-  }
-  
-  // Retrieves true if time since last session update is minor than 600 seconds,
-  // if not retrieves false meaning the session has expired
-  public boolean checkSession(){
-    if(getTodaySeconds() - session > 600){
-      return true;
-    }
-    return false;
-  }
-  
   // Increments the number of public games won
   public void addPublicWin(){
     public_wins++;
@@ -97,13 +71,11 @@ public class Player{
     private_total++;
   }
   
-  // Retrieves all the statistics separated by commas
-  public String getStats(){
-    String private_t = Integer.toString(private_total);
-    String private_w = Integer.toString(private_wins);
-    String public_t = Integer.toString(public_total);
-    String public_w = Integer.toString(public_wins);
-    return private_t + "," + private_w + "," + public_t + "," + public_w;
+  public boolean isValidPassword(String passwordToCheck){
+    if(passwordToCheck == password){
+      return true;
+    }
+    return false;
   }
 
   /////////////////////////
