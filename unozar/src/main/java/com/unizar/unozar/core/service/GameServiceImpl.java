@@ -1,6 +1,5 @@
 package com.unizar.unozar.core.service;
 
-import com.unizar.unozar.core.controller.resources.AddPlayerRequest;
 import com.unizar.unozar.core.controller.resources.CreateGameRequest;
 import com.unizar.unozar.core.repository.GameRepository;
 
@@ -18,7 +17,7 @@ public class GameServiceImpl implements GameService{
     return null;
   }
 
-  public String addPlayer(AddPlayerRequest request) {
+  public String addPlayer(){
     // TODO Auto-generated method stub
     return null;
   }
