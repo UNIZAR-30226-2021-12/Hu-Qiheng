@@ -1,30 +1,40 @@
 package com.unizar.unozar.core.service;
 
-import java.sql.Date;
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Optional;
-import java.util.stream.Collectors;
+
+import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.AuthorityUtils;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import com.unizar.unozar.core.JWTUtil;
 import com.unizar.unozar.core.DTO.PlayerDTO;
 import com.unizar.unozar.core.controller.resources.AuthenticationRequest;
+import com.unizar.unozar.core.controller.resources.AuthenticationResponse;
 import com.unizar.unozar.core.controller.resources.BasicPlayerRequest;
 import com.unizar.unozar.core.controller.resources.CreatePlayerRequest;
 import com.unizar.unozar.core.controller.resources.UpdatePlayerRequest;
 import com.unizar.unozar.core.entities.Player;
+import com.unizar.unozar.core.exceptions.InvalidPassword;
+import com.unizar.unozar.core.exceptions.PlayerNotFound;
 import com.unizar.unozar.core.repository.PlayerRepository;
 
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.impl.DefaultClaims;
 
 public class PlayerServiceImpl implements PlayerService{
 
   private final PlayerRepository playerRepository;
+  
   private final JWTUtil jWTUtil;
+  
   private final AuthenticationManager authenticationManager;
   
   public PlayerServiceImpl(PlayerRepository playerRepository,
@@ -42,8 +52,8 @@ public class PlayerServiceImpl implements PlayerService{
     return player;
   }
   
-  public PlayerDTO readPlayer(String id){
-    Optional<Player> toFind = playerRepository.findById(id);
+  public PlayerDTO readPlayer(String email){
+    Optional<Player> toFind = playerRepository.findByEmail(email);
     if (toFind.isPresent()){
       Player toRead = toFind.get();
       return (new PlayerDTO(toRead));
@@ -66,31 +76,46 @@ public class PlayerServiceImpl implements PlayerService{
     return null;
   }
 
-  public PlayerDTO authentication(AuthenticationRequest request){
+  public AuthenticationResponse 
+      authentication(AuthenticationRequest request){
     Optional<Player> toFind = playerRepository.findByEmail(request.getEmail());
-    if(toFind.isPresent()){
-      Player toAuth = toFind.get();
-      if(toAuth.isValidPassword(request.getPassword()){
-        
-        
-      }
-      PlayerDTO authenticated = new PlayerDTO();
-      return authenticated;
+    if(!toFind.isPresent()){
+      throw new PlayerNotFound("Email does not exist in the system");
     }
+    Player toAuth = toFind.get();
+    if(!toAuth.isValidPassword(request.getPassword())){
+      throw new InvalidPassword("Invalid password");
+    }
+    authenticationManager.authenticate(
+        new UsernamePasswordAuthenticationToken(
+            toAuth.getId(), toAuth.getPassword()));
+    UserDetails detailsFromToAuth = loadPlayerDetails(toAuth);
+    String token = jWTUtil.generateToken(detailsFromToAuth);
+    return new AuthenticationResponse(token);
   }
   
-  private String getJWTToken(String userId){
-    String secretKey = "paralelepipedo";
-    List<GrantedAuthority> grantedAuthorities = 
-        AuthorityUtils.commaSeparatedStringToAuthorityList("ROLE_USER");
-    String token = Jwts.builder().setId("unozarJWT").setSubject(userId)
-        .claim("authorities", grantedAuthorities.stream()
-            .map(GrantedAuthority::getAuthority)
-            .collect(Collectors.toList()))
-        .setIssuedAt(new Date(System.currentTimeMillis()))
-        .setExpiration(new Date(System.currentTimeMillis() + 600000))
-        .signWith(SignatureAlgorithm.HS512, secretKey.getBytes()).compact();
-    return "Bearer " + token;
+  public AuthenticationResponse 
+      refreshToken(HttpServletRequest request){
+    DefaultClaims claims = (io.jsonwebtoken.impl.DefaultClaims) 
+        request.getAttribute("claims");
+    Map<String, Object> expectedMap = getMapFromTokenClaims(claims);
+    String token = jWTUtil.doGenerateRefreshToken(expectedMap, 
+        (String) expectedMap.get("sub"));
+    return new AuthenticationResponse(token);
   }
 
+  private UserDetails loadPlayerDetails(Player toDetail){
+    List<SimpleGrantedAuthority> roles = null;
+    roles = Arrays.asList(new SimpleGrantedAuthority("player"));
+    return new User(toDetail.getId(), toDetail.getPassword(), roles);
+  }
+  
+  private Map<String, Object> getMapFromTokenClaims(DefaultClaims claims){
+    Map<String, Object> expectedMap = new HashMap<String, Object>();
+    for(Entry<String, Object> entry : claims.entrySet()){
+      expectedMap.put(entry.getKey(), entry.getValue());
+    }
+    return expectedMap;
+  }
+  
 }

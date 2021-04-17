@@ -73,7 +73,7 @@ public class JWTUtil{
 
   }
 
-  public boolean validateToken(String authToken) {
+  public boolean validateToken(String authToken){
     try {
       Jws<Claims> claims = Jwts.parser().setSigningKey(secret).parseClaimsJws(authToken);
       return true;
