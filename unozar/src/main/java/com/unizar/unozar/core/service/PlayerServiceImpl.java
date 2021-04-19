@@ -1,20 +1,20 @@
 package com.unizar.unozar.core.service;
 
-import java.util.Arrays;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
 
+import com.unizar.unozar.core.CustomPlayerDetailsService;
 import com.unizar.unozar.core.JWTUtil;
 import com.unizar.unozar.core.DTO.PlayerDTO;
 import com.unizar.unozar.core.controller.resources.AuthenticationRequest;
@@ -29,29 +29,33 @@ import com.unizar.unozar.core.repository.PlayerRepository;
 
 import io.jsonwebtoken.impl.DefaultClaims;
 
+@Service
 public class PlayerServiceImpl implements PlayerService{
 
-  private final PlayerRepository playerRepository;
+  @Autowired
+  private PlayerRepository playerRepository;
   
-  private final JWTUtil jWTUtil;
+  @Autowired
+  private JWTUtil jWTUtil;
   
-  private final AuthenticationManager authenticationManager;
+  @Autowired
+  private PasswordEncoder bCryptEncoder;
   
-  public PlayerServiceImpl(PlayerRepository playerRepository,
-      JWTUtil jWTUtil, AuthenticationManager authenticationManager){
-    this.playerRepository = playerRepository;
-    this.jWTUtil = jWTUtil;
-    this.authenticationManager = authenticationManager;
-  }
+  @Autowired
+  private CustomPlayerDetailsService playerDetailsService;
+  
+  @Autowired
+  private AuthenticationManager authenticationManager;
   
   @Override
   public PlayerDTO createPlayer(CreatePlayerRequest request){
     Player toCreate = playerRepository.save(new Player(request.getEmail(), 
-        request.getAlias(), request.getPassword()));
+        request.getAlias(), bCryptEncoder.encode(request.getPassword())));
     PlayerDTO player = new PlayerDTO(toCreate);
     return player;
   }
   
+  @Override
   public PlayerDTO readPlayer(String email){
     Optional<Player> toFind = playerRepository.findByEmail(email);
     if (toFind.isPresent()){
@@ -61,6 +65,7 @@ public class PlayerServiceImpl implements PlayerService{
     return null;
   }
 
+  @Override
   public PlayerDTO updatePlayer(String id, UpdatePlayerRequest request){
     Optional<Player> toFind = playerRepository.findById(id);
     if (toFind.isPresent()){
@@ -70,12 +75,13 @@ public class PlayerServiceImpl implements PlayerService{
     return null;
   }
 
+  @Override
   public Void deletePlayer(BasicPlayerRequest request){
-    
     playerRepository.deleteById(request.getId());
     return null;
   }
 
+  @Override
   public AuthenticationResponse 
       authentication(AuthenticationRequest request){
     Optional<Player> toFind = playerRepository.findByEmail(request.getEmail());
@@ -89,11 +95,13 @@ public class PlayerServiceImpl implements PlayerService{
     authenticationManager.authenticate(
         new UsernamePasswordAuthenticationToken(
             toAuth.getId(), toAuth.getPassword()));
-    UserDetails detailsFromToAuth = loadPlayerDetails(toAuth);
+    UserDetails detailsFromToAuth = 
+        playerDetailsService.loadUserByUsername(toAuth.getId());
     String token = jWTUtil.generateToken(detailsFromToAuth);
     return new AuthenticationResponse(token);
   }
   
+  @Override
   public AuthenticationResponse 
       refreshToken(HttpServletRequest request){
     DefaultClaims claims = (io.jsonwebtoken.impl.DefaultClaims) 
@@ -102,12 +110,6 @@ public class PlayerServiceImpl implements PlayerService{
     String token = jWTUtil.doGenerateRefreshToken(expectedMap, 
         (String) expectedMap.get("sub"));
     return new AuthenticationResponse(token);
-  }
-
-  private UserDetails loadPlayerDetails(Player toDetail){
-    List<SimpleGrantedAuthority> roles = null;
-    roles = Arrays.asList(new SimpleGrantedAuthority("player"));
-    return new User(toDetail.getId(), toDetail.getPassword(), roles);
   }
   
   private Map<String, Object> getMapFromTokenClaims(DefaultClaims claims){

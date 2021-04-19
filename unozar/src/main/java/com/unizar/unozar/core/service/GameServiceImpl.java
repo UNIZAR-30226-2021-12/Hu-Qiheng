@@ -1,8 +1,11 @@
 package com.unizar.unozar.core.service;
 
+import org.springframework.stereotype.Service;
+
 import com.unizar.unozar.core.controller.resources.CreateGameRequest;
 import com.unizar.unozar.core.repository.GameRepository;
 
+@Service
 public class GameServiceImpl implements GameService{
 
   GameRepository gameRepository;

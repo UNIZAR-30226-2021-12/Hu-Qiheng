@@ -12,6 +12,7 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.stereotype.Service;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
@@ -22,6 +23,7 @@ import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.SignatureException;
 import io.jsonwebtoken.UnsupportedJwtException;
 
+@Service
 public class JWTUtil{
 
   private String secret;
@@ -48,11 +50,11 @@ public class JWTUtil{
 
     Collection<? extends GrantedAuthority> roles = userDetails.getAuthorities();
 
-    if (roles.contains(new SimpleGrantedAuthority("ROLE_ADMIN"))) {
+    if (roles.contains(new SimpleGrantedAuthority("admin"))) {
       claims.put("isAdmin", true);
     }
-    if (roles.contains(new SimpleGrantedAuthority("ROLE_USER"))) {
-      claims.put("isUser", true);
+    if (roles.contains(new SimpleGrantedAuthority("player"))) {
+      claims.put("isPlayer", true);
     }
     
     return doGenerateToken(claims, userDetails.getUsername());

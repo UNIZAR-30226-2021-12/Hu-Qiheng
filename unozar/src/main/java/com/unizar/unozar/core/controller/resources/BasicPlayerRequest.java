@@ -2,7 +2,7 @@ package com.unizar.unozar.core.controller.resources;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-public class BasicPlayerRequest {
+public class BasicPlayerRequest{
   
   @JsonProperty
   private String id;

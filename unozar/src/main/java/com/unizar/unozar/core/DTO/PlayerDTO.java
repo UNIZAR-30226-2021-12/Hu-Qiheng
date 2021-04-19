@@ -10,8 +10,6 @@ public class PlayerDTO{
   
   public String alias;
   
-  public String token;
-  
   public int private_wins;
   
   public int private_total;
@@ -24,14 +22,10 @@ public class PlayerDTO{
     id = toTransfer.getId();
     email = toTransfer.getEmail();
     alias = toTransfer.getAlias();
-    token = null;
     private_wins = toTransfer.getPrivateWins();
     private_total = toTransfer.getPrivateTotal();
     public_wins = toTransfer.getPublicWins();
     public_total = toTransfer.getPublicTotal();
   }
-  
-  public void setToken(String token){
-    this.token = token;
-  }
+
 }
