@@ -13,38 +13,34 @@ import org.hibernate.annotations.GenericGenerator;
 public class Player{
   @Id
   @GeneratedValue( generator = "system-uuid" )
-  @GenericGenerator( name = "system-uuid", strategy = "uuid" )
+  @GenericGenerator( name = "system-uuid", strategy = "uuid")
   private String id;
   
-  @Column(name = "EMAIL", unique = true)
+  @Column(name = "EMAIL", unique = true, nullable = false)
   private String email;
 
-  @Column(name = "ALIAS")
+  @Column(name = "ALIAS", nullable = false)
   private String alias;
 
-  @Column(name = "PASSWORD")
+  @Column(name = "PASSWORD", nullable = false)
   private String password;
-
-  @Column(name = "SESSION")
-  private int session;
   
-  @Column(name = "PRIVATE_WINS")
+  @Column(name = "PRIVATE_WINS", nullable = false)
   private int private_wins;
 
-  @Column(name = "PRIVATE_TOTAL")
+  @Column(name = "PRIVATE_TOTAL", nullable = false)
   private int private_total;
 
-  @Column(name = "PUBLIC_WINS")
+  @Column(name = "PUBLIC_WINS", nullable = false)
   private int public_wins;
 
-  @Column(name = "PUBLIC_TOTAL")
+  @Column(name = "PUBLIC_TOTAL", nullable = false)
   private int public_total;
   
   public Player(String email, String alias, String password){
     this.email = email;
     this.alias = alias;
     this.password = password;
-    session = -601;
     private_wins = 0;
     private_total = 0;
     public_wins = 0;
@@ -98,10 +94,6 @@ public class Player{
     return password;
   }
 
-  public int getSession(){
-    return session;
-  }
-  
   public int getPublicWins(){
     return public_wins;
   }

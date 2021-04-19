@@ -3,7 +3,6 @@ package com.unizar.unozar.core;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -32,6 +31,23 @@ public class SpringSecurityConfiguration extends WebSecurityConfigurerAdapter{
     return new BCryptPasswordEncoder();
   }
   
+  private static final String[] WHITELIST = {
+      // Unozar code
+      "/player/authentication",
+      "/player/refreshToken",
+      // -- Swagger UI v2
+      "/v2/api-docs",
+      "/swagger-resources",
+      "/swagger-resources/**",
+      "/configuration/ui",
+      "/configuration/security",
+      "/swagger-ui.html",
+      "/webjars/**",
+      // -- Swagger UI v3 (OpenAPI)
+      "/v3/api-docs/**",
+      "/swagger-ui/**"
+  };
+  
   @Override
   public void configure(AuthenticationManagerBuilder auth) throws Exception{
     auth.userDetailsService(playerDetailsService).passwordEncoder(
@@ -44,24 +60,10 @@ public class SpringSecurityConfiguration extends WebSecurityConfigurerAdapter{
     return super.authenticationManagerBean();
   }
   
-//  @Override
-//  public void configure(HttpSecurity http) throws Exception{
-//    http.csrf().disable()
-//    .authorizeRequests().antMatchers("/helloadmin").hasRole("ADMIN")
-//    .antMatchers("/hellouser").hasAnyRole("USER","ADMIN")
-//    .antMatchers("/authenticate", "/register").permitAll().anyRequest()
-//    .authenticated().and().exceptionHandling()
-//    .authenticationEntryPoint(jwtAuthenticationEntryPoint)
-//    .and().sessionManagement()
-//    .sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
-//    .addFilterBefore(customJwtAuthenticationFilter, 
-//        UsernamePasswordAuthenticationFilter.class);
-//  }
-  
   @Override
   public void configure(HttpSecurity http) throws Exception{
     http.csrf().disable().authorizeRequests()
-    .antMatchers("/player/authentication", "/player/refreshToken").permitAll()
+    .antMatchers(WHITELIST).permitAll()
     .anyRequest().authenticated().and().exceptionHandling()
     .authenticationEntryPoint(jwtAuthenticationEntryPoint)
     .and().sessionManagement()

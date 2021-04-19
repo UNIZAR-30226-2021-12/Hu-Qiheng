@@ -4,7 +4,7 @@ server:
 # ===============================
 # = SQL CONNECTION
 # ===============================
-# Connection url for the database "postgres"
+# Connection url for the database unozar
 spring:
   datasource:
     url: ${DB_URL:jdbc:postgresql://localhost:5432/unozar}
