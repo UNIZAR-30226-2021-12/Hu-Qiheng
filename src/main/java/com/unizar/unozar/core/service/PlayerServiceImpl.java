@@ -114,7 +114,7 @@ public class PlayerServiceImpl implements PlayerService{
       throw new PlayerNotFound("Email does not exist in the system");
     }
     Player toAuth = toFind.get();
-    if(!toAuth.isValidPassword(request.getPassword())){
+    if(!toAuth.isValidPassword(bCryptEncoder.encode(request.getPassword()))){
       throw new InvalidPassword("Invalid password");
     }
     authenticationManager.authenticate(
