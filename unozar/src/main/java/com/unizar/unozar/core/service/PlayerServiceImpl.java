@@ -20,10 +20,14 @@ import com.unizar.unozar.core.DTO.PlayerDTO;
 import com.unizar.unozar.core.controller.resources.AuthenticationRequest;
 import com.unizar.unozar.core.controller.resources.AuthenticationResponse;
 import com.unizar.unozar.core.controller.resources.BasicPlayerRequest;
-import com.unizar.unozar.core.controller.resources.CreatePlayerRequest;
-import com.unizar.unozar.core.controller.resources.UpdatePlayerRequest;
+import com.unizar.unozar.core.controller.resources.DeletePlayerRequest;
 import com.unizar.unozar.core.entities.Player;
+import com.unizar.unozar.core.exceptions.AliasSyntaxError;
+import com.unizar.unozar.core.exceptions.EmailInUse;
+import com.unizar.unozar.core.exceptions.EmailSyntaxError;
+import com.unizar.unozar.core.exceptions.EmptyRequest;
 import com.unizar.unozar.core.exceptions.InvalidPassword;
+import com.unizar.unozar.core.exceptions.PasswordSyntaxError;
 import com.unizar.unozar.core.exceptions.PlayerNotFound;
 import com.unizar.unozar.core.repository.PlayerRepository;
 
@@ -48,36 +52,57 @@ public class PlayerServiceImpl implements PlayerService{
   private AuthenticationManager authenticationManager;
   
   @Override
-  public PlayerDTO createPlayer(CreatePlayerRequest request){
-    Player toCreate = playerRepository.save(new Player(request.getEmail(), 
+  public PlayerDTO createPlayer(BasicPlayerRequest request){
+    checkCreatePlayerRequest(request);
+    String emailNewUser = request.getEmail();
+    Optional<Player> toFind = playerRepository.findByEmail(emailNewUser);
+    if(toFind.isPresent()){
+      throw new EmailInUse("The email is already in use");
+    }
+    Player created = playerRepository.save(new Player(request.getEmail(), 
         request.getAlias(), bCryptEncoder.encode(request.getPassword())));
-    PlayerDTO player = new PlayerDTO(toCreate);
+    PlayerDTO player = new PlayerDTO(created);
     return player;
   }
   
   @Override
-  public PlayerDTO readPlayer(String email){
-    Optional<Player> toFind = playerRepository.findByEmail(email);
-    if (toFind.isPresent()){
-      Player toRead = toFind.get();
-      return (new PlayerDTO(toRead));
+  public PlayerDTO readPlayer(String id){
+    Optional<Player> toFind = playerRepository.findByEmail(id);
+    if(!toFind.isPresent()){
+      throw new PlayerNotFound("Id does not exist in the system");
     }
-    return null;
+    Player toRead = toFind.get();
+    return new PlayerDTO(toRead);
   }
 
   @Override
-  public PlayerDTO updatePlayer(String id, UpdatePlayerRequest request){
+  public Void updatePlayer(String id, BasicPlayerRequest request){
+    checkUpdatePlayerRequest(request);
     Optional<Player> toFind = playerRepository.findById(id);
     if (toFind.isPresent()){
-      Player toRead = toFind.get();
-      return (new PlayerDTO(toRead));
+      throw new PlayerNotFound("Id does not exist in the system");
+    }
+    Player toUpdate = toFind.get();
+    if(request.getAlias() != null){
+      toUpdate.setAlias(request.getAlias());
+    }
+    if(request.getEmail() != null){
+      Optional<Player> otherPlayer = 
+          playerRepository.findByEmail(request.getEmail());
+      if(otherPlayer.isPresent()){
+        throw new EmailInUse("The email is already in use");
+      }
+      toUpdate.setEmail(request.getEmail());
+    }
+    if(request.getPassword() != null){
+      toUpdate.setPassword(bCryptEncoder.encode(request.getPassword()));
     }
     return null;
   }
 
   @Override
-  public Void deletePlayer(BasicPlayerRequest request){
-    playerRepository.deleteById(request.getId());
+  public Void deletePlayer(String id, DeletePlayerRequest request){
+    playerRepository.deleteById(id);
     return null;
   }
 
@@ -112,6 +137,55 @@ public class PlayerServiceImpl implements PlayerService{
     return new AuthenticationResponse(token);
   }
   
+  private Void checkCreatePlayerRequest(BasicPlayerRequest request){
+    checkEmail(request.getEmail());
+    checkAlias(request.getAlias());
+    checkPassword(request.getPassword());
+    return null;
+  }
+
+  private Void checkUpdatePlayerRequest(BasicPlayerRequest request) {
+    boolean requestEmpty = true;
+    if(request.getEmail() != null){
+      requestEmpty = false;
+      checkEmail(request.getEmail());
+    }
+    if(request.getAlias() != null){
+      requestEmpty = false;
+      checkAlias(request.getAlias());
+    }
+    if(request.getPassword() != null){
+      requestEmpty = false;
+      checkPassword(request.getPassword());
+    }
+    if(requestEmpty){
+      throw new EmptyRequest("The update player request is empty");
+    }
+    return null;
+  }
+
+  
+  private Void checkPassword(String password){
+    if(password.length() <= 3){
+      throw new PasswordSyntaxError("The password is too short");
+    }
+    return null;
+  }
+
+  private Void checkAlias(String alias){
+    if(alias.length() <= 3){
+      throw new AliasSyntaxError("The alias is too short");
+    }
+    return null;
+  }
+
+  private Void checkEmail(String email){
+    if(!email.contains("@")){
+      throw new EmailSyntaxError("The email is not a valid email direction");
+    }
+    return null;
+  }
+
   private Map<String, Object> getMapFromTokenClaims(DefaultClaims claims){
     Map<String, Object> expectedMap = new HashMap<String, Object>();
     for(Entry<String, Object> entry : claims.entrySet()){

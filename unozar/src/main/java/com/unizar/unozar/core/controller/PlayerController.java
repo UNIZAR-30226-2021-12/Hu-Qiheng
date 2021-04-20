@@ -17,8 +17,7 @@ import com.unizar.unozar.core.DTO.PlayerDTO;
 import com.unizar.unozar.core.controller.resources.AuthenticationRequest;
 import com.unizar.unozar.core.controller.resources.AuthenticationResponse;
 import com.unizar.unozar.core.controller.resources.BasicPlayerRequest;
-import com.unizar.unozar.core.controller.resources.CreatePlayerRequest;
-import com.unizar.unozar.core.controller.resources.UpdatePlayerRequest;
+import com.unizar.unozar.core.controller.resources.DeletePlayerRequest;
 import com.unizar.unozar.core.service.PlayerService;
 
 @RestController
@@ -34,27 +33,29 @@ public class PlayerController{
   
   @PostMapping(value = "/createPlayer")
   public ResponseEntity<PlayerDTO>
-      createPlayer(@RequestBody CreatePlayerRequest request){
+      createPlayer(@RequestBody BasicPlayerRequest request){
     return ResponseEntity.ok(playerService.createPlayer(request));
   }
   
-  @GetMapping(value = "/readPlayer/{email}")
+  @GetMapping(value = "/readPlayer/{id}")
   public ResponseEntity<PlayerDTO>
-      readPlayer(@PathVariable String email){
-    return ResponseEntity.ok(playerService.readPlayer(email));
+      readPlayer(@PathVariable String id){
+    return ResponseEntity.ok(playerService.readPlayer(id));
   }
   
   @PatchMapping(value = "/{id}")
-  public ResponseEntity<PlayerDTO> 
+  public ResponseEntity<Void> 
       updatePlayer(@PathVariable String id, 
-      @RequestBody UpdatePlayerRequest request){
-    return ResponseEntity.ok(playerService.updatePlayer(id, request));
+      @RequestBody BasicPlayerRequest request){
+    playerService.updatePlayer(id, request);
+    return ResponseEntity.ok().build();
   }
   
-  @DeleteMapping(value = "/deletePlayer")
+  @DeleteMapping(value = "/deletePlayer/{id}")
   public ResponseEntity<Void> 
-      deletePlayer(@RequestBody BasicPlayerRequest request){
-    playerService.deletePlayer(request);
+      deletePlayer(@PathVariable String id,
+      @RequestBody DeletePlayerRequest request){
+    playerService.deletePlayer(id, request);
     return ResponseEntity.ok().build();
   }
   

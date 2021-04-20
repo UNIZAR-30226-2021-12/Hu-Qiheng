@@ -3,19 +3,26 @@ package com.unizar.unozar.core.controller.resources;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class BasicPlayerRequest{
-  
-  @JsonProperty
-  private String id;
-  
-  @JsonProperty
-  private String token;
 
-  public String getId() {
-    return id;
+  @JsonProperty
+  private String email;
+  
+  @JsonProperty
+  private String alias;
+  
+  @JsonProperty
+  private String password;
+
+  public String getEmail(){
+    return email;
   }
-
-  public String getToken() {
-    return token;
+  
+  public String getAlias(){
+    return alias;
+  }
+  
+  public String getPassword(){
+    return password;
   }
   
 }

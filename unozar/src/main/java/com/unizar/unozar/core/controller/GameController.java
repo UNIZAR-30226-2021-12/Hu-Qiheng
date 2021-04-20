@@ -8,7 +8,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.unizar.unozar.core.DTO.GameDTO;
-import com.unizar.unozar.core.controller.resources.CreateGameRequest;
 import com.unizar.unozar.core.service.GameService;
 
 @RestController
@@ -24,7 +23,7 @@ public class GameController{
   
   @GetMapping(value = "/createGame")
   public ResponseEntity<GameDTO>
-      createGame(@RequestBody CreateGameRequest request){
+      createGame(){
     return null;
   }
   

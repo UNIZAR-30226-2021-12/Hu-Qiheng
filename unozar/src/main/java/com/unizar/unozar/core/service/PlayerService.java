@@ -6,18 +6,17 @@ import com.unizar.unozar.core.DTO.PlayerDTO;
 import com.unizar.unozar.core.controller.resources.AuthenticationRequest;
 import com.unizar.unozar.core.controller.resources.AuthenticationResponse;
 import com.unizar.unozar.core.controller.resources.BasicPlayerRequest;
-import com.unizar.unozar.core.controller.resources.CreatePlayerRequest;
-import com.unizar.unozar.core.controller.resources.UpdatePlayerRequest;
+import com.unizar.unozar.core.controller.resources.DeletePlayerRequest;
 
 public interface PlayerService{
 
-  public PlayerDTO createPlayer(CreatePlayerRequest request);
+  public PlayerDTO createPlayer(BasicPlayerRequest request);
 
   public PlayerDTO readPlayer(String id);
   
-  public PlayerDTO updatePlayer(String id, UpdatePlayerRequest request);
+  public Void updatePlayer(String id, BasicPlayerRequest request);
   
-  public Void deletePlayer(BasicPlayerRequest request);
+  public Void deletePlayer(String id, DeletePlayerRequest request);
   
   public AuthenticationResponse authentication(AuthenticationRequest request);
   

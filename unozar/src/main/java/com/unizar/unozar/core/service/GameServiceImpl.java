@@ -2,7 +2,6 @@ package com.unizar.unozar.core.service;
 
 import org.springframework.stereotype.Service;
 
-import com.unizar.unozar.core.controller.resources.CreateGameRequest;
 import com.unizar.unozar.core.repository.GameRepository;
 
 @Service
@@ -15,7 +14,7 @@ public class GameServiceImpl implements GameService{
   }
   
   @Override
-  public String createGame(CreateGameRequest request) {
+  public String createGame() {
     
     return null;
   }
