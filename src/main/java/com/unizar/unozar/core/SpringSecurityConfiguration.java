@@ -33,6 +33,7 @@ public class SpringSecurityConfiguration extends WebSecurityConfigurerAdapter{
   
   private static final String[] WHITELIST = {
       // Unozar code
+      "/player/createPlayer",
       "/player/authentication",
       "/player/refreshToken",
       // -- Swagger UI v2
