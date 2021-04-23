@@ -16,6 +16,7 @@ import com.unizar.unozar.core.entities.Player;
 import com.unizar.unozar.core.exceptions.EmailInUse;
 import com.unizar.unozar.core.exceptions.InvalidIdentity;
 import com.unizar.unozar.core.exceptions.InvalidPassword;
+import com.unizar.unozar.core.exceptions.InvalidToken;
 import com.unizar.unozar.core.exceptions.PlayerNotFound;
 import com.unizar.unozar.core.repository.PlayerRepository;
 
@@ -94,7 +95,7 @@ public class PlayerServiceImpl implements PlayerService{
     }
     Player toDelete = toFind.get();
     if(!toDelete.checkSession(request.getToken().substring(36))){
-      throw new InvalidIdentity("Invalid token");
+      throw new InvalidToken("Invalid token");
     }
     playerRepository.deleteById(id);
     return null;

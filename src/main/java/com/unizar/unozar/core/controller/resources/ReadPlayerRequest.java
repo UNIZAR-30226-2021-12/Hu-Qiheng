@@ -5,7 +5,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public class ReadPlayerRequest{
   
   @JsonProperty
-  String id;
+  public String id;
   
   public String getId(){
     return id;
