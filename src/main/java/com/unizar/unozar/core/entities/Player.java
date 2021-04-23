@@ -113,7 +113,7 @@ public class Player{
   }
   
   public boolean isValidPassword(String passwordToCheck){
-    if(passwordToCheck == password){
+    if(passwordToCheck.equals(password)){
       return true;
     }
     return false;
