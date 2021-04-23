@@ -18,7 +18,6 @@ import com.unizar.unozar.core.controller.resources.AuthenticationRequest;
 import com.unizar.unozar.core.controller.resources.AuthenticationResponse;
 import com.unizar.unozar.core.controller.resources.CreatePlayerRequest;
 import com.unizar.unozar.core.controller.resources.DeletePlayerRequest;
-import com.unizar.unozar.core.controller.resources.ReadPlayerRequest;
 import com.unizar.unozar.core.controller.resources.RefreshTokenRequest;
 import com.unizar.unozar.core.controller.resources.UpdatePlayerRequest;
 import com.unizar.unozar.core.service.PlayerService;
@@ -70,7 +69,7 @@ public class PlayerController{
     return ResponseEntity.ok(playerService.authentication(request));
   }
   
-  @GetMapping(value = "/refreshToken")
+  @PostMapping(value = "/refreshToken")
   public ResponseEntity<AuthenticationResponse> 
       refreshToken(RefreshTokenRequest request){
     return ResponseEntity.ok(playerService.refreshToken(request));

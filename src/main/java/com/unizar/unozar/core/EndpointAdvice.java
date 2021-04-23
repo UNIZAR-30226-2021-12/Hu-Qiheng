@@ -1,7 +1,6 @@
 package com.unizar.unozar.core;
 
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.http.HttpStatus;
@@ -17,37 +16,37 @@ import com.unizar.unozar.core.exceptions.PlayerNotFound;
 public class EndpointAdvice{
   
   @ExceptionHandler({EmailInUse.class})
-  @ResponseStatus(HttpStatus.CONFLICT)
+  @ResponseStatus(HttpStatus.CONFLICT) // 409
   public String emailInUse(EmailInUse e){
       return "The email is already in use";
   }
   
   @ExceptionHandler({InvalidIdentity.class})
-  @ResponseStatus(HttpStatus.NOT_ACCEPTABLE)
+  @ResponseStatus(HttpStatus.NOT_ACCEPTABLE) // 406
   public String invalidIdentity(InvalidIdentity e){
       return "The requester's id does not match with the given id";
   }
   
   @ExceptionHandler({InvalidPassword.class})
-  @ResponseStatus(HttpStatus.FORBIDDEN)
+  @ResponseStatus(HttpStatus.FORBIDDEN) // 403
   public String invalidPassword(InvalidPassword e){
       return "Invalid password";
   }
   
   @ExceptionHandler({PlayerNotFound.class})
-  @ResponseStatus(HttpStatus.EXPECTATION_FAILED)
+  @ResponseStatus(HttpStatus.EXPECTATION_FAILED) // 417
   public String playerNotFound(PlayerNotFound e){
       return "Id does not exist in the system";
   }
   
   @ExceptionHandler({InvalidToken.class})
-  @ResponseStatus(HttpStatus.I_AM_A_TEAPOT)
+  @ResponseStatus(HttpStatus.I_AM_A_TEAPOT) // 418
   public String invalidToken(InvalidToken e){
       return "Invalid token";
   }
   
   @ExceptionHandler({Como.class})
-  @ResponseStatus(HttpStatus.TOO_MANY_REQUESTS)
+  @ResponseStatus(HttpStatus.TOO_MANY_REQUESTS) // 429
   public String invalidToken(Como e){
       return "CoMoJAJAJSjasjdashd";
   }

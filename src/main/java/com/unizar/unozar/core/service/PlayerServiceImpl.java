@@ -53,7 +53,7 @@ public class PlayerServiceImpl implements PlayerService{
 
   @Override
   public Void updatePlayer(String id, UpdatePlayerRequest request){
-    if(id != request.getToken().substring(0, 32)){
+    if(!id.equals(request.getToken().substring(0, 32))){
       throw new InvalidIdentity("The requester's id does not match with the " +
           "given id");      
     }    
