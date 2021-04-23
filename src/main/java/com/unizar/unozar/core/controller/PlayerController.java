@@ -62,11 +62,18 @@ public class PlayerController{
     return ResponseEntity.ok().build();
   }
   
-  @DeleteMapping(value = "/deletePlayer/{id}")
+//  @DeleteMapping(value = "/deletePlayer/{id}")
+//  public ResponseEntity<Void> 
+//      deletePlayer(@PathVariable String id,
+//      @RequestBody DeletePlayerRequest request){
+//    playerService.deletePlayer(id, request);
+//    return ResponseEntity.ok().build();
+//  }
+  
+  @PostMapping(value = "/deletePlayer")
   public ResponseEntity<Void> 
-      deletePlayer(@PathVariable String id,
-      @RequestBody DeletePlayerRequest request){
-    playerService.deletePlayer(id, request);
+      deletePlayer(@RequestBody DeletePlayerRequest request){
+    playerService.deletePlayer(request);
     return ResponseEntity.ok().build();
   }
   

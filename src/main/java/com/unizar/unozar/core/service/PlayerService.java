@@ -16,7 +16,7 @@ public interface PlayerService{
   
   public Void updatePlayer(String id, UpdatePlayerRequest request);
   
-  public Void deletePlayer(String id, DeletePlayerRequest request);
+  public Void deletePlayer(DeletePlayerRequest request);
   
   public AuthenticationResponse authentication(AuthenticationRequest request);
   
