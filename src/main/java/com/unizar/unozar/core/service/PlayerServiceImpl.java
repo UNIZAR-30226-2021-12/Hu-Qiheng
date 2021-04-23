@@ -48,8 +48,7 @@ public class PlayerServiceImpl implements PlayerService{
     if(toFind.isEmpty()){
       throw new PlayerNotFound("Id does not exist in the system");
     }
-    Player toRead = toFind.get();
-    return new PlayerDTO(toRead);
+    return new PlayerDTO(toFind.get());
   }
 
   @Override
