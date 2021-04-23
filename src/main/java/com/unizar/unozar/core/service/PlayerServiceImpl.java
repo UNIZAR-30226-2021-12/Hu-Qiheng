@@ -51,7 +51,7 @@ public class PlayerServiceImpl implements PlayerService{
       throw new PlayerNotFound("Id does not exist in the system");
     }
     
-    return new PlayerDTO(toFind.orElse(new Player("","","")));
+    return new PlayerDTO();
   }
 
   @Override
