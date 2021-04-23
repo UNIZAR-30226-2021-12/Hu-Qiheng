@@ -79,16 +79,17 @@ public class PlayerServiceImpl implements PlayerService{
     if(request.getPassword() != null){
       toUpdate.setPassword(request.getPassword());
     }
+    playerRepository.save(toUpdate);
     return null;
   }
 
   @Override
-  public Void deletePlayer(DeletePlayerRequest request){
-    if(!request.getId().equals(request.getToken().substring(0, 32))){
+  public Void deletePlayer(String id, DeletePlayerRequest request){
+    if(!id.equals(request.getToken().substring(0, 32))){
       throw new InvalidIdentity("The requester's id does not match with the " +
           "given id"); 
     }
-    Optional<Player> toFind = playerRepository.findById(request.getId());
+    Optional<Player> toFind = playerRepository.findById(id);
     if(!toFind.isPresent()){
       throw new PlayerNotFound("Id does not exist in the system");
     }
@@ -96,7 +97,7 @@ public class PlayerServiceImpl implements PlayerService{
     if(!toDelete.checkSession(request.getToken().substring(32))){
       throw new InvalidToken("Invalid token");
     }
-    playerRepository.deleteById(request.getId());
+    playerRepository.deleteById(id);
     return null;
   }
 
@@ -112,6 +113,7 @@ public class PlayerServiceImpl implements PlayerService{
       throw new InvalidPassword("Invalid password");
     }
     String token = toAuth.getId() + toAuth.updateSession();
+    playerRepository.save(toAuth);
     return new AuthenticationResponse(token);
   }
   
@@ -128,6 +130,7 @@ public class PlayerServiceImpl implements PlayerService{
       throw new InvalidIdentity("Invalid token");
     }
     String token = toRefresh.getId() + toRefresh.updateSession();
+    playerRepository.save(toRefresh);
     return new AuthenticationResponse(token);
   }
   

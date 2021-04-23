@@ -42,16 +42,10 @@ public class PlayerController{
     return ResponseEntity.ok(playerService.createPlayer(request));
   }
   
-//  @GetMapping(value = "/readPlayer/{id}")
-//  public ResponseEntity<PlayerDTO>
-//      readPlayer(@PathVariable String id){
-//    return ResponseEntity.ok(playerService.readPlayer(id));
-//  }
-  
-  @PostMapping(value = "/readPlayer")
+  @GetMapping(value = "/readPlayer/{id}")
   public ResponseEntity<PlayerDTO>
-      readPlayer(@RequestBody ReadPlayerRequest request){
-    return ResponseEntity.ok(playerService.readPlayer(request.getId()));
+      readPlayer(@PathVariable String id){
+    return ResponseEntity.ok(playerService.readPlayer(id));
   }
   
   @PatchMapping(value = "/updatePlayer/{id}")
@@ -62,18 +56,11 @@ public class PlayerController{
     return ResponseEntity.ok().build();
   }
   
-//  @DeleteMapping(value = "/deletePlayer/{id}")
-//  public ResponseEntity<Void> 
-//      deletePlayer(@PathVariable String id,
-//      @RequestBody DeletePlayerRequest request){
-//    playerService.deletePlayer(id, request);
-//    return ResponseEntity.ok().build();
-//  }
-  
-  @PostMapping(value = "/deletePlayer")
+  @DeleteMapping(value = "/deletePlayer/{id}")
   public ResponseEntity<Void> 
-      deletePlayer(@RequestBody DeletePlayerRequest request){
-    playerService.deletePlayer(request);
+      deletePlayer(@PathVariable String id,
+      @RequestBody DeletePlayerRequest request){
+    playerService.deletePlayer(id, request);
     return ResponseEntity.ok().build();
   }
   
