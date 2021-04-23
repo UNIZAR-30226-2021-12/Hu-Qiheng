@@ -85,7 +85,7 @@ public class Player{
   // since last session update is minor than 600 seconds, otherwise retrieves 
   // false
   public boolean checkSession(String givenSession){
-    if(((getTodaySeconds() - session) > 600) && 
+    if(((getTodaySeconds() - session) < 600) && 
         (Integer.parseInt(givenSession) == session)){
       return true;
     }

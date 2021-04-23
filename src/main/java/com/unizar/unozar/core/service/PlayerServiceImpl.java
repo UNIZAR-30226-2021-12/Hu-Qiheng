@@ -63,7 +63,7 @@ public class PlayerServiceImpl implements PlayerService{
     }
     Player toUpdate = toFind.get();
     if(!toUpdate.checkSession(request.getToken().substring(32))){
-      throw new InvalidIdentity("Invalid token");
+      throw new InvalidToken("Invalid token");
     }
     if(request.getAlias() != null){
       toUpdate.setAlias(request.getAlias());
