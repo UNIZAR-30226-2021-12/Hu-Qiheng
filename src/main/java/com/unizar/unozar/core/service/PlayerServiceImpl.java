@@ -53,7 +53,7 @@ public class PlayerServiceImpl implements PlayerService{
 
   @Override
   public Void updatePlayer(String id, UpdatePlayerRequest request){
-    if(id != request.getToken().substring(0, 31)){
+    if(id != request.getToken().substring(0, 32)){
       throw new InvalidIdentity("The requester's id does not match with the " +
           "given id");      
     }    
@@ -84,7 +84,7 @@ public class PlayerServiceImpl implements PlayerService{
 
   @Override
   public Void deletePlayer(String id, DeletePlayerRequest request){
-    if(id != request.getToken().substring(0, 31)){
+    if(id != request.getToken().substring(0, 32)){
       throw new InvalidIdentity("The requester's id does not match with the " +
           "given id"); 
     }   
@@ -118,7 +118,7 @@ public class PlayerServiceImpl implements PlayerService{
   @Override
   public AuthenticationResponse 
       refreshToken(RefreshTokenRequest request){
-    String id = request.getToken().substring(0, 31);
+    String id = request.getToken().substring(0, 32);
     Optional<Player> toFind = playerRepository.findById(id);
     if (!toFind.isPresent()){
       throw new PlayerNotFound("Id does not exist in the system");
