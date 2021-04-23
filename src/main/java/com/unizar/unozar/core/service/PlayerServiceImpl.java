@@ -50,14 +50,8 @@ public class PlayerServiceImpl implements PlayerService{
     if(!toFind.isPresent()){
       throw new PlayerNotFound("Id does not exist in the system");
     }
-    Player toRead;
-    try{
-      toRead = toFind.get();
-    }catch(Exception e){
-      throw new Como("JAJAJAJAJA");
-    }
-
-    return new PlayerDTO(toRead);
+    
+    return new PlayerDTO(toFind.orElse(new Player("","","")));
   }
 
   @Override

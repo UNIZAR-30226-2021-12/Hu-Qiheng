@@ -26,6 +26,16 @@ public class PlayerDTO{
   @JsonProperty
   public int public_total;
 
+  public PlayerDTO(){
+    id = "Nono";
+    email = "puede";
+    alias = "nono";
+    private_wins = 0;
+    private_total = 11111;
+    public_wins = 0;
+    public_total = 112;
+  }
+  
   public PlayerDTO(Player toTransfer){
     id = toTransfer.getId();
     email = toTransfer.getEmail();
