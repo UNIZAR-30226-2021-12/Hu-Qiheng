@@ -51,9 +51,9 @@ public class PlayerServiceImpl implements PlayerService{
       throw new PlayerNotFound("Id does not exist in the system");
     }
     Player toRead;
-    try {
+    try{
       toRead = toFind.get();
-    }catch(NoSuchElementException e){
+    }catch(Exception e){
       throw new Como("JAJAJAJAJA");
     }
 
