@@ -84,10 +84,12 @@ public class PlayerServiceImpl implements PlayerService{
 
   @Override
   public Void deletePlayer(DeletePlayerRequest request){
+    System.out.println("getId"+request.getId());
+    System.out.println("getToken"+request.getToken().substring(0, 32));
     if(request.getId() != request.getToken().substring(0, 32)){
       throw new InvalidIdentity("The requester's id does not match with the " +
           "given id"); 
-    }   
+    }
     Optional<Player> toFind = playerRepository.findById(request.getId());
     if(!toFind.isPresent()){
       throw new PlayerNotFound("Id does not exist in the system");
