@@ -51,7 +51,8 @@ public class PlayerController{
   @PostMapping(value = "/readPlayer")
   public ResponseEntity<PlayerDTO>
       readPlayer(@RequestBody ReadPlayerRequest request){
-    return ResponseEntity.ok(playerService.readPlayer(request.getId()));
+    //return ResponseEntity.ok(playerService.readPlayer(request.getId()));
+    return ResponseEntity.ok().build();
   }
   
   @PatchMapping(value = "/updatePlayer/{id}")
