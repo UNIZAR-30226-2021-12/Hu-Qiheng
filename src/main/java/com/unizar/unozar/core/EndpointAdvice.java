@@ -15,31 +15,31 @@ import com.unizar.unozar.core.exceptions.PlayerNotFound;
 public class EndpointAdvice{
   
   @ExceptionHandler({EmailInUse.class})
-  @ResponseStatus(HttpStatus.BAD_REQUEST)
+  @ResponseStatus(HttpStatus.CONFLICT)
   public String emailInUse(EmailInUse e){
       return "The email is already in use";
   }
   
   @ExceptionHandler({InvalidIdentity.class})
-  @ResponseStatus(HttpStatus.BAD_REQUEST)
+  @ResponseStatus(HttpStatus.NOT_ACCEPTABLE)
   public String invalidIdentity(InvalidIdentity e){
       return "The requester's id does not match with the given id";
   }
   
   @ExceptionHandler({InvalidPassword.class})
-  @ResponseStatus(HttpStatus.BAD_REQUEST)
+  @ResponseStatus(HttpStatus.FORBIDDEN)
   public String invalidPassword(InvalidPassword e){
       return "Invalid password";
   }
   
   @ExceptionHandler({PlayerNotFound.class})
-  @ResponseStatus(HttpStatus.BAD_REQUEST)
+  @ResponseStatus(HttpStatus.EXPECTATION_FAILED)
   public String playerNotFound(PlayerNotFound e){
       return "Id does not exist in the system";
   }
   
   @ExceptionHandler({InvalidToken.class})
-  @ResponseStatus(HttpStatus.BAD_REQUEST)
+  @ResponseStatus(HttpStatus.I_AM_A_TEAPOT)
   public String invalidToken(InvalidToken e){
       return "Invalid token";
   }
