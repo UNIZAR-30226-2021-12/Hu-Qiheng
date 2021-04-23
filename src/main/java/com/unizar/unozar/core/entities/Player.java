@@ -14,6 +14,7 @@ import org.hibernate.annotations.GenericGenerator;
 @Table(name = "PLAYER")
 public class Player{
   @Id
+  @Column(name = "ID")
   @GeneratedValue( generator = "system-uuid" )
   @GenericGenerator( name = "system-uuid", strategy = "uuid")
   private String id;
