@@ -19,7 +19,7 @@ public class Player{
   @GenericGenerator( name = "system-uuid", strategy = "uuid")
   private String id;
   
-  @Column(name = "EMAIL", unique = true, nullable = false)
+  @Column(name = "EMAIL", nullable = false)
   private String email;
 
   @Column(name = "ALIAS", nullable = false)
@@ -42,6 +42,17 @@ public class Player{
 
   @Column(name = "PUBLIC_TOTAL", nullable = false)
   private int public_total;
+  
+  public Player(){
+    email = "patata";
+    alias = "petete";
+    password = "potato";
+    session = 0;
+    private_wins = 0;
+    private_total = 0;
+    public_wins = 0;
+    public_total = 0;
+  }
   
   public Player(String email, String alias, String password){
     this.email = email;
