@@ -27,7 +27,6 @@ public class PlayerServiceImpl implements PlayerService{
   public PlayerServiceImpl(PlayerRepository playerRepository){
     this.playerRepository = playerRepository;
   }
-
   
   @Override
   public PlayerDTO createPlayer(CreatePlayerRequest request){
@@ -105,7 +104,7 @@ public class PlayerServiceImpl implements PlayerService{
   public AuthenticationResponse 
       authentication(AuthenticationRequest request){
     Optional<Player> toFind = playerRepository.findByEmail(request.getEmail());
-    if(!toFind.isPresent()){
+    if(toFind.isEmpty()){
       throw new PlayerNotFound("Email does not exist in the system");
     }
     Player toAuth = toFind.get();

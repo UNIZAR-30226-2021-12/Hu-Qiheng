@@ -18,6 +18,7 @@ import com.unizar.unozar.core.controller.resources.AuthenticationRequest;
 import com.unizar.unozar.core.controller.resources.AuthenticationResponse;
 import com.unizar.unozar.core.controller.resources.CreatePlayerRequest;
 import com.unizar.unozar.core.controller.resources.DeletePlayerRequest;
+import com.unizar.unozar.core.controller.resources.ReadPlayerRequest;
 import com.unizar.unozar.core.controller.resources.RefreshTokenRequest;
 import com.unizar.unozar.core.controller.resources.UpdatePlayerRequest;
 import com.unizar.unozar.core.service.PlayerService;
@@ -41,10 +42,16 @@ public class PlayerController{
     return ResponseEntity.ok(playerService.createPlayer(request));
   }
   
-  @GetMapping(value = "/readPlayer/{id}")
+//  @GetMapping(value = "/readPlayer/{id}")
+//  public ResponseEntity<PlayerDTO>
+//      readPlayer(@PathVariable String id){
+//    return ResponseEntity.ok(playerService.readPlayer(id));
+//  }
+  
+  @PostMapping(value = "/readPlayer")
   public ResponseEntity<PlayerDTO>
-      readPlayer(@PathVariable String id){
-    return ResponseEntity.ok(playerService.readPlayer(id));
+      readPlayer(@RequestBody ReadPlayerRequest request){
+    return ResponseEntity.ok(playerService.readPlayer(request.getId()));
   }
   
   @PatchMapping(value = "/updatePlayer/{id}")
