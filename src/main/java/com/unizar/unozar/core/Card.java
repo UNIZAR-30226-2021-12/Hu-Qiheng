@@ -1,9 +1,6 @@
 package com.unizar.unozar.core;
 
-
-
-
-public class Card {
+public class Card{
   
   // Special value
   public final static int NONE = -1;
@@ -25,7 +22,6 @@ public class Card {
   public final static int CHANGE_COLOR = 4;
   
   public final static int BASIC_SPECIAL_FUNCT[] = {REVERSE, SKIP, STEAL_TWO};
-  
   
   private int num;
   private int color;

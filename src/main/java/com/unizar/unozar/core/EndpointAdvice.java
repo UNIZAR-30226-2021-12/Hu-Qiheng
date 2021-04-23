@@ -5,6 +5,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.http.HttpStatus;
 
+import com.unizar.unozar.core.exceptions.Como;
 import com.unizar.unozar.core.exceptions.EmailInUse;
 import com.unizar.unozar.core.exceptions.InvalidIdentity;
 import com.unizar.unozar.core.exceptions.InvalidPassword;
@@ -42,5 +43,11 @@ public class EndpointAdvice{
   @ResponseStatus(HttpStatus.I_AM_A_TEAPOT)
   public String invalidToken(InvalidToken e){
       return "Invalid token";
+  }
+  
+  @ExceptionHandler({Como.class})
+  @ResponseStatus(HttpStatus.TOO_MANY_REQUESTS)
+  public String invalidToken(Como e){
+      return "CoMoJAJAJSjasjdashd";
   }
 }

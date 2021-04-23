@@ -1,5 +1,6 @@
 package com.unizar.unozar.core.service;
 
+import java.util.NoSuchElementException;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +14,7 @@ import com.unizar.unozar.core.controller.resources.DeletePlayerRequest;
 import com.unizar.unozar.core.controller.resources.RefreshTokenRequest;
 import com.unizar.unozar.core.controller.resources.UpdatePlayerRequest;
 import com.unizar.unozar.core.entities.Player;
+import com.unizar.unozar.core.exceptions.Como;
 import com.unizar.unozar.core.exceptions.EmailInUse;
 import com.unizar.unozar.core.exceptions.InvalidIdentity;
 import com.unizar.unozar.core.exceptions.InvalidPassword;
@@ -45,10 +47,17 @@ public class PlayerServiceImpl implements PlayerService{
   @Override
   public PlayerDTO readPlayer(String id){
     Optional<Player> toFind = playerRepository.findById(id);
-    if(toFind.isEmpty()){
+    if(!toFind.isPresent()){
       throw new PlayerNotFound("Id does not exist in the system");
     }
-    return new PlayerDTO(toFind.get());
+    Player toRead;
+    try {
+      toRead = toFind.get();
+    }catch(NoSuchElementException e){
+      throw new Como("JAJAJAJAJA");
+    }
+
+    return new PlayerDTO(toRead);
   }
 
   @Override
