@@ -22,9 +22,13 @@ import com.unizar.unozar.core.repository.PlayerRepository;
 @Service
 public class PlayerServiceImpl implements PlayerService{
 
-  @Autowired
-  private PlayerRepository playerRepository;
+  private final PlayerRepository playerRepository;
+  
+  public PlayerServiceImpl(PlayerRepository playerRepository){
+    this.playerRepository = playerRepository;
+  }
 
+  
   @Override
   public PlayerDTO createPlayer(CreatePlayerRequest request){
     String emailNewUser = request.getEmail();
