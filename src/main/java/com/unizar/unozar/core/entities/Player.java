@@ -1,5 +1,7 @@
 package com.unizar.unozar.core.entities;
 
+import java.time.LocalDateTime;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -25,6 +27,9 @@ public class Player{
   @Column(name = "PASSWORD", nullable = false)
   private String password;
   
+  @Column(name = "SESSION", nullable = false)
+  private int session;
+  
   @Column(name = "PRIVATE_WINS", nullable = false)
   private int private_wins;
 
@@ -41,10 +46,38 @@ public class Player{
     this.email = email;
     this.alias = alias;
     this.password = password;
+    session = -601;
     private_wins = 0;
     private_total = 0;
     public_wins = 0;
     public_total = 0;
+  }
+  
+  // Retrieves today's seconds
+  private int getTodaySeconds(){
+    LocalDateTime localDate = LocalDateTime.now();
+    int hours = localDate.getHour();
+    int minutes = localDate.getMinute();
+    int seconds = localDate.getSecond();
+    int newSession = hours * 3600 + minutes * 60 + seconds;
+    return newSession;
+  }
+  
+  // Creates a new session for the user, based on today's seconds in total
+  public int updateSession(){
+    session = getTodaySeconds();
+    return session;
+  }
+  
+  // Retrieves true if the given session equals the saved session and the time 
+  // since last session update is minor than 600 seconds, otherwise retrieves 
+  // false
+  public boolean checkSession(String givenSession){
+    if(((getTodaySeconds() - session) > 600) && 
+        (Integer.parseInt(givenSession) == session)){
+      return true;
+    }
+    return false;
   }
   
   // Increments the number of public games won

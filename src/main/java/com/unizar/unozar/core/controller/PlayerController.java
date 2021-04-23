@@ -1,7 +1,5 @@
 package com.unizar.unozar.core.controller;
 
-import javax.servlet.http.HttpServletRequest;
-
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -16,8 +14,10 @@ import org.springframework.web.bind.annotation.RestController;
 import com.unizar.unozar.core.DTO.PlayerDTO;
 import com.unizar.unozar.core.controller.resources.AuthenticationRequest;
 import com.unizar.unozar.core.controller.resources.AuthenticationResponse;
-import com.unizar.unozar.core.controller.resources.BasicPlayerRequest;
+import com.unizar.unozar.core.controller.resources.CreatePlayerRequest;
 import com.unizar.unozar.core.controller.resources.DeletePlayerRequest;
+import com.unizar.unozar.core.controller.resources.RefreshTokenRequest;
+import com.unizar.unozar.core.controller.resources.UpdatePlayerRequest;
 import com.unizar.unozar.core.service.PlayerService;
 
 @RestController
@@ -33,7 +33,7 @@ public class PlayerController{
   
   @PostMapping(value = "/createPlayer")
   public ResponseEntity<PlayerDTO>
-      createPlayer(@RequestBody BasicPlayerRequest request){
+      createPlayer(@RequestBody CreatePlayerRequest request){
     return ResponseEntity.ok(playerService.createPlayer(request));
   }
   
@@ -43,10 +43,10 @@ public class PlayerController{
     return ResponseEntity.ok(playerService.readPlayer(id));
   }
   
-  @PatchMapping(value = "/{id}")
+  @PatchMapping(value = "/updatePlayer/{id}")
   public ResponseEntity<Void> 
       updatePlayer(@PathVariable String id, 
-      @RequestBody BasicPlayerRequest request){
+      @RequestBody UpdatePlayerRequest request){
     playerService.updatePlayer(id, request);
     return ResponseEntity.ok().build();
   }
@@ -67,7 +67,7 @@ public class PlayerController{
   
   @GetMapping(value = "/refreshToken")
   public ResponseEntity<AuthenticationResponse> 
-      refreshToken(HttpServletRequest request){
+      refreshToken(RefreshTokenRequest request){
     return ResponseEntity.ok(playerService.refreshToken(request));
   }
   

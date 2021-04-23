@@ -2,7 +2,7 @@ package com.unizar.unozar.core.controller.resources;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-public class BasicPlayerRequest{
+public class UpdatePlayerRequest{
 
   @JsonProperty
   private String email;
@@ -11,7 +11,10 @@ public class BasicPlayerRequest{
   private String alias;
   
   @JsonProperty
-  private String password;
+  private String password;  
+  
+  @JsonProperty
+  private String token;
 
   public String getEmail(){
     return email;
@@ -25,4 +28,7 @@ public class BasicPlayerRequest{
     return password;
   }
   
+  public String getToken(){
+    return token;
+  }
 }

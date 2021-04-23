@@ -28,8 +28,3 @@ springdoc:
     path: /docs/swagger
   swagger-ui:
     path: /swagger-doc.html
-
-jwt:
-  secret: paralelepipedo
-  expirationDateInMs: 600000
-  refreshExpirationDateInMs: 600000  
