@@ -121,6 +121,7 @@ public class PlayerServiceImpl implements PlayerService{
   public AuthenticationResponse 
       refreshToken(RefreshTokenRequest request){
     System.out.println("Aqui");
+    System.out.println(request.getToken());
     String id = request.getToken().substring(0, 32);
     System.out.println("Aqui2");
     Optional<Player> toFind = playerRepository.findById(id);
