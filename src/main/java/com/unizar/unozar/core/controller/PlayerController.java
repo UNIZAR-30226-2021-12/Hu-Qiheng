@@ -71,7 +71,7 @@ public class PlayerController{
   
   @PostMapping(value = "/refreshToken")
   public ResponseEntity<AuthenticationResponse> 
-      refreshToken(RefreshTokenRequest request){
+      refreshToken(@RequestBody RefreshTokenRequest request){
     return ResponseEntity.ok(playerService.refreshToken(request));
   }
   

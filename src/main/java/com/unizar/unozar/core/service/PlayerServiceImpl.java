@@ -120,26 +120,17 @@ public class PlayerServiceImpl implements PlayerService{
   @Override
   public AuthenticationResponse 
       refreshToken(RefreshTokenRequest request){
-    System.out.println("Aqui");
-    System.out.println(request.getToken());
     String id = request.getToken().substring(0, 32);
-    System.out.println("Aqui2");
     Optional<Player> toFind = playerRepository.findById(id);
-    System.out.println("Aqui3");
     if (!toFind.isPresent()){
       throw new PlayerNotFound("Id does not exist in the system");
     }
-    System.out.println("Aqui4");
     Player toRefresh = toFind.get();
-    System.out.println("Aqui5");
     if(!toRefresh.checkSession(request.getToken().substring(32))){
       throw new InvalidIdentity("Invalid token");
     }
-    System.out.println("Aqui6");
     String token = toRefresh.getId() + toRefresh.updateSession();
-    System.out.println("Aqui7");
     playerRepository.save(toRefresh);
-    System.out.println("Aqui8");
     return new AuthenticationResponse(token);
   }
   
