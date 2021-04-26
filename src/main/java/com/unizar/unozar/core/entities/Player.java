@@ -13,6 +13,9 @@ import org.hibernate.annotations.GenericGenerator;
 @Entity
 @Table(name = "PLAYER")
 public class Player{
+  
+  public final String NONE = "NONE";
+  
   @Id
   @Column(name = "ID")
   @GeneratedValue( generator = "system-uuid" )
@@ -28,41 +31,46 @@ public class Player{
   @Column(name = "PASSWORD", nullable = false)
   private String password;
   
+  @Column(name = "GAME_ID", nullable = false)
+  private String gameId;
+  
   @Column(name = "SESSION", nullable = false)
   private int session;
   
   @Column(name = "PRIVATE_WINS", nullable = false)
-  private int private_wins;
+  private int privateWins;
 
   @Column(name = "PRIVATE_TOTAL", nullable = false)
-  private int private_total;
+  private int privateTotal;
 
   @Column(name = "PUBLIC_WINS", nullable = false)
-  private int public_wins;
+  private int publicWins;
 
   @Column(name = "PUBLIC_TOTAL", nullable = false)
-  private int public_total;
+  private int publicTotal;
   
   public Player(){
     email = "email";
     alias = "alias";
     password = "password";
+    gameId = NONE;
     session = 0;
-    private_wins = 0;
-    private_total = 0;
-    public_wins = 0;
-    public_total = 0;
+    privateWins = 0;
+    privateTotal = 0;
+    publicWins = 0;
+    publicTotal = 0;
   }
   
   public Player(String email, String alias, String password){
     this.email = email;
     this.alias = alias;
     this.password = password;
+    gameId = NONE;
     session = -601;
-    private_wins = 0;
-    private_total = 0;
-    public_wins = 0;
-    public_total = 0;
+    privateWins = 0;
+    privateTotal = 0;
+    publicWins = 0;
+    publicTotal = 0;
   }
   
   // Retrieves today's seconds
@@ -94,22 +102,22 @@ public class Player{
   
   // Increments the number of public games won
   public void addPublicWin(){
-    public_wins++;
+    publicWins++;
   }
 
   // Increments the number of public games played
   public void addPublicTotal(){
-    public_total++;
+    publicTotal++;
   }
 
   // Increments the number of private games won
   public void addPrivateWin(){
-    private_wins++;
+    privateWins++;
   }
 
   // Increments the number of private games played
   public void addPrivateTotal(){
-    private_total++;
+    privateTotal++;
   }
   
   public boolean isValidPassword(String passwordToCheck){
@@ -117,6 +125,14 @@ public class Player{
       return true;
     }
     return false;
+  }
+  
+  // Retrieves true if the player is currently on a game, false otherwise
+  public boolean isInAGame(){
+    if(gameId.equals(NONE)){
+      return false;
+    }
+    return true;
   }
 
   /////////////////////////
@@ -139,20 +155,24 @@ public class Player{
     return password;
   }
 
+  public String getGameId(){
+    return gameId;
+  }
+  
   public int getPublicWins(){
-    return public_wins;
+    return publicWins;
   }
 
   public int getPublicTotal(){
-    return public_total;
+    return publicTotal;
   }
 
   public int getPrivateWins(){
-    return private_wins;
+    return privateWins;
   }
 
   public int getPrivateTotal(){
-    return private_total;
+    return privateTotal;
   }
 
   public void setAlias(String alias){
@@ -166,20 +186,24 @@ public class Player{
   public void setPassword(String password){
     this.password = password;
   }
+  
+  public void setGameId(String game_id){
+    this.gameId = game_id;
+  }
 
   public void setPublicWins(int public_wins){
-    this.public_wins = public_wins;
+    this.publicWins = public_wins;
   }
 
   public void setPublicTotal(int public_total){
-    this.public_total = public_total;
+    this.publicTotal = public_total;
   }
 
   public void setPrivateWins(int private_wins){
-    this.private_wins = private_wins;
+    this.privateWins = private_wins;
   }
 
   public void setPrivateTotal(int private_total){
-    this.private_total = private_total;
+    this.privateTotal = private_total;
   }
 }

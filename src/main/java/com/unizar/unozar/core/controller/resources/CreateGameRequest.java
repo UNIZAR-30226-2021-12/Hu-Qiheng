@@ -5,6 +5,9 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public class CreateGameRequest{
   
   @JsonProperty
+  private boolean isPrivate;
+  
+  @JsonProperty
   private int maxPlayers;
   
   @JsonProperty
@@ -12,6 +15,10 @@ public class CreateGameRequest{
   
   @JsonProperty
   private String token;
+  
+  public boolean getIsPrivate(){
+    return isPrivate;
+  }
 
   public int getMaxPlayers(){
     return maxPlayers;

@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.unizar.unozar.core.DTO.GameDTO;
 import com.unizar.unozar.core.controller.resources.CreateGameRequest;
 import com.unizar.unozar.core.controller.resources.JoinGameRequest;
+import com.unizar.unozar.core.controller.resources.PlayCardRequest;
 import com.unizar.unozar.core.controller.resources.ReadGameRequest;
 import com.unizar.unozar.core.controller.resources.TokenRequest;
 import com.unizar.unozar.core.service.GameService;
@@ -27,34 +28,38 @@ public class GameController{
     this.gameService = gameService;
   }
   
-  @PostMapping(value = "/createGame")
-  public ResponseEntity<GameDTO>
-      createGame(@RequestBody CreateGameRequest request){
-    return ResponseEntity.ok(gameService.createGame(request));
-  }
-  
-  @GetMapping(value = "/readGame/{id}")
-  public ResponseEntity<GameDTO>
-      readGame(@PathVariable String id, @RequestBody ReadGameRequest request){
-    return ResponseEntity.ok(gameService.readGame(id, request));
-  }
-  
-  @PostMapping(value = "/joinGame")
-  public ResponseEntity<GameDTO>
-      joinGame(@RequestBody JoinGameRequest request){
-    return ResponseEntity.ok(gameService.joinGame(request));
-  }
-  
-  @GetMapping(value = "/startGame")
+  @PostMapping(value = "/create")
   public ResponseEntity<Void>
-     startGame(){
-    return null;
+      create(@RequestBody CreateGameRequest request){
+    gameService.create(request);
+    return ResponseEntity.ok().build();
+  }
+  
+  @GetMapping(value = "/read/{id}")
+  public ResponseEntity<GameDTO>
+      read(@PathVariable String id, @RequestBody ReadGameRequest request){
+    return ResponseEntity.ok(gameService.read(id, request));
+  }
+  
+  @PostMapping(value = "/join")
+  public ResponseEntity<Void>
+      join(@RequestBody JoinGameRequest request){
+    gameService.join(request);
+    return ResponseEntity.ok().build();
+  }
+  
+  @PostMapping(value = "/start")
+  public ResponseEntity<Void>
+      start(@RequestBody TokenRequest request){
+    gameService.start(request);
+    return ResponseEntity.ok().build();
   }
   
   @GetMapping(value = "/playCard")
-  public ResponseEntity<GameDTO>
-      playCard(){
-    return null;
+  public ResponseEntity<Void>
+      playCard(@RequestBody PlayCardRequest request){
+    gameService.playCard(request);
+    return ResponseEntity.ok().build();
   }
   
 // Not implemented yet
@@ -64,9 +69,10 @@ public class GameController{
 //    return null;
 //  }
   
-  @PostMapping(value = "/quitGame")
+  @PostMapping(value = "/quit")
   public ResponseEntity<Void>
-     quitGame(@RequestBody TokenRequest request){
+      quit(@RequestBody TokenRequest request){
+    gameService.quit(request);
     return ResponseEntity.ok().build();
   }
   

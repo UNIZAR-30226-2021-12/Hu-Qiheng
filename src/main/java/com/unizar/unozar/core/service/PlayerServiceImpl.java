@@ -29,7 +29,7 @@ public class PlayerServiceImpl implements PlayerService{
   }
   
   @Override
-  public PlayerDTO createPlayer(CreatePlayerRequest request){
+  public PlayerDTO create(CreatePlayerRequest request){
     String emailNewUser = request.getEmail();
     Optional<Player> toFind = playerRepository.findByEmail(emailNewUser);
     if(toFind.isPresent()){
@@ -42,26 +42,15 @@ public class PlayerServiceImpl implements PlayerService{
   }
   
   @Override
-  public PlayerDTO readPlayer(String id){
-    Optional<Player> toFind = playerRepository.findById(id);
-    if(!toFind.isPresent()){
-      throw new PlayerNotFound("Id does not exist in the system");
-    }
-    PlayerDTO player = new PlayerDTO(toFind.get());
+  public PlayerDTO read(String id){
+    PlayerDTO player = new PlayerDTO(findPlayer(id));
     return player;
   }
 
   @Override
-  public Void updatePlayer(String id, UpdatePlayerRequest request){
-    if(!id.equals(request.getToken().substring(0, 32))){
-      throw new InvalidIdentity("The requester's id does not match with the " +
-          "given id");      
-    }    
-    Optional<Player> toFind = playerRepository.findById(id);
-    if (!toFind.isPresent()){
-      throw new PlayerNotFound("Id does not exist in the system");
-    }
-    Player toUpdate = toFind.get();
+  public Void update(UpdatePlayerRequest request){
+    String id = request.getToken().substring(0, 32);
+    Player toUpdate = findPlayer(id);
     if(!toUpdate.checkSession(request.getToken().substring(32))){
       throw new InvalidToken("Invalid token");
     }
@@ -84,16 +73,9 @@ public class PlayerServiceImpl implements PlayerService{
   }
 
   @Override
-  public Void deletePlayer(String id, DeletePlayerRequest request){
-    if(!id.equals(request.getToken().substring(0, 32))){
-      throw new InvalidIdentity("The requester's id does not match with the " +
-          "given id"); 
-    }
-    Optional<Player> toFind = playerRepository.findById(id);
-    if(!toFind.isPresent()){
-      throw new PlayerNotFound("Id does not exist in the system");
-    }
-    Player toDelete = toFind.get();
+  public Void delete(DeletePlayerRequest request){
+    String id = request.getToken().substring(0, 32);
+    Player toDelete = findPlayer(id);
     if(!toDelete.checkSession(request.getToken().substring(32))){
       throw new InvalidToken("Invalid token");
     }
@@ -102,8 +84,7 @@ public class PlayerServiceImpl implements PlayerService{
   }
 
   @Override
-  public AuthenticationResponse 
-      authentication(AuthenticationRequest request){
+  public AuthenticationResponse authentication(AuthenticationRequest request){
     Optional<Player> toFind = playerRepository.findByEmail(request.getEmail());
     if(!toFind.isPresent()){
       throw new PlayerNotFound("Email does not exist in the system");
@@ -114,24 +95,27 @@ public class PlayerServiceImpl implements PlayerService{
     }
     String token = toAuth.getId() + toAuth.updateSession();
     playerRepository.save(toAuth);
-    return new AuthenticationResponse(token);
+    return new AuthenticationResponse(toAuth.getId(), token);
   }
   
   @Override
-  public AuthenticationResponse 
-      refreshToken(TokenRequest request){
+  public AuthenticationResponse refreshToken(TokenRequest request){
     String id = request.getToken().substring(0, 32);
-    Optional<Player> toFind = playerRepository.findById(id);
-    if (!toFind.isPresent()){
-      throw new PlayerNotFound("Id does not exist in the system");
-    }
-    Player toRefresh = toFind.get();
+    Player toRefresh = findPlayer(id);
     if(!toRefresh.checkSession(request.getToken().substring(32))){
       throw new InvalidIdentity("Invalid token");
     }
     String token = toRefresh.getId() + toRefresh.updateSession();
     playerRepository.save(toRefresh);
-    return new AuthenticationResponse(token);
+    return new AuthenticationResponse(toRefresh.getId(), token);
+  }
+  
+  public Player findPlayer(String id){ 
+    Optional<Player> toFind = playerRepository.findById(id);
+    if (!toFind.isPresent()){
+      throw new PlayerNotFound("Id does not exist in the system");
+    }
+    return toFind.get();
   }
   
 }

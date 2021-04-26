@@ -25,6 +25,9 @@ public class Game {
   @GenericGenerator(name = "system-uuid", strategy = "uuid")
   private String id;
   
+  @Column(name = "IS_PRIVATE")
+  private boolean isPrivate;
+  
   @Column(name = "MAX_PLAYERS")
   private int maxPlayers;
   
@@ -43,8 +46,20 @@ public class Game {
   @Column(name = "NORMAL_FLOW")
   private boolean normalFlow;
   
+  public Game(){
+    isPrivate = true;
+    maxPlayers = 4;
+    numBots = 0;
+    players = new String[maxPlayers];
+    playersDecks = new PlayerDeck[maxPlayers];
+    players[0] = null;
+    for (int i = 1 + numBots; i < maxPlayers; i++){
+      players[i] = null;
+    }
+  }
   
-  public Game(int maxPlayers, int numBots, String player){
+  public Game(boolean isPrivate, int maxPlayers, int numBots, String player){
+    this.isPrivate = isPrivate;
     this.maxPlayers = maxPlayers;
     this.numBots = numBots;
     players = new String[maxPlayers];
@@ -94,8 +109,8 @@ public class Game {
   }
   
   public boolean startGame(){
-    
-    return normalFlow;
+    //EMPTY
+    return true;
   }
 
   /////////////////////////

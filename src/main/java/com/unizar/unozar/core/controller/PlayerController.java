@@ -35,31 +35,29 @@ public class PlayerController{
     this.playerService = playerService;
   }
   
-  @PostMapping(value = "/createPlayer")
+  @PostMapping(value = "/create")
   public ResponseEntity<PlayerDTO>
-      createPlayer(@RequestBody CreatePlayerRequest request){
-    return ResponseEntity.ok(playerService.createPlayer(request));
+      create(@RequestBody CreatePlayerRequest request){
+    return ResponseEntity.ok(playerService.create(request));
   }
   
-  @GetMapping(value = "/readPlayer/{id}")
+  @GetMapping(value = "/read/{id}")
   public ResponseEntity<PlayerDTO>
-      readPlayer(@PathVariable String id){
-    return ResponseEntity.ok(playerService.readPlayer(id));
+      read(@PathVariable String id){
+    return ResponseEntity.ok(playerService.read(id));
   }
   
-  @PatchMapping(value = "/updatePlayer/{id}")
+  @PatchMapping(value = "/update")
   public ResponseEntity<Void> 
-      updatePlayer(@PathVariable String id, 
-      @RequestBody UpdatePlayerRequest request){
-    playerService.updatePlayer(id, request);
+      update(@RequestBody UpdatePlayerRequest request){
+    playerService.update(request);
     return ResponseEntity.ok().build();
   }
   
-  @DeleteMapping(value = "/deletePlayer/{id}")
+  @DeleteMapping(value = "/delete")
   public ResponseEntity<Void> 
-      deletePlayer(@PathVariable String id,
-      @RequestBody DeletePlayerRequest request){
-    playerService.deletePlayer(id, request);
+      delete(@RequestBody DeletePlayerRequest request){
+    playerService.delete(request);
     return ResponseEntity.ok().build();
   }
   

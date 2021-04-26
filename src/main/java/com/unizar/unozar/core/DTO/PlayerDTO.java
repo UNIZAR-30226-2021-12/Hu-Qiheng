@@ -15,35 +15,29 @@ public class PlayerDTO{
   public String alias;
   
   @JsonProperty
-  public int private_wins;
+  public String gameId;
   
   @JsonProperty
-  public int private_total;
+  public int privateWins;
   
   @JsonProperty
-  public int public_wins;
+  public int privateTotal;
   
   @JsonProperty
-  public int public_total;
-
-  public PlayerDTO(){
-    id = "Nono";
-    email = "puede";
-    alias = "nono";
-    private_wins = 0;
-    private_total = 11111;
-    public_wins = 0;
-    public_total = 112;
-  }
+  public int publicWins;
+  
+  @JsonProperty
+  public int publicTotal;
   
   public PlayerDTO(Player toTransfer){
     id = toTransfer.getId();
     email = toTransfer.getEmail();
     alias = toTransfer.getAlias();
-    private_wins = toTransfer.getPrivateWins();
-    private_total = toTransfer.getPrivateTotal();
-    public_wins = toTransfer.getPublicWins();
-    public_total = toTransfer.getPublicTotal();
+    gameId = toTransfer.getGameId();
+    privateWins = toTransfer.getPrivateWins();
+    privateTotal = toTransfer.getPrivateTotal();
+    publicWins = toTransfer.getPublicWins();
+    publicTotal = toTransfer.getPublicTotal();
   }
 
 }
