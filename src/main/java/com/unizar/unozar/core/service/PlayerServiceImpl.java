@@ -9,7 +9,7 @@ import com.unizar.unozar.core.controller.resources.AuthenticationRequest;
 import com.unizar.unozar.core.controller.resources.AuthenticationResponse;
 import com.unizar.unozar.core.controller.resources.CreatePlayerRequest;
 import com.unizar.unozar.core.controller.resources.DeletePlayerRequest;
-import com.unizar.unozar.core.controller.resources.RefreshTokenRequest;
+import com.unizar.unozar.core.controller.resources.TokenRequest;
 import com.unizar.unozar.core.controller.resources.UpdatePlayerRequest;
 import com.unizar.unozar.core.entities.Player;
 import com.unizar.unozar.core.exceptions.EmailInUse;
@@ -119,7 +119,7 @@ public class PlayerServiceImpl implements PlayerService{
   
   @Override
   public AuthenticationResponse 
-      refreshToken(RefreshTokenRequest request){
+      refreshToken(TokenRequest request){
     String id = request.getToken().substring(0, 32);
     Optional<Player> toFind = playerRepository.findById(id);
     if (!toFind.isPresent()){

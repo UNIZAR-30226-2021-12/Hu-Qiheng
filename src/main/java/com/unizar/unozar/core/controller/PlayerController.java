@@ -18,7 +18,7 @@ import com.unizar.unozar.core.controller.resources.AuthenticationRequest;
 import com.unizar.unozar.core.controller.resources.AuthenticationResponse;
 import com.unizar.unozar.core.controller.resources.CreatePlayerRequest;
 import com.unizar.unozar.core.controller.resources.DeletePlayerRequest;
-import com.unizar.unozar.core.controller.resources.RefreshTokenRequest;
+import com.unizar.unozar.core.controller.resources.TokenRequest;
 import com.unizar.unozar.core.controller.resources.UpdatePlayerRequest;
 import com.unizar.unozar.core.service.PlayerService;
 
@@ -71,7 +71,7 @@ public class PlayerController{
   
   @PostMapping(value = "/refreshToken")
   public ResponseEntity<AuthenticationResponse> 
-      refreshToken(@RequestBody RefreshTokenRequest request){
+      refreshToken(@RequestBody TokenRequest request){
     return ResponseEntity.ok(playerService.refreshToken(request));
   }
   

@@ -2,7 +2,7 @@ package com.unizar.unozar.core.controller.resources;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-public class RefreshTokenRequest {
+public class TokenRequest {
   
   @JsonProperty
   private String token;

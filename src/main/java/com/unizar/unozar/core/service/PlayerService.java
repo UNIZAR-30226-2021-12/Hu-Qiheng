@@ -5,7 +5,7 @@ import com.unizar.unozar.core.controller.resources.AuthenticationRequest;
 import com.unizar.unozar.core.controller.resources.AuthenticationResponse;
 import com.unizar.unozar.core.controller.resources.CreatePlayerRequest;
 import com.unizar.unozar.core.controller.resources.DeletePlayerRequest;
-import com.unizar.unozar.core.controller.resources.RefreshTokenRequest;
+import com.unizar.unozar.core.controller.resources.TokenRequest;
 import com.unizar.unozar.core.controller.resources.UpdatePlayerRequest;
 
 public interface PlayerService{
@@ -20,6 +20,6 @@ public interface PlayerService{
   
   public AuthenticationResponse authentication(AuthenticationRequest request);
   
-  public AuthenticationResponse refreshToken(RefreshTokenRequest request);
+  public AuthenticationResponse refreshToken(TokenRequest request);
 
 }
