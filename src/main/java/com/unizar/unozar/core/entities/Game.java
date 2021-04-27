@@ -8,6 +8,8 @@ import javax.persistence.Table;
 
 import org.hibernate.annotations.GenericGenerator;
 
+import com.unizar.unozar.core.DiscardDeck;
+import com.unizar.unozar.core.DrawDeck;
 import com.unizar.unozar.core.PlayerDeck;
 
 @Entity
@@ -17,9 +19,10 @@ public class Game {
   private final int NOT_STARTED = -1;
   private final int NONE = 0;
   private final int SKIP = 1;
-  private final int STEAL_TWO = 2;
-  private final int STEAL_FOUR = 4;
-  
+  private final int DRAW_TWO = 2;
+  private final int DRAW_FOUR = 3;
+  private final int FINISHED = 4;
+
   @Id
   @GeneratedValue(generator = "system-uuid")
   @GenericGenerator(name = "system-uuid", strategy = "uuid")
@@ -40,22 +43,39 @@ public class Game {
   @Column(name = "PLAYERS_DECKS")
   private PlayerDeck playersDecks[];
   
+  @Column(name = "DRAW_DECK")
+  private DrawDeck drawDeck;
+  
+  @Column(name = "DISCARD_DECK")
+  private DiscardDeck discardDeck;
+  
+  @Column(name = "TURN")
+  private int turn;
+  
   @Column(name = "SPECIAL_EVENT")
   private int specialEvent;
   
   @Column(name = "NORMAL_FLOW")
   private boolean normalFlow;
   
-  public Game(){
+  @Column(name = "IS_PAUSED")
+  private boolean isPaused;
+  
+  public Game(){ // Don't even look at this
     isPrivate = true;
     maxPlayers = 4;
     numBots = 0;
     playersIds = new String[maxPlayers];
     playersDecks = new PlayerDeck[maxPlayers];
-    playersIds[0] = null;
-    for (int i = 1 + numBots; i < maxPlayers; i++){
-      playersIds[i] = null;
+    for (int i = 0; i < maxPlayers; i++){
+      playersIds[i] = "";
     }
+    drawDeck = new DrawDeck();
+    discardDeck = new DiscardDeck();
+    turn = 0;
+    specialEvent = NOT_STARTED;
+    normalFlow = true;
+    isPaused = false;
   }
   
   public Game(boolean isPrivate, int maxPlayers, int numBots, String player){
@@ -66,8 +86,14 @@ public class Game {
     playersDecks = new PlayerDeck[maxPlayers];
     playersIds[0] = player;
     for (int i = 1 + numBots; i < maxPlayers; i++){
-      playersIds[i] = null;
+      playersIds[i] = "";
     }
+    drawDeck = new DrawDeck();
+    discardDeck = new DiscardDeck();
+    turn = 0;
+    specialEvent = NOT_STARTED;
+    normalFlow = true;
+    isPaused = false;
   }
   
   // Returns true if the player was added to the game, false otherwise
@@ -113,6 +139,24 @@ public class Game {
     return true;
   }
 
+  public boolean isGameStarted(){
+    if(specialEvent != NOT_STARTED){
+      return true;
+    }
+    return false;
+  }
+
+  public boolean isGamePaused(){
+    return isPaused;
+  }
+  
+  public boolean isGameFinished(){
+    if(specialEvent == FINISHED){
+      return true;
+    }
+    return false;
+  }
+  
   /////////////////////////
   // Getters and Setters //
   /////////////////////////
@@ -129,15 +173,6 @@ public class Game {
     return numBots;
   }
   
-  public String getPlayers(){
-    String result = "";
-    for(int i = 0; i < playersIds.length - 1; i ++){
-      result += playersIds[i]+",";
-    }
-    result += playersIds[playersIds.length - 1];
-    return result;
-  }
-  
   public int getPlayerNum(String playerId){
     for(int i = 0; i < maxPlayers; i++){
       if(playersIds[i].equals(playerId)){
@@ -145,5 +180,29 @@ public class Game {
       }
     }
     return -1;
+  }
+  
+  public String getTopDiscardString(){
+    return discardDeck.getTop().toString();
+  }
+  
+  public int getTurn(){
+    return turn;
+  }
+  
+  public String[] getPlayersIds(){
+    return playersIds;
+  }
+  
+  public int[] getPlayersNumCards(){
+    int playersNumCards[] = new int[maxPlayers];
+    for (int i = 0; i < maxPlayers; i++){
+      playersNumCards[i] = playersDecks[i].getNumCards();
+    }
+    return playersNumCards;
+  }
+  
+  public String getPlayerCards(int playerNum){
+    return playersDecks[playerNum].toString();
   }
 }

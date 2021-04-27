@@ -30,4 +30,16 @@ public class PlayerDeck{
     return null;
   }
   
+  public int getNumCards(){
+    return numCards;
+  }
+  
+  @Override
+  public String toString(){
+    String cards = "";
+    for(int i = 0; i < numCards; i++){
+      cards += deck[i].toString();
+    }
+    return cards;
+  }
 }

@@ -2,11 +2,11 @@ package com.unizar.unozar.core;
 
 import java.util.Random;
 
-public class StealDeck{
+public class DrawDeck{
   private Card deck[];
   private int numCards;
   
-  public StealDeck(){
+  public DrawDeck(){
     deck = new Card[108];
     numCards = 0;
     this.addNumbers();
@@ -64,7 +64,7 @@ public class StealDeck{
       }
     }
     for(int i = 0; i < 4; i++){
-      cardsAdded += addSpecial(Card.BLACK, Card.STEAL_FOUR);
+      cardsAdded += addSpecial(Card.BLACK, Card.DRAW_FOUR);
       cardsAdded += addSpecial(Card.BLACK, Card.CHANGE_COLOR);
     }
     if(cardsAdded == 32){
@@ -85,7 +85,7 @@ public class StealDeck{
     }
   }
   
-  public Card stealOne(){
+  public Card drawCard(){
     numCards--;
     return deck[numCards];
   }

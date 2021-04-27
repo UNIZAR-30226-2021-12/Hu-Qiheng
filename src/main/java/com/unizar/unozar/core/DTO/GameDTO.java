@@ -6,10 +6,13 @@ import com.unizar.unozar.core.entities.Game;
 public class GameDTO{
 
   @JsonProperty
-  public String topDiscardPile;
-
+  public int maxPlayers;
+  
   @JsonProperty
-  public String[] playerCards;
+  public String topDiscard;
+  
+  @JsonProperty
+  public String playerCards;
   
   @JsonProperty
   public int turn;
@@ -30,7 +33,17 @@ public class GameDTO{
   public boolean gameFinished;
 
   public GameDTO(Game game, int playerNum){
-    
+    maxPlayers = game.getMaxPlayers();
+    topDiscard = game.getTopDiscardString();
+    turn = game.getTurn();
+    playersIds = new String[maxPlayers];
+    playersIds = game.getPlayersIds();
+    playersNumCards = new int[maxPlayers];
+    playersNumCards = game.getPlayersNumCards();
+    gameStarted = game.isGameStarted();
+    gamePaused = game.isGamePaused();
+    gameFinished = game.isGameFinished();
+    playerCards = game.getPlayerCards(playerNum);
   }
   
 }

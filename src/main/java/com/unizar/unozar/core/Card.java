@@ -17,11 +17,11 @@ public class Card{
   // Special functions
   public final static int REVERSE = 0;
   public final static int SKIP = 1;
-  public final static int STEAL_TWO = 2;
-  public final static int STEAL_FOUR = 3;
+  public final static int DRAW_TWO = 2;
+  public final static int DRAW_FOUR = 3;
   public final static int CHANGE_COLOR = 4;
   
-  public final static int BASIC_SPECIAL_FUNCT[] = {REVERSE, SKIP, STEAL_TWO};
+  public final static int BASIC_SPECIAL_FUNCT[] = {REVERSE, SKIP, DRAW_TWO};
   
   private int num;
   private int color;
@@ -112,9 +112,9 @@ public class Card{
       return "R";
     case SKIP:
       return "S";
-    case STEAL_TWO:
+    case DRAW_TWO:
       return "2";
-    case STEAL_FOUR:
+    case DRAW_FOUR:
       return "4";
     case CHANGE_COLOR:
       return "C";

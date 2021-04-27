@@ -4,10 +4,9 @@ public class DiscardDeck{
   private Card deck[];
   private int numCards;
   
-  public DiscardDeck(Card top){
+  public DiscardDeck(){
     deck = new Card[108];
-    deck[0] = top;
-    numCards = 1;
+    numCards = 0;
   }
   
   public boolean playCard(Card toPlay){
@@ -36,5 +35,16 @@ public class DiscardDeck{
     deck[0] = deck[numCards - 1];
     numCards = 1;
     return surplusDeck;
+  }
+  
+  public int getNumCards(){
+    return numCards;
+  }
+  
+  public Card getTop(){
+    if(numCards == 0){
+      return null;
+    }
+    return deck[numCards - 1];
   }
 }
