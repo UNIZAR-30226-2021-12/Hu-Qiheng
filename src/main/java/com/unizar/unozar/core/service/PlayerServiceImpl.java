@@ -30,8 +30,7 @@ public class PlayerServiceImpl implements PlayerService{
   
   @Override
   public PlayerDTO create(CreatePlayerRequest request){
-    String emailNewUser = request.getEmail();
-    Optional<Player> toFind = playerRepository.findByEmail(emailNewUser);
+    Optional<Player> toFind = playerRepository.findByEmail(request.getEmail());
     if(toFind.isPresent()){
       throw new EmailInUse("The email is already in use");
     }
@@ -49,11 +48,8 @@ public class PlayerServiceImpl implements PlayerService{
 
   @Override
   public Void update(UpdatePlayerRequest request){
-    String id = request.getToken().substring(0, 32);
-    Player toUpdate = findPlayer(id);
-    if(!toUpdate.checkSession(request.getToken().substring(32))){
-      throw new InvalidToken("Invalid token");
-    }
+    Player toUpdate = findPlayer(request.getToken().substring(0, 32));
+    checkToken(toUpdate, request.getToken().substring(32));
     if(request.getAlias() != null){
       toUpdate.setAlias(request.getAlias());
     }
@@ -74,12 +70,9 @@ public class PlayerServiceImpl implements PlayerService{
 
   @Override
   public Void delete(DeletePlayerRequest request){
-    String id = request.getToken().substring(0, 32);
-    Player toDelete = findPlayer(id);
-    if(!toDelete.checkSession(request.getToken().substring(32))){
-      throw new InvalidToken("Invalid token");
-    }
-    playerRepository.deleteById(id);
+    Player toDelete = findPlayer(request.getToken().substring(0, 32));
+    checkToken(toDelete, request.getToken().substring(32));
+    playerRepository.delete(toDelete);
     return null;
   }
 
@@ -100,11 +93,8 @@ public class PlayerServiceImpl implements PlayerService{
   
   @Override
   public AuthenticationResponse refreshToken(TokenRequest request){
-    String id = request.getToken().substring(0, 32);
-    Player toRefresh = findPlayer(id);
-    if(!toRefresh.checkSession(request.getToken().substring(32))){
-      throw new InvalidIdentity("Invalid token");
-    }
+    Player toRefresh = findPlayer(request.getToken().substring(0, 32));
+    checkToken(toRefresh, request.getToken().substring(32));
     String token = toRefresh.getId() + toRefresh.updateSession();
     playerRepository.save(toRefresh);
     return new AuthenticationResponse(toRefresh.getId(), token);
@@ -118,4 +108,10 @@ public class PlayerServiceImpl implements PlayerService{
     return toFind.get();
   }
   
+  public Void checkToken(Player toCheck, String token){
+    if(!toCheck.checkSession(token)){
+      throw new InvalidIdentity("Invalid token");
+    }
+    return null;
+  }
 }

@@ -35,7 +35,7 @@ public class Game {
   private int numBots;
   
   @Column(name = "PLAYERS")
-  private String players[];
+  private String playersIds[];
   
   @Column(name = "PLAYERS_DECKS")
   private PlayerDeck playersDecks[];
@@ -50,11 +50,11 @@ public class Game {
     isPrivate = true;
     maxPlayers = 4;
     numBots = 0;
-    players = new String[maxPlayers];
+    playersIds = new String[maxPlayers];
     playersDecks = new PlayerDeck[maxPlayers];
-    players[0] = null;
+    playersIds[0] = null;
     for (int i = 1 + numBots; i < maxPlayers; i++){
-      players[i] = null;
+      playersIds[i] = null;
     }
   }
   
@@ -62,11 +62,11 @@ public class Game {
     this.isPrivate = isPrivate;
     this.maxPlayers = maxPlayers;
     this.numBots = numBots;
-    players = new String[maxPlayers];
+    playersIds = new String[maxPlayers];
     playersDecks = new PlayerDeck[maxPlayers];
-    players[0] = player;
+    playersIds[0] = player;
     for (int i = 1 + numBots; i < maxPlayers; i++){
-      players[i] = null;
+      playersIds[i] = null;
     }
   }
   
@@ -76,8 +76,8 @@ public class Game {
       return false;
     }
     for(int i = 1 + numBots; i < maxPlayers; i++){
-      if(players[i] == null){
-        players[i] = player;
+      if(playersIds[i] == null){
+        playersIds[i] = player;
         return true;
       }
     }
@@ -88,7 +88,7 @@ public class Game {
   public boolean hasSpace(){
     int occupiedPlaces = 0;
     for(int i = 0; i < maxPlayers; i++){
-     if(players[i] != null){
+     if(playersIds[i] != null){
        occupiedPlaces++;
      }
     }
@@ -101,7 +101,7 @@ public class Game {
   // Returns true if the player was already added to the game, false otherwise
   private boolean hasPlayer(String player){
     for(int i = 0; i < maxPlayers; i++){
-      if(players[i] == player){
+      if(playersIds[i] == player){
         return true;
       }
     }
@@ -131,10 +131,19 @@ public class Game {
   
   public String getPlayers(){
     String result = "";
-    for(int i = 0; i < players.length - 1; i ++){
-      result += players[i]+",";
+    for(int i = 0; i < playersIds.length - 1; i ++){
+      result += playersIds[i]+",";
     }
-    result += players[players.length - 1];
+    result += playersIds[playersIds.length - 1];
     return result;
+  }
+  
+  public int getPlayerNum(String playerId){
+    for(int i = 0; i < maxPlayers; i++){
+      if(playersIds[i].equals(playerId)){
+        return i;
+      }
+    }
+    return -1;
   }
 }

@@ -25,12 +25,12 @@ public class Card{
   
   private int num;
   private int color;
-  private int specialFunct; // Special function
+  private int spec; // Special function
   
   public Card(int num, int color, int specialFunct){
     this.num = num;
     this.color = color;
-    this.specialFunct = specialFunct;
+    this.spec = specialFunct;
   }
   
   public boolean isRelatedWith(Card otherCard){
@@ -57,7 +57,7 @@ public class Card{
   }
 
   public boolean isSameFunct(Card otherCard){
-    if((specialFunct != NONE) && (specialFunct == otherCard.getSpecialFunct())){
+    if((spec != NONE) && (spec == otherCard.getSpecialFunct())){
       return true;
     }
     return false;
@@ -76,15 +76,55 @@ public class Card{
   }
   
   public int getSpecialFunct(){
-    return specialFunct;
+    return spec;
   }
   
   ///////////////
   // TO_STRING //
   ///////////////
   
+  private String numToString(){
+    if(num != NONE){
+      return Integer.toString(num);
+    }else{
+      return "X";
+    }
+  }
+
+  private String colorToString(){
+    switch(color){
+    case RED:
+      return "R";
+    case YELLOW:
+      return "Y";
+    case GREEN:
+      return "G";
+    case BLUE:
+      return "B";
+    default:
+      return "X";  
+    }
+  }
+  
+  private String specToString(){
+    switch(spec){
+    case REVERSE:
+      return "R";
+    case SKIP:
+      return "S";
+    case STEAL_TWO:
+      return "2";
+    case STEAL_FOUR:
+      return "4";
+    case CHANGE_COLOR:
+      return "C";
+    default:
+      return "X";
+    }
+  }
+  
   @Override
   public String toString(){
-    return "N:" + num + "-C:" + color + "-F:" + specialFunct;
+    return this.numToString() + this.colorToString() + this.specToString();
   }
 }

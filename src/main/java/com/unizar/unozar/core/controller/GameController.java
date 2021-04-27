@@ -3,7 +3,6 @@ package com.unizar.unozar.core.controller;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -13,7 +12,6 @@ import com.unizar.unozar.core.DTO.GameDTO;
 import com.unizar.unozar.core.controller.resources.CreateGameRequest;
 import com.unizar.unozar.core.controller.resources.JoinGameRequest;
 import com.unizar.unozar.core.controller.resources.PlayCardRequest;
-import com.unizar.unozar.core.controller.resources.ReadGameRequest;
 import com.unizar.unozar.core.controller.resources.TokenRequest;
 import com.unizar.unozar.core.service.GameService;
 
@@ -35,10 +33,10 @@ public class GameController{
     return ResponseEntity.ok().build();
   }
   
-  @GetMapping(value = "/read/{id}")
+  @PostMapping(value = "/read")
   public ResponseEntity<GameDTO>
-      read(@PathVariable String id, @RequestBody ReadGameRequest request){
-    return ResponseEntity.ok(gameService.read(id, request));
+      read(@RequestBody TokenRequest request){
+    return ResponseEntity.ok(gameService.read(request));
   }
   
   @PostMapping(value = "/join")
