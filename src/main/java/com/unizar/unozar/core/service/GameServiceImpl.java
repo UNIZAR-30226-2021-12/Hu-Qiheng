@@ -6,17 +6,22 @@ import org.springframework.stereotype.Service;
 
 import com.unizar.unozar.core.DTO.GameDTO;
 import com.unizar.unozar.core.controller.resources.CreateGameRequest;
+import com.unizar.unozar.core.controller.resources.DrawCardsRequest;
 import com.unizar.unozar.core.controller.resources.JoinGameRequest;
 import com.unizar.unozar.core.controller.resources.PlayCardRequest;
 import com.unizar.unozar.core.controller.resources.TokenRequest;
 import com.unizar.unozar.core.entities.Game;
 import com.unizar.unozar.core.entities.Player;
+import com.unizar.unozar.core.exceptions.GameFull;
 import com.unizar.unozar.core.exceptions.GameNotFound;
+import com.unizar.unozar.core.exceptions.GameNotFull;
 import com.unizar.unozar.core.exceptions.InvalidIdentity;
 import com.unizar.unozar.core.exceptions.PlayerIsNotPlaying;
 import com.unizar.unozar.core.exceptions.PlayerIsPlaying;
 import com.unizar.unozar.core.exceptions.PlayerNotFound;
+import com.unizar.unozar.core.exceptions.PlayerNotInAGame;
 import com.unizar.unozar.core.exceptions.PlayerNotInGame;
+import com.unizar.unozar.core.exceptions.PlayerNotOwner;
 import com.unizar.unozar.core.repository.GameRepository;
 import com.unizar.unozar.core.repository.PlayerRepository;
 
@@ -66,25 +71,96 @@ public class GameServiceImpl implements GameService{
 
   @Override
   public Void join(JoinGameRequest request){
-    
+    Player requester = findPlayer(request.getToken().substring(0,32));
+    checkToken(requester, request.getToken().substring(32));
+    checkPlayerNotInGame(requester);
+    Optional<Game> toFind = gameRepository.findById(request.getGameId());
+    if(!toFind.isPresent()){
+      throw new GameNotFound("The game does not exist");
+    }
+    Game toJoin = toFind.get();
+    if(!toJoin.hasSpace()){
+      throw new GameFull("The game has no space for another player");
+    }
+    toJoin.addPlayer(requester.getId());
+    requester.setGameId(toJoin.getId());
+    gameRepository.save(toJoin);
+    playerRepository.save(requester);
     return null;
   }
 
   @Override
   public Void start(TokenRequest request){
-    
+    Player requester = findPlayer(request.getToken().substring(0,32));
+    checkToken(requester, request.getToken().substring(32));
+    checkPlayerInGame(requester);
+    Optional<Game> toFind = gameRepository.findById(requester.getGameId());
+    if(!toFind.isPresent()){
+      throw new GameNotFound("The game does not exist");
+    }
+    Game toStart = toFind.get();
+    if(!toStart.hasPlayer(requester.getId())){
+      throw new PlayerNotInGame("The player is not in the game");
+    }
+    if(!toStart.getOwner().equals(requester.getId())){
+      throw new PlayerNotOwner("Only the owner can start a game");
+    }
+    if(toStart.hasSpace()){
+      throw new GameNotFull("Only games with all the players can start");
+    }
+    toStart.startGame();
+    gameRepository.save(toStart);
     return null;
   }
   
   @Override
   public Void playCard(PlayCardRequest request){
-    
+    Player requester = findPlayer(request.getToken().substring(0,32));
+    checkToken(requester, request.getToken().substring(32));
+    checkPlayerInGame(requester);
+    Optional<Game> toFind = gameRepository.findById(requester.getGameId());
+    if(!toFind.isPresent()){
+      throw new GameNotFound("The game does not exist");
+    }
+    Game toPlay = toFind.get();
+    toPlay.playCard(requester.getId(), request.getCardToPlay(), 
+        request.getHasSaidUnozar(), request.getColorSelected());
+    gameRepository.save(toPlay);
+    return null;
+  }
+  
+  @Override
+  public Void drawCards(DrawCardsRequest request){
+    Player requester = findPlayer(request.getToken().substring(0,32));
+    checkToken(requester, request.getToken().substring(32));
+    checkPlayerInGame(requester);
+    Optional<Game> toFind = gameRepository.findById(requester.getGameId());
+    if(!toFind.isPresent()){
+      throw new GameNotFound("The game does not exist");
+    }
+    Game toPlay = toFind.get();
+    toPlay.drawCards(requester.getId(), request.getCardsToDraw(), 
+        request.getHasSaidUnozar());
+    gameRepository.save(toPlay);
     return null;
   }
   
   @Override
   public Void quit(TokenRequest request){
-    
+    Player requester = findPlayer(request.getToken().substring(0,32));
+    checkToken(requester, request.getToken().substring(32));
+    checkPlayerInGame(requester);
+    Optional<Game> toFind = gameRepository.findById(requester.getGameId());
+    if(!toFind.isPresent()){
+      throw new GameNotFound("The game does not exist");
+    }
+    Game toQuit = toFind.get();
+    if(!toQuit.quitPlayer(requester.getId())){
+      throw new PlayerNotInGame("The player is not in the game");
+    }
+    requester.setGameId(Player.NONE);
+    gameRepository.save(toQuit);
+    playerRepository.save(requester);
     return null;
   }
   

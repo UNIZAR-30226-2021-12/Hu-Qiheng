@@ -2,6 +2,8 @@ package com.unizar.unozar.core;
 
 import java.util.Random;
 
+import com.unizar.unozar.core.exceptions.DeckFull;
+
 public class DrawDeck{
   private Card deck[];
   private int numCards;
@@ -11,6 +13,15 @@ public class DrawDeck{
     numCards = 0;
     this.addNumbers();
     this.addSpecials();
+  }
+  
+  public void addCard(Card toAdd){
+    if(numCards < 108){
+      deck[numCards] = toAdd;
+      numCards++;
+    }else{
+      throw new DeckFull("HOW?!?!?!?");
+    }
   }
   
   private boolean addCard(int number, int color, int specialFunct){

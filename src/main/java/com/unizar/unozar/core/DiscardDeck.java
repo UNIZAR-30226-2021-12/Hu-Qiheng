@@ -1,5 +1,7 @@
 package com.unizar.unozar.core;
 
+import com.unizar.unozar.core.exceptions.DiscardDeckNotEmpty;
+
 public class DiscardDeck{
   private Card deck[];
   private int numCards;
@@ -9,10 +11,17 @@ public class DiscardDeck{
     numCards = 0;
   }
   
+  public void startDeck(Card top){
+    if(numCards == 0){
+      deck[numCards] = top;
+      numCards++;
+    }
+    throw new DiscardDeckNotEmpty("The discard deck already has cards");
+  }
+  
   public boolean playCard(Card toPlay){
     if((numCards < 108) && isPlayable(toPlay)){
-      deck[numCards] = deck[numCards - 1];
-      deck[numCards - 1] = toPlay;
+      deck[numCards] = toPlay;
       numCards++;
       return true;
     }

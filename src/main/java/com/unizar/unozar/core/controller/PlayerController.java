@@ -19,6 +19,7 @@ import com.unizar.unozar.core.controller.resources.AuthenticationResponse;
 import com.unizar.unozar.core.controller.resources.CreatePlayerRequest;
 import com.unizar.unozar.core.controller.resources.DeletePlayerRequest;
 import com.unizar.unozar.core.controller.resources.TokenRequest;
+import com.unizar.unozar.core.controller.resources.TokenResponse;
 import com.unizar.unozar.core.controller.resources.UpdatePlayerRequest;
 import com.unizar.unozar.core.service.PlayerService;
 
@@ -48,10 +49,9 @@ public class PlayerController{
   }
   
   @PatchMapping(value = "/update")
-  public ResponseEntity<Void> 
+  public ResponseEntity<TokenResponse> 
       update(@RequestBody UpdatePlayerRequest request){
-    playerService.update(request);
-    return ResponseEntity.ok().build();
+    return ResponseEntity.ok(playerService.update(request));
   }
   
   @DeleteMapping(value = "/delete")

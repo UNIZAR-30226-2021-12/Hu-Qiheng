@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.unizar.unozar.core.DTO.GameDTO;
 import com.unizar.unozar.core.controller.resources.CreateGameRequest;
+import com.unizar.unozar.core.controller.resources.DrawCardsRequest;
 import com.unizar.unozar.core.controller.resources.JoinGameRequest;
 import com.unizar.unozar.core.controller.resources.PlayCardRequest;
 import com.unizar.unozar.core.controller.resources.TokenRequest;
@@ -53,12 +54,20 @@ public class GameController{
     return ResponseEntity.ok().build();
   }
   
-  @GetMapping(value = "/playCard")
+  @PostMapping(value = "/playCard")
   public ResponseEntity<Void>
       playCard(@RequestBody PlayCardRequest request){
     gameService.playCard(request);
     return ResponseEntity.ok().build();
   }
+  
+  @PostMapping(value = "/drawCards")
+  public ResponseEntity<Void>
+      drawCards(@RequestBody DrawCardsRequest request){
+    gameService.drawCards(request);
+    return ResponseEntity.ok().build();
+  }
+  
   
 // Not implemented yet
 //  @GetMapping(value = "/pauseGame")

@@ -6,6 +6,7 @@ import com.unizar.unozar.core.controller.resources.AuthenticationResponse;
 import com.unizar.unozar.core.controller.resources.CreatePlayerRequest;
 import com.unizar.unozar.core.controller.resources.DeletePlayerRequest;
 import com.unizar.unozar.core.controller.resources.TokenRequest;
+import com.unizar.unozar.core.controller.resources.TokenResponse;
 import com.unizar.unozar.core.controller.resources.UpdatePlayerRequest;
 
 public interface PlayerService{
@@ -14,7 +15,7 @@ public interface PlayerService{
 
   public PlayerDTO read(String id);
   
-  public Void update(UpdatePlayerRequest request);
+  public TokenResponse update(UpdatePlayerRequest request);
   
   public Void delete(DeletePlayerRequest request);
   

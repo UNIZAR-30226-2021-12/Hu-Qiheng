@@ -1,5 +1,7 @@
 package com.unizar.unozar.core;
 
+import com.unizar.unozar.core.exceptions.DeckFull;
+
 public class PlayerDeck{
   private Card deck[];
   private int numCards;
@@ -9,13 +11,12 @@ public class PlayerDeck{
     numCards = 0;
   }
   
-  public boolean addCard(Card toAdd){
+  public void addCard(Card toAdd){
     if(numCards < 108){
       deck[numCards] = toAdd;
       numCards++;
-      return true;
     }
-    return false;
+    throw new DeckFull("HOW?!?");
   }
   
   public Card select(int cardNum){

@@ -14,7 +14,7 @@ import org.hibernate.annotations.GenericGenerator;
 @Table(name = "PLAYER")
 public class Player{
   
-  public final String NONE = "NONE";
+  public final static String NONE = "NONE";
   
   @Id
   @Column(name = "ID")
@@ -88,7 +88,7 @@ public class Player{
     session = getTodaySeconds();
     return session;
   }
-  
+
   // Retrieves true if the given session equals the saved session and the time 
   // since last session update is minor than 600 seconds, otherwise retrieves 
   // false

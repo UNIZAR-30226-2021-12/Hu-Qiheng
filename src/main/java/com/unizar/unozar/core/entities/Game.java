@@ -8,9 +8,13 @@ import javax.persistence.Table;
 
 import org.hibernate.annotations.GenericGenerator;
 
+import com.unizar.unozar.core.Card;
 import com.unizar.unozar.core.DiscardDeck;
 import com.unizar.unozar.core.DrawDeck;
 import com.unizar.unozar.core.PlayerDeck;
+import com.unizar.unozar.core.exceptions.CardNotFound;
+import com.unizar.unozar.core.exceptions.IncorrectTurn;
+import com.unizar.unozar.core.exceptions.PlayerNotInGame;
 
 @Entity
 @Table(name = "GAME")
@@ -18,11 +22,13 @@ public class Game {
   
   private final int NOT_STARTED = -1;
   private final int NONE = 0;
-  private final int SKIP = 1;
-  private final int DRAW_TWO = 2;
-  private final int DRAW_FOUR = 3;
-  private final int FINISHED = 4;
-
+  private final int DRAW_TWO = 1;
+  private final int DRAW_FOUR = 2;
+  private final int FINISHED = 3;
+  
+  private final String BOT = "BOT";
+  private final String EMPTY = "EMPTY";
+  
   @Id
   @GeneratedValue(generator = "system-uuid")
   @GenericGenerator(name = "system-uuid", strategy = "uuid")
@@ -61,6 +67,12 @@ public class Game {
   @Column(name = "IS_PAUSED")
   private boolean isPaused;
   
+  @Column(name = "WINNER")
+  private int winner;
+  
+  @Column(name = "END_CHECKED")
+  private boolean endChecked[];
+  
   public Game(){ // Don't even look at this
     isPrivate = true;
     maxPlayers = 4;
@@ -69,6 +81,7 @@ public class Game {
     playersDecks = new PlayerDeck[maxPlayers];
     for (int i = 0; i < maxPlayers; i++){
       playersIds[i] = "";
+      endChecked[i] = false;
     }
     drawDeck = new DrawDeck();
     discardDeck = new DiscardDeck();
@@ -76,6 +89,7 @@ public class Game {
     specialEvent = NOT_STARTED;
     normalFlow = true;
     isPaused = false;
+    winner = 0;
   }
   
   public Game(boolean isPrivate, int maxPlayers, int numBots, String player){
@@ -83,27 +97,48 @@ public class Game {
     this.maxPlayers = maxPlayers;
     this.numBots = numBots;
     playersIds = new String[maxPlayers];
-    playersDecks = new PlayerDeck[maxPlayers];
     playersIds[0] = player;
-    for (int i = 1 + numBots; i < maxPlayers; i++){
-      playersIds[i] = "";
+    endChecked[0] = false;
+    for (int i = 1; i < 1 + numBots; i++){
+      playersIds[i] = BOT;
+      endChecked[i] = false;
     }
+    for (int i = 1 + numBots; i < maxPlayers; i++){
+      playersIds[i] = EMPTY;
+      endChecked[i] = false;
+    }
+    playersDecks = new PlayerDeck[maxPlayers];
     drawDeck = new DrawDeck();
     discardDeck = new DiscardDeck();
     turn = 0;
     specialEvent = NOT_STARTED;
     normalFlow = true;
     isPaused = false;
+    winner = 0;
   }
   
   // Returns true if the player was added to the game, false otherwise
-  public boolean addPlayer(String player){
-    if(this.hasPlayer(player)) {
+  public boolean addPlayer(String playerId){
+    if(this.hasPlayer(playerId)){
       return false;
     }
     for(int i = 1 + numBots; i < maxPlayers; i++){
-      if(playersIds[i] == null){
-        playersIds[i] = player;
+      if(playersIds[i].equals(EMPTY)){
+        playersIds[i] = playerId;
+        return true;
+      }
+    }
+    return false;
+  }
+  
+  // Returns true if the player was quited from the game, false otherwise
+  public boolean quitPlayer(String playerId){
+    if(!this.hasPlayer(playerId)){
+      return false;
+    }
+    for(int i = 0; i < maxPlayers; i++){
+      if(playersIds[i].equals(playerId)){
+        playersIds[i] = EMPTY;
         return true;
       }
     }
@@ -112,20 +147,16 @@ public class Game {
   
   // Returns true if there is place for someone else, false otherwise
   public boolean hasSpace(){
-    int occupiedPlaces = 0;
-    for(int i = 0; i < maxPlayers; i++){
-     if(playersIds[i] != null){
-       occupiedPlaces++;
-     }
-    }
-    if((occupiedPlaces + numBots) < maxPlayers){
-      return true;
+    for(int i = 1 + numBots; i < maxPlayers; i++){
+      if(playersIds[i].equals(EMPTY)){
+        return true;
+      }
     }
     return false;
   }
   
-  // Returns true if the player was already added to the game, false otherwise
-  private boolean hasPlayer(String player){
+  // Returns true if the player is currently in the game, false otherwise
+  public boolean hasPlayer(String player){
     for(int i = 0; i < maxPlayers; i++){
       if(playersIds[i] == player){
         return true;
@@ -135,10 +166,34 @@ public class Game {
   }
   
   public boolean startGame(){
-    //EMPTY
+    if(specialEvent != NOT_STARTED){
+      return false;
+    }
+    specialEvent = NONE;
+    drawDeck.shuffle();
+    for(int i = 0; i < maxPlayers; i++){
+      for(int j = 0; j < 7; j++){
+        playersDecks[i].addCard(drawDeck.drawCard());  
+      }
+    }
+    startDrawDeck();
     return true;
   }
 
+  private void startDrawDeck(){
+    boolean done = false;
+    while(!done){
+      Card top = drawDeck.drawCard();
+      if(top.getColor() != Card.BLACK){
+        discardDeck.startDeck(top);
+        done = true;
+      }else{
+        drawDeck.addCard(top);
+        drawDeck.shuffle();
+      }
+    }
+  }
+  
   public boolean isGameStarted(){
     if(specialEvent != NOT_STARTED){
       return true;
@@ -155,6 +210,34 @@ public class Game {
       return true;
     }
     return false;
+  }
+  
+  public void playCard(String playerId, int cardToMove, 
+      boolean hasSaidUnozar, String colorSelected){
+    int playerNum = getPlayerNum(playerId);
+    if(playerNum == -1){
+      throw new PlayerNotInGame("The player is not in the game");
+    }
+    if(playerNum != turn){
+      throw new IncorrectTurn("It is not the player's turn");
+    }
+    if(playersDecks[playerNum].getNumCards() <= cardToMove){
+      throw new CardNotFound("The player do not have that many cards");
+    }
+  }
+  
+  public void drawCards(String playerId, int cardsToDraw, 
+      boolean hasSaidUnozar){
+    int playerNum = getPlayerNum(playerId);
+    if(playerNum == -1){
+      throw new PlayerNotInGame("The player is not in the game");
+    }
+    if(playerNum != turn){
+      throw new IncorrectTurn("It is not the player's turn");
+    }
+    if(specialEvent == NONE){
+      
+    }
   }
   
   /////////////////////////
@@ -192,6 +275,10 @@ public class Game {
   
   public String[] getPlayersIds(){
     return playersIds;
+  }
+  
+  public String getOwner(){
+    return playersIds[0];
   }
   
   public int[] getPlayersNumCards(){

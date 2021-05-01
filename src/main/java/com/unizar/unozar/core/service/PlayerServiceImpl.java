@@ -10,6 +10,7 @@ import com.unizar.unozar.core.controller.resources.AuthenticationResponse;
 import com.unizar.unozar.core.controller.resources.CreatePlayerRequest;
 import com.unizar.unozar.core.controller.resources.DeletePlayerRequest;
 import com.unizar.unozar.core.controller.resources.TokenRequest;
+import com.unizar.unozar.core.controller.resources.TokenResponse;
 import com.unizar.unozar.core.controller.resources.UpdatePlayerRequest;
 import com.unizar.unozar.core.entities.Player;
 import com.unizar.unozar.core.exceptions.EmailInUse;
@@ -47,7 +48,7 @@ public class PlayerServiceImpl implements PlayerService{
   }
 
   @Override
-  public Void update(UpdatePlayerRequest request){
+  public TokenResponse update(UpdatePlayerRequest request){
     Player toUpdate = findPlayer(request.getToken().substring(0, 32));
     checkToken(toUpdate, request.getToken().substring(32));
     if(request.getAlias() != null){
@@ -64,8 +65,9 @@ public class PlayerServiceImpl implements PlayerService{
     if(request.getPassword() != null){
       toUpdate.setPassword(request.getPassword());
     }
+    String token = toUpdate.getId() + toUpdate.updateSession();
     playerRepository.save(toUpdate);
-    return null;
+    return new TokenResponse(token);
   }
 
   @Override
