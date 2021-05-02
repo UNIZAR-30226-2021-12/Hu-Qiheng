@@ -1,11 +1,28 @@
-package com.unizar.unozar.core;
+package com.unizar.unozar.core.entities;
 
 import java.util.Random;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Table;
+
 import com.unizar.unozar.core.exceptions.DeckFull;
 
+@Entity
+@Table(name = "DRAW_DECK")
 public class DrawDeck{
+  
+  @Id
+  @GeneratedValue(strategy = GenerationType.AUTO)
+  private int id;
+  
+  @Column
   private Card deck[];
+  
+  @Column
   private int numCards;
   
   public DrawDeck(){

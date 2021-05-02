@@ -1,9 +1,26 @@
-package com.unizar.unozar.core;
+package com.unizar.unozar.core.entities;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Table;
 
 import com.unizar.unozar.core.exceptions.DiscardDeckNotEmpty;
 
+@Entity
+@Table(name = "DISCARD_DECK")
 public class DiscardDeck{
+  
+  @Id
+  @GeneratedValue(strategy = GenerationType.AUTO)
+  private int id;
+  
+  @Column(name = "DECK")
   private Card deck[];
+  
+  @Column(name = "NUM_CARDS")
   private int numCards;
   
   public DiscardDeck(){

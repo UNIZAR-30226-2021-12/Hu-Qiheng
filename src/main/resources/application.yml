@@ -9,7 +9,7 @@ spring:
   datasource:
     url: ${DB_URL:jdbc:postgresql://localhost:5432/unozar}
     username: postgres
-    password: example
+    password: 123
 
 # ===============================
 # = SPRING JPA

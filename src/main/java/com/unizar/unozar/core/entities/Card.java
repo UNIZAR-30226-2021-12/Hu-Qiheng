@@ -1,5 +1,14 @@
-package com.unizar.unozar.core;
+package com.unizar.unozar.core.entities;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Table;
+
+@Entity
+@Table(name = "CARD")
 public class Card{
   
   // Special value
@@ -23,8 +32,17 @@ public class Card{
   
   public final static int BASIC_SPECIAL_FUNCT[] = {REVERSE, SKIP, DRAW_TWO};
   
+  @Id
+  @GeneratedValue(strategy = GenerationType.AUTO)
+  private int id;
+  
+  @Column(name = "NUM")
   private int num;
+  
+  @Column(name = "COLOR")
   private int color;
+  
+  @Column(name = "SPEC")
   private int spec; // Special function
   
   public Card(int num, int color, int specialFunct){

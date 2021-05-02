@@ -4,21 +4,20 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
+import javax.persistence.OrderColumn;
 import javax.persistence.Table;
 
 import org.hibernate.annotations.GenericGenerator;
 
-import com.unizar.unozar.core.Card;
-import com.unizar.unozar.core.DiscardDeck;
-import com.unizar.unozar.core.DrawDeck;
-import com.unizar.unozar.core.PlayerDeck;
 import com.unizar.unozar.core.exceptions.CardNotFound;
 import com.unizar.unozar.core.exceptions.IncorrectTurn;
 import com.unizar.unozar.core.exceptions.PlayerNotInGame;
 
 @Entity
 @Table(name = "GAME")
-public class Game {
+public class Game{
   
   private final int NOT_STARTED = -1;
   private final int NONE = 0;
@@ -46,13 +45,14 @@ public class Game {
   @Column(name = "PLAYERS")
   private String playersIds[];
   
-  @Column(name = "PLAYERS_DECKS")
+  @OrderColumn
+  @OneToMany(targetEntity = PlayerDeck.class)
   private PlayerDeck playersDecks[];
   
-  @Column(name = "DRAW_DECK")
+  @OneToOne(targetEntity = DrawDeck.class)
   private DrawDeck drawDeck;
   
-  @Column(name = "DISCARD_DECK")
+  @OneToOne(targetEntity = DiscardDeck.class)
   private DiscardDeck discardDeck;
   
   @Column(name = "TURN")
@@ -79,6 +79,7 @@ public class Game {
     numBots = 0;
     playersIds = new String[maxPlayers];
     playersDecks = new PlayerDeck[maxPlayers];
+    endChecked = new boolean[maxPlayers];
     for (int i = 0; i < maxPlayers; i++){
       playersIds[i] = "";
       endChecked[i] = false;
