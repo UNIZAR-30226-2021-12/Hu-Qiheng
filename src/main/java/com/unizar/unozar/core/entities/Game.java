@@ -84,6 +84,7 @@ public class Game{
     endChecked = new boolean[maxPlayers];
     for (int i = 0; i < maxPlayers; i++){
       playersIds[i] = "";
+      playersDecks[i] = new PlayerDeck();
       endChecked[i] = false;
     }
     drawDeck = new DrawDeck();
@@ -104,6 +105,9 @@ public class Game{
     endChecked = new boolean[maxPlayers];
     playersIds[0] = player;
     endChecked[0] = false;
+    for(int i = 0; i < maxPlayers; i++){
+      playersDecks[i] = new PlayerDeck();
+    }
     for (int i = 1; i < 1 + numBots; i++){
       playersIds[i] = BOT;
       endChecked[i] = false;
