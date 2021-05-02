@@ -19,7 +19,6 @@ import com.unizar.unozar.core.exceptions.InvalidIdentity;
 import com.unizar.unozar.core.exceptions.PlayerIsNotPlaying;
 import com.unizar.unozar.core.exceptions.PlayerIsPlaying;
 import com.unizar.unozar.core.exceptions.PlayerNotFound;
-import com.unizar.unozar.core.exceptions.PlayerNotInAGame;
 import com.unizar.unozar.core.exceptions.PlayerNotInGame;
 import com.unizar.unozar.core.exceptions.PlayerNotOwner;
 import com.unizar.unozar.core.repository.GameRepository;

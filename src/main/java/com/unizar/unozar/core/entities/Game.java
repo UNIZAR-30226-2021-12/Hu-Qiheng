@@ -98,6 +98,7 @@ public class Game{
     this.maxPlayers = maxPlayers;
     this.numBots = numBots;
     playersIds = new String[maxPlayers];
+    endChecked = new boolean[maxPlayers];
     playersIds[0] = player;
     endChecked[0] = false;
     for (int i = 1; i < 1 + numBots; i++){
