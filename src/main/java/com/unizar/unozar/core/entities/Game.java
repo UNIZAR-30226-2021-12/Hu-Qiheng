@@ -27,7 +27,7 @@ public class Game{
   private final int FINISHED = 3;
   
   private final String BOT = "BOT";
-  private final String EMPTY = "EMPTY";
+  public final static String EMPTY = "EMPTY";
   
   @Id
   @GeneratedValue(generator = "system-uuid")

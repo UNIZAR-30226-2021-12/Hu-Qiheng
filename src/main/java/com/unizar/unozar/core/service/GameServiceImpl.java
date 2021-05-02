@@ -158,6 +158,9 @@ public class GameServiceImpl implements GameService{
       throw new PlayerNotInGame("The player is not in the game");
     }
     requester.setGameId(Player.NONE);
+    if(toQuit.getOwner().equals(Game.EMPTY)){
+      
+    }
     gameRepository.save(toQuit);
     playerRepository.save(requester);
     return null;

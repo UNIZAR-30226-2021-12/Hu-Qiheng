@@ -45,6 +45,12 @@ public class Card{
   @Column(name = "SPEC")
   private int spec; // Special function
   
+  public Card(){
+    num = NONE;
+    color = NONE;
+    spec = NONE;
+  }
+  
   public Card(int num, int color, int specialFunct){
     this.num = num;
     this.color = color;
