@@ -60,7 +60,7 @@ public class GameServiceImpl implements GameService{
     System.out.println("Hola desde read #3\n");
     checkPlayerInGame(inGame);
     System.out.println("Hola desde read #4\n");
-    Optional<Game> toFind = gameRepository.findById(inGame.getGameId());
+    Optional<Game> toFind = gameRepository.findByid(inGame.getGameId());
     System.out.println("Hola desde read #5\n");
     if(!toFind.isPresent()){
       throw new GameNotFound("The game does not exist");
