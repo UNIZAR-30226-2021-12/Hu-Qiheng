@@ -48,7 +48,7 @@ public class Game{
   private String playersIds[];
   
   @OrderColumn
-  @OneToMany(targetEntity = PlayerDeck.class, cascade = CascadeType.ALL)
+  @OneToOne(targetEntity = PlayerDeck.class, cascade = CascadeType.ALL)
   private PlayerDeck playersDecks[];
   
   @OneToOne(targetEntity = DrawDeck.class, cascade = CascadeType.ALL)

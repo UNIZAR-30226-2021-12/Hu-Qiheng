@@ -7,6 +7,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 import javax.persistence.OrderColumn;
 import javax.persistence.Table;
 
@@ -21,7 +22,7 @@ public class PlayerDeck{
   private int id;
   
   @OrderColumn
-  @OneToMany(targetEntity = Card.class, cascade = CascadeType.ALL)
+  @OneToOne(targetEntity = Card.class, cascade = CascadeType.ALL)
   private Card deck[];
   
   @Column(name = "NUM_CARDS")
