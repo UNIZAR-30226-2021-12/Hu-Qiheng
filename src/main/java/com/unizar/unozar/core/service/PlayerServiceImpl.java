@@ -16,7 +16,6 @@ import com.unizar.unozar.core.entities.Player;
 import com.unizar.unozar.core.exceptions.EmailInUse;
 import com.unizar.unozar.core.exceptions.InvalidIdentity;
 import com.unizar.unozar.core.exceptions.InvalidPassword;
-import com.unizar.unozar.core.exceptions.InvalidToken;
 import com.unizar.unozar.core.exceptions.PlayerNotFound;
 import com.unizar.unozar.core.repository.PlayerRepository;
 

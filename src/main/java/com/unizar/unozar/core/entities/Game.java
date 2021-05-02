@@ -1,5 +1,6 @@
 package com.unizar.unozar.core.entities;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -46,13 +47,13 @@ public class Game{
   private String playersIds[];
   
   @OrderColumn
-  @OneToMany(targetEntity = PlayerDeck.class)
+  @OneToMany(targetEntity = PlayerDeck.class, cascade = CascadeType.ALL)
   private PlayerDeck playersDecks[];
   
-  @OneToOne(targetEntity = DrawDeck.class)
+  @OneToOne(targetEntity = DrawDeck.class, cascade = CascadeType.ALL)
   private DrawDeck drawDeck;
   
-  @OneToOne(targetEntity = DiscardDeck.class)
+  @OneToOne(targetEntity = DiscardDeck.class, cascade = CascadeType.ALL)
   private DiscardDeck discardDeck;
   
   @Column(name = "TURN")
@@ -237,9 +238,50 @@ public class Game{
     if(playerNum != turn){
       throw new IncorrectTurn("It is not the player's turn");
     }
-    if(specialEvent == NONE){
-      
+    switch(specialEvent){
+    case NOT_STARTED:
+      notStartedDraw(playerId, cardsToDraw, hasSaidUnozar);
+      break;
+    case NONE:
+      noneDraw(playerId, cardsToDraw, hasSaidUnozar);
+      break;
+    case DRAW_TWO:
+      drawTwoDraw(playerId, cardsToDraw, hasSaidUnozar);
+      break;
+    case DRAW_FOUR:
+      drawFourDraw(playerId, cardsToDraw, hasSaidUnozar);
+      break;
+    case FINISHED:
+      finishedDraw(playerId, cardsToDraw, hasSaidUnozar);
+      break;
+    default:
+      //throw new 
     }
+  }
+  
+  private void finishedDraw(String playerId, int cardsToDraw, boolean hasSaidUnozar) {
+    // TODO Auto-generated method stub
+    
+  }
+
+  private void drawFourDraw(String playerId, int cardsToDraw, boolean hasSaidUnozar) {
+    // TODO Auto-generated method stub
+    
+  }
+
+  private void drawTwoDraw(String playerId, int cardsToDraw, boolean hasSaidUnozar) {
+    // TODO Auto-generated method stub
+    
+  }
+
+  private void noneDraw(String playerId, int cardsToDraw, boolean hasSaidUnozar) {
+    // TODO Auto-generated method stub
+    
+  }
+
+  private void notStartedDraw(String playerId, int cardsToDraw, boolean hasSaidUnozar) {
+    // TODO Auto-generated method stub
+    
   }
   
   /////////////////////////
