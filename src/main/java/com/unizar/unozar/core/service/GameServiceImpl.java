@@ -12,6 +12,7 @@ import com.unizar.unozar.core.controller.resources.PlayCardRequest;
 import com.unizar.unozar.core.controller.resources.TokenRequest;
 import com.unizar.unozar.core.entities.Game;
 import com.unizar.unozar.core.entities.Player;
+import com.unizar.unozar.core.exceptions.Como;
 import com.unizar.unozar.core.exceptions.GameFull;
 import com.unizar.unozar.core.exceptions.GameNotFound;
 import com.unizar.unozar.core.exceptions.GameNotFull;
@@ -158,11 +159,26 @@ public class GameServiceImpl implements GameService{
       throw new PlayerNotInGame("The player is not in the game");
     }
     requester.setGameId(Player.NONE);
-    if(toQuit.getOwner().equals(Game.EMPTY)){
-      
-    }
-    gameRepository.save(toQuit);
     playerRepository.save(requester);
+    if(toQuit.getOwner().equals(Game.EMPTY)){
+      if(toQuit.hasAnyPlayer()){
+        int maxPlayers = toQuit.getMaxPlayers();
+        int numBots = toQuit.getNumBots();
+        String playersIds[] = new String[maxPlayers];
+        playersIds = toQuit.getPlayersIds();
+        for(int i = numBots + 1; i < maxPlayers; i++){
+          if((!playersIds[i].equals(Game.EMPTY)) && 
+              (!playersIds[i].equals(Game.BOT))){
+            if(!toQuit.toOwner(playersIds[i])){
+              throw new Como("asjdioajeoi");
+            }
+          }
+        }
+        gameRepository.save(toQuit);
+      }else{
+        gameRepository.delete(toQuit);
+      }
+    } 
     return null;
   }
   

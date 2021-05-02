@@ -6,6 +6,9 @@ import com.unizar.unozar.core.entities.Game;
 public class GameDTO{
 
   @JsonProperty
+  public String gameId;
+  
+  @JsonProperty
   public int maxPlayers;
   
   @JsonProperty
@@ -33,6 +36,7 @@ public class GameDTO{
   public boolean gameFinished;
 
   public GameDTO(Game game, int playerNum){
+    gameId = game.getId();
     maxPlayers = game.getMaxPlayers();
     topDiscard = game.getTopDiscardString();
     turn = game.getTurn();

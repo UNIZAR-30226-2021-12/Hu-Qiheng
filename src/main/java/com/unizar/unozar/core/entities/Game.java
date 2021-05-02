@@ -13,6 +13,7 @@ import javax.persistence.Table;
 import org.hibernate.annotations.GenericGenerator;
 
 import com.unizar.unozar.core.exceptions.CardNotFound;
+import com.unizar.unozar.core.exceptions.Como;
 import com.unizar.unozar.core.exceptions.IncorrectTurn;
 import com.unizar.unozar.core.exceptions.PlayerNotInGame;
 
@@ -26,7 +27,7 @@ public class Game{
   private final int DRAW_FOUR = 2;
   private final int FINISHED = 3;
   
-  private final String BOT = "BOT";
+  public final static String BOT = "BOT";
   public final static String EMPTY = "EMPTY";
   
   @Id
@@ -148,6 +149,23 @@ public class Game{
     return false;
   }
   
+  public boolean toOwner(String newOwnerId){
+    if(!this.hasPlayer(newOwnerId)){
+      return false;
+    }
+    for(int i = 0; i < maxPlayers; i++){
+      if(playersIds[i].equals(newOwnerId)){
+        if(!playersIds[0].equals(EMPTY)){
+          throw new Como("AWHDIASHD");
+        }
+        playersIds[0] = playersIds[i];
+        playersIds[i] = EMPTY;
+        return true;
+      }
+    }
+    return false;
+  }
+  
   // Returns true if there is place for someone else, false otherwise
   public boolean hasSpace(){
     for(int i = 1 + numBots; i < maxPlayers; i++){
@@ -161,7 +179,16 @@ public class Game{
   // Returns true if the player is currently in the game, false otherwise
   public boolean hasPlayer(String player){
     for(int i = 0; i < maxPlayers; i++){
-      if(playersIds[i] == player){
+      if(playersIds[i].equals(player)){
+        return true;
+      }
+    }
+    return false;
+  }
+  
+  public boolean hasAnyPlayer(){
+    for(int i = 0; i < maxPlayers; i++){
+      if(!playersIds[i].equals(BOT) && !playersIds[i].equals(EMPTY)){
         return true;
       }
     }
@@ -310,6 +337,9 @@ public class Game{
   }
   
   public String getTopDiscardString(){
+    if(discardDeck.getNumCards() == 0){
+      return "";
+    }
     return discardDeck.getTop().toString();
   }
   
@@ -336,4 +366,6 @@ public class Game{
   public String getPlayerCards(int playerNum){
     return playersDecks[playerNum].toString();
   }
+
+
 }
