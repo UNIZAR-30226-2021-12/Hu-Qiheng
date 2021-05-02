@@ -5,6 +5,7 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.OrderColumn;
@@ -48,7 +49,8 @@ public class Game{
   private String playersIds[];
   
   @OrderColumn
-  @OneToOne(targetEntity = PlayerDeck.class, cascade = CascadeType.ALL)
+  @OneToMany(mappedBy = "id", targetEntity = PlayerDeck.class, 
+      cascade = CascadeType.ALL)
   private PlayerDeck playersDecks[];
   
   @OneToOne(targetEntity = DrawDeck.class, cascade = CascadeType.ALL)
@@ -379,6 +381,5 @@ public class Game{
   public String getPlayerCards(int playerNum){
     return playersDecks[playerNum].toString();
   }
-
 
 }
