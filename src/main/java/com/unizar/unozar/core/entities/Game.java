@@ -32,6 +32,7 @@ public class Game{
   public final String EMPTY = "EMPTY";
   
   @Id
+  @Column(name = "ID")
   @GeneratedValue(generator = "system-uuid")
   @GenericGenerator(name = "system-uuid", strategy = "uuid")
   private String id;
