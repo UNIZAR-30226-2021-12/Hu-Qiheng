@@ -44,12 +44,12 @@ public class GameDTO{
     playersIds = game.getPlayersIds();
     playersNumCards = new int[maxPlayers];
     for (int i = 0; i < maxPlayers; i++){
-      playersNumCards[i] = game.getPlayerNumCards(i);
+//      playersNumCards[i] = game.getPlayerNumCards(i);
     }
     gameStarted = game.isGameStarted();
     gamePaused = game.isGamePaused();
     gameFinished = game.isGameFinished();
-    playerCards = game.getPlayerCards(playerNum);
+//    playerCards = game.getPlayerCards(playerNum);
   }
   
 }

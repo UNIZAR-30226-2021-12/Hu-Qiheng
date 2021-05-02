@@ -49,16 +49,16 @@ public class Game{
   @Column(name = "PLAYERS")
   private String playersIds[];
   
-  @OrderColumn
-  @OneToMany(mappedBy = "id", targetEntity = PlayerDeck.class, 
-      cascade = CascadeType.ALL)
-  private PlayerDeck playersDecks[];
-  
-  @OneToOne(targetEntity = DrawDeck.class, cascade = CascadeType.ALL)
-  private DrawDeck drawDeck;
-  
-  @OneToOne(targetEntity = DiscardDeck.class, cascade = CascadeType.ALL)
-  private DiscardDeck discardDeck;
+//  @OrderColumn
+//  @OneToMany(mappedBy = "id", targetEntity = PlayerDeck.class, 
+//      cascade = CascadeType.ALL)
+//  private PlayerDeck playersDecks[];
+//  
+//  @OneToOne(targetEntity = DrawDeck.class, cascade = CascadeType.ALL)
+//  private DrawDeck drawDeck;
+//  
+//  @OneToOne(targetEntity = DiscardDeck.class, cascade = CascadeType.ALL)
+//  private DiscardDeck discardDeck;
   
   @Column(name = "TURN")
   private int turn;
@@ -83,15 +83,15 @@ public class Game{
     maxPlayers = 4;
     numBots = 0;
     playersIds = new String[maxPlayers];
-    playersDecks = new PlayerDeck[maxPlayers];
+//    playersDecks = new PlayerDeck[maxPlayers];
     endChecked = new boolean[maxPlayers];
     for (int i = 0; i < maxPlayers; i++){
       playersIds[i] = "";
-      playersDecks[i] = new PlayerDeck();
+//      playersDecks[i] = new PlayerDeck();
       endChecked[i] = false;
     }
-    drawDeck = new DrawDeck();
-    discardDeck = new DiscardDeck();
+//    drawDeck = new DrawDeck();
+//    discardDeck = new DiscardDeck();
     turn = 0;
     specialEvent = NOT_STARTED;
     normalFlow = true;
@@ -104,12 +104,12 @@ public class Game{
     this.maxPlayers = maxPlayers;
     this.numBots = numBots;
     playersIds = new String[maxPlayers];
-    playersDecks = new PlayerDeck[maxPlayers];
+//    playersDecks = new PlayerDeck[maxPlayers];
     endChecked = new boolean[maxPlayers];
     playersIds[0] = player;
     endChecked[0] = false;
     for(int i = 0; i < maxPlayers; i++){
-      playersDecks[i] = new PlayerDeck();
+//      playersDecks[i] = new PlayerDeck();
     }
     for (int i = 1; i < 1 + numBots; i++){
       playersIds[i] = BOT;
@@ -119,8 +119,8 @@ public class Game{
       playersIds[i] = EMPTY;
       endChecked[i] = false;
     }
-    drawDeck = new DrawDeck();
-    discardDeck = new DiscardDeck();
+//    drawDeck = new DrawDeck();
+//    discardDeck = new DiscardDeck();
     turn = 0;
     specialEvent = NOT_STARTED;
     normalFlow = true;
@@ -207,10 +207,10 @@ public class Game{
       return false;
     }
     specialEvent = NONE;
-    drawDeck.shuffle();
+//    drawDeck.shuffle();
     for(int i = 0; i < maxPlayers; i++){
       for(int j = 0; j < 7; j++){
-        playersDecks[i].addCard(drawDeck.drawCard());  
+//        playersDecks[i].addCard(drawDeck.drawCard());  
       }
     }
     startDrawDeck();
@@ -219,16 +219,16 @@ public class Game{
 
   private void startDrawDeck(){
     boolean done = false;
-    while(!done){
-      Card top = drawDeck.drawCard();
-      if(top.getColor() != Card.BLACK){
-        discardDeck.startDeck(top);
-        done = true;
-      }else{
-        drawDeck.addCard(top);
-        drawDeck.shuffle();
-      }
-    }
+//    while(!done){
+//      Card top = drawDeck.drawCard();
+//      if(top.getColor() != Card.BLACK){
+//        discardDeck.startDeck(top);
+//        done = true;
+//      }else{
+//        drawDeck.addCard(top);
+//        drawDeck.shuffle();
+//      }
+//    }
   }
   
   public boolean isGameStarted(){
@@ -258,9 +258,9 @@ public class Game{
     if(playerNum != turn){
       throw new IncorrectTurn("It is not the player's turn");
     }
-    if(playersDecks[playerNum].getNumCards() <= cardToMove){
-      throw new CardNotFound("The player do not have that many cards");
-    }
+//    if(playersDecks[playerNum].getNumCards() <= cardToMove){
+//      throw new CardNotFound("The player do not have that many cards");
+//    }
   }
   
   public void drawCards(String playerId, int cardsToDraw, 
@@ -349,10 +349,10 @@ public class Game{
   }
   
   public String getTopDiscardString(){
-    if(discardDeck.getNumCards() == 0){
+//    if(discardDeck.getNumCards() == 0){
       return "";
-    }
-    return discardDeck.getTop().toString();
+//    }
+//    return discardDeck.getTop().toString();
   }
   
   public int getTurn(){
@@ -367,20 +367,20 @@ public class Game{
     return playersIds[0];
   }
   
-  public int getPlayerNumCards(int playerNum){
-    return playersDecks[playerNum].getNumCards();
-  }
-  
-  public int[] getPlayersNumCards(){
-    int playersNumCards[] = new int[maxPlayers];
-    for (int i = 0; i < maxPlayers; i++){
-      playersNumCards[i] = playersDecks[i].getNumCards();
-    }
-    return playersNumCards;
-  }
-  
-  public String getPlayerCards(int playerNum){
-    return playersDecks[playerNum].toString();
-  }
+//  public int getPlayerNumCards(int playerNum){
+//    return playersDecks[playerNum].getNumCards();
+//  }
+//  
+//  public int[] getPlayersNumCards(){
+//    int playersNumCards[] = new int[maxPlayers];
+//    for (int i = 0; i < maxPlayers; i++){
+//      playersNumCards[i] = playersDecks[i].getNumCards();
+//    }
+//    return playersNumCards;
+//  }
+//  
+//  public String getPlayerCards(int playerNum){
+//    return playersDecks[playerNum].toString();
+//  }
 
 }
