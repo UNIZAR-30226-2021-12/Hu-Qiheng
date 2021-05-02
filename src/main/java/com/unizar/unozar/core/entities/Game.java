@@ -28,8 +28,8 @@ public class Game{
   private final int DRAW_FOUR = 2;
   private final int FINISHED = 3;
   
-  public final static String BOT = "BOT";
-  public final static String EMPTY = "EMPTY";
+  public final String BOT = "BOT";
+  public final String EMPTY = "EMPTY";
   
   @Id
   @GeneratedValue(generator = "system-uuid")

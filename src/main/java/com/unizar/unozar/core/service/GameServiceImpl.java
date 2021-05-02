@@ -53,19 +53,29 @@ public class GameServiceImpl implements GameService{
   
   @Override
   public GameDTO read(TokenRequest request){
+    System.out.println("Hola desde read #1\n");
     Player inGame = findPlayer(request.getToken().substring(0, 32));
+    System.out.println("Hola desde read #2\n");
     checkToken(inGame, request.getToken().substring(32));
+    System.out.println("Hola desde read #3\n");
     checkPlayerInGame(inGame);
+    System.out.println("Hola desde read #4\n");
     Optional<Game> toFind = gameRepository.findById(inGame.getGameId());
+    System.out.println("Hola desde read #5\n");
     if(!toFind.isPresent()){
       throw new GameNotFound("The game does not exist");
     }
+    System.out.println("Hola desde read #6\n");
     Game toRead = toFind.get();
+    System.out.println("Hola desde read #7\n");
     int playerNum = toRead.getPlayerNum(inGame.getId());
+    System.out.println("Hola desde read #8\n");
     if(playerNum == -1){
       throw new PlayerNotInGame("The player is not in the game");
     }
+    System.out.println("Hola desde read #9\n");
     GameDTO read = new GameDTO(toRead, playerNum);
+    System.out.println("Hola desde read #10\n");
     return read;
   }
 
@@ -160,15 +170,15 @@ public class GameServiceImpl implements GameService{
     }
     requester.setGameId(Player.NONE);
     playerRepository.save(requester);
-    if(toQuit.getOwner().equals(Game.EMPTY)){
+    if(toQuit.getOwner().equals(toQuit.EMPTY)){
       if(toQuit.hasAnyPlayer()){
         int maxPlayers = toQuit.getMaxPlayers();
         int numBots = toQuit.getNumBots();
         String playersIds[] = new String[maxPlayers];
         playersIds = toQuit.getPlayersIds();
         for(int i = numBots + 1; i < maxPlayers; i++){
-          if((!playersIds[i].equals(Game.EMPTY)) && 
-              (!playersIds[i].equals(Game.BOT))){
+          if((!playersIds[i].equals(toQuit.EMPTY)) && 
+              (!playersIds[i].equals(toQuit.BOT))){
             if(!toQuit.toOwner(playersIds[i])){
               throw new Como("asjdioajeoi");
             }
