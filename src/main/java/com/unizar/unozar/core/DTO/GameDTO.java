@@ -43,7 +43,9 @@ public class GameDTO{
     playersIds = new String[maxPlayers];
     playersIds = game.getPlayersIds();
     playersNumCards = new int[maxPlayers];
-    playersNumCards = game.getPlayersNumCards();
+    for (int i = 0; i < maxPlayers; i++){
+      playersNumCards[i] = game.getPlayerNumCards(i);
+    }
     gameStarted = game.isGameStarted();
     gamePaused = game.isGamePaused();
     gameFinished = game.isGameFinished();

@@ -286,27 +286,32 @@ public class Game{
     }
   }
   
-  private void finishedDraw(String playerId, int cardsToDraw, boolean hasSaidUnozar) {
+  private void finishedDraw(String playerId, int cardsToDraw, 
+      boolean hasSaidUnozar){
     // TODO Auto-generated method stub
     
   }
 
-  private void drawFourDraw(String playerId, int cardsToDraw, boolean hasSaidUnozar) {
+  private void drawFourDraw(String playerId, int cardsToDraw, 
+      boolean hasSaidUnozar){
     // TODO Auto-generated method stub
     
   }
 
-  private void drawTwoDraw(String playerId, int cardsToDraw, boolean hasSaidUnozar) {
+  private void drawTwoDraw(String playerId, int cardsToDraw, 
+      boolean hasSaidUnozar){
     // TODO Auto-generated method stub
     
   }
 
-  private void noneDraw(String playerId, int cardsToDraw, boolean hasSaidUnozar) {
+  private void noneDraw(String playerId, int cardsToDraw, 
+      boolean hasSaidUnozar){
     // TODO Auto-generated method stub
     
   }
 
-  private void notStartedDraw(String playerId, int cardsToDraw, boolean hasSaidUnozar) {
+  private void notStartedDraw(String playerId, int cardsToDraw, 
+      boolean hasSaidUnozar){
     // TODO Auto-generated method stub
     
   }
@@ -353,6 +358,10 @@ public class Game{
   
   public String getOwner(){
     return playersIds[0];
+  }
+  
+  public int getPlayerNumCards(int playerNum){
+    return playersDecks[playerNum].getNumCards();
   }
   
   public int[] getPlayersNumCards(){
