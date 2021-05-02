@@ -98,6 +98,7 @@ public class Game{
     this.maxPlayers = maxPlayers;
     this.numBots = numBots;
     playersIds = new String[maxPlayers];
+    playersDecks = new PlayerDeck[maxPlayers];
     endChecked = new boolean[maxPlayers];
     playersIds[0] = player;
     endChecked[0] = false;
@@ -109,7 +110,6 @@ public class Game{
       playersIds[i] = EMPTY;
       endChecked[i] = false;
     }
-    playersDecks = new PlayerDeck[maxPlayers];
     drawDeck = new DrawDeck();
     discardDeck = new DiscardDeck();
     turn = 0;
