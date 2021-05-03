@@ -121,7 +121,7 @@ public class Game{
       endChecked[i] = false;
     }
     drawDeck = new DrawDeck();
-    discardDeck = new DiscardDeck();
+    discardDeck = new DiscardDeck(this);
     turn = 0;
     specialEvent = NOT_STARTED;
     normalFlow = true;

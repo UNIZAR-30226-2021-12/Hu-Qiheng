@@ -37,6 +37,11 @@ public class DiscardDeck{
     deck = new ArrayList<Card>();
   }
   
+  public DiscardDeck(Game game){
+    deck = new ArrayList<Card>();
+    this.game = game;
+  }
+  
   public void startDeck(Card top){
     if(deck.size() == 0){
       deck.add(top);
@@ -70,6 +75,7 @@ public class DiscardDeck{
   }
   
   public int getNumCards(){
+    System.out.println("Hola desde getnumcards #X\n");
     return deck.size();
   }
   
