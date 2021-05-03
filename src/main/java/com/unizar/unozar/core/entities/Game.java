@@ -352,9 +352,11 @@ public class Game{
   }
   
   public String getTopDiscardString(){
+    System.out.println("Hola desde gettopblabla #1\n");
     if(discardDeck.getNumCards() == 0){
       return "";
     }
+    System.out.println("Hola desde gettopblabla #2\n");
     return discardDeck.getTop().toString();
   }
   
