@@ -10,6 +10,7 @@ import com.unizar.unozar.core.controller.resources.DrawCardsRequest;
 import com.unizar.unozar.core.controller.resources.JoinGameRequest;
 import com.unizar.unozar.core.controller.resources.PlayCardRequest;
 import com.unizar.unozar.core.controller.resources.TokenRequest;
+import com.unizar.unozar.core.entities.DiscardDeck;
 import com.unizar.unozar.core.entities.Game;
 import com.unizar.unozar.core.entities.Player;
 import com.unizar.unozar.core.exceptions.Como;
@@ -22,20 +23,25 @@ import com.unizar.unozar.core.exceptions.PlayerIsPlaying;
 import com.unizar.unozar.core.exceptions.PlayerNotFound;
 import com.unizar.unozar.core.exceptions.PlayerNotInGame;
 import com.unizar.unozar.core.exceptions.PlayerNotOwner;
+import com.unizar.unozar.core.repository.DiscardDeckRepository;
 import com.unizar.unozar.core.repository.GameRepository;
 import com.unizar.unozar.core.repository.PlayerRepository;
 
 @Service
 public class GameServiceImpl implements GameService{
-
+  
   private final GameRepository gameRepository;
   
   private final PlayerRepository playerRepository;
+
+  private final DiscardDeckRepository discardDeckRepository;
   
   public GameServiceImpl(GameRepository gameRepository, 
-      PlayerRepository playerRepository){
+      PlayerRepository playerRepository, 
+      DiscardDeckRepository discardDeckRepository){
     this.gameRepository = gameRepository;
     this.playerRepository = playerRepository;
+    this.discardDeckRepository = discardDeckRepository;
   }
   
   @Override
@@ -45,6 +51,9 @@ public class GameServiceImpl implements GameService{
     checkPlayerNotInGame(owner);
     Game toCreate = new Game(request.getIsPrivate(), request.getMaxPlayers(),
         request.getNumBots(), id);
+    DiscardDeck discardDeck = new DiscardDeck(toCreate);
+    toCreate.setDiscardDeck(discardDeck);
+    discardDeckRepository.save(discardDeck);
     gameRepository.save(toCreate);
     owner.setGameId(toCreate.getId());
     playerRepository.save(owner);

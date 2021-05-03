@@ -387,5 +387,9 @@ public class Game{
   public String getPlayerCards(int playerNum){
     return playersDecks.get(playerNum).toString();
   }
+  
+  public void setDiscardDeck(DiscardDeck deck){
+    discardDeck = deck;
+  }
 
 }
