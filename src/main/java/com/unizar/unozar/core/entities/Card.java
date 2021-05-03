@@ -5,6 +5,8 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 @Entity
@@ -44,6 +46,18 @@ public class Card{
   
   @Column(name = "SPEC")
   private int spec; // Special function
+  
+  @ManyToOne()
+  @JoinColumn(name = "PLAYER_DECK")
+  private PlayerDeck playerDeck;
+  
+  @ManyToOne()
+  @JoinColumn(name = "DRAW_DECK")
+  private DrawDeck drawDeck;
+ 
+  @ManyToOne()
+  @JoinColumn(name = "DISCARD_DECK")
+  private DiscardDeck discardDeck;
   
   public Card(){
     num = NONE;

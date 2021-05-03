@@ -1,12 +1,17 @@
 package com.unizar.unozar.core.entities;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 import javax.persistence.OrderColumn;
 import javax.persistence.Table;
 
@@ -20,37 +25,35 @@ public class DiscardDeck{
   @GeneratedValue(strategy = GenerationType.AUTO)
   private int id;
   
-  @OrderColumn
-  @OneToMany(targetEntity = Card.class, cascade = CascadeType.ALL)
-  private Card deck[];
+  @OneToMany(mappedBy = "discardDeck", cascade = CascadeType.ALL,
+      orphanRemoval = true)
+  private List<Card> deck;
   
-  @Column(name = "NUM_CARDS")
-  private int numCards;
+  @JoinColumn(name = "GAME_ID")
+  @OneToOne
+  private Game game;
   
   public DiscardDeck(){
-    deck = new Card[108];
-    numCards = 0;
+    deck = new ArrayList<Card>();
   }
   
   public void startDeck(Card top){
-    if(numCards == 0){
-      deck[numCards] = top;
-      numCards++;
+    if(deck.size() == 0){
+      deck.add(top);
     }
     throw new DiscardDeckNotEmpty("The discard deck already has cards");
   }
   
   public boolean playCard(Card toPlay){
-    if((numCards < 108) && isPlayable(toPlay)){
-      deck[numCards] = toPlay;
-      numCards++;
+    if((deck.size() < 108) && isPlayable(toPlay)){
+      deck.add(toPlay);
       return true;
     }
     return false;
   }
   
   private boolean isPlayable(Card toPlay){
-    if(toPlay.isRelatedWith(deck[numCards - 1]) || 
+    if(toPlay.isRelatedWith(deck.get(deck.size() - 1)) || 
         (toPlay.getColor() == Card.BLACK)){
       return true;
     }
@@ -58,23 +61,22 @@ public class DiscardDeck{
   }
   
   public Card[] emptyDeckButTop(){
-    Card surplusDeck[] = new Card[numCards - 1];
-    for(int i = 0; i < numCards - 1; i++){
-      surplusDeck[i] = deck[i];
+    Card surplusDeck[] = new Card[deck.size() - 1];
+    for(int i = 0; i < deck.size() - 1; i++){
+      surplusDeck[i] = deck.get(i);
+      deck.remove(i);
     }
-    deck[0] = deck[numCards - 1];
-    numCards = 1;
     return surplusDeck;
   }
   
   public int getNumCards(){
-    return numCards;
+    return deck.size();
   }
   
   public Card getTop(){
-    if(numCards == 0){
+    if(deck.size() == 0){
       return null;
     }
-    return deck[numCards - 1];
+    return deck.get(deck.size() - 1);
   }
 }

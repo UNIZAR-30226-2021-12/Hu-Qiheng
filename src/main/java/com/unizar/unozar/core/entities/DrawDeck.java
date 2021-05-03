@@ -1,5 +1,7 @@
 package com.unizar.unozar.core.entities;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
 import javax.persistence.CascadeType;
@@ -8,7 +10,9 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 import javax.persistence.OrderColumn;
 import javax.persistence.Table;
 
@@ -19,36 +23,35 @@ import com.unizar.unozar.core.exceptions.DeckFull;
 public class DrawDeck{
   
   @Id
+  @Column(name = "ID")
   @GeneratedValue(strategy = GenerationType.AUTO)
   private int id;
   
-  @OrderColumn
-  @OneToMany(targetEntity = Card.class, cascade = CascadeType.ALL)
-  private Card deck[];
+  @OneToMany(mappedBy = "drawDeck", cascade = CascadeType.ALL,
+      orphanRemoval = true)
+  private List<Card> deck;
   
-  @Column
-  private int numCards;
+  @JoinColumn(name = "GAME_ID")
+  @OneToOne
+  private Game game;
   
   public DrawDeck(){
-    deck = new Card[108];
-    numCards = 0;
+    deck = new ArrayList<Card>();
     this.addNumbers();
     this.addSpecials();
   }
   
   public void addCard(Card toAdd){
-    if(numCards < 108){
-      deck[numCards] = toAdd;
-      numCards++;
+    if(deck.size() < 108){
+      deck.add(toAdd);
     }else{
       throw new DeckFull("HOW?!?!?!?");
     }
   }
   
   private boolean addCard(int number, int color, int specialFunct){
-    if(numCards < 108){
-      deck[numCards] = new Card(number, color, specialFunct);
-      numCards++;
+    if(deck.size() < 108){
+      deck.add(new Card(number, color, specialFunct));
       return true;
     }
     return false;
@@ -109,26 +112,26 @@ public class DrawDeck{
     int index;
     Card temp;
     Random random = new Random();
-    for(int i = numCards - 1; i > 0; i--){
+    for(int i = deck.size() - 1; i > 0; i--){
       index = random.nextInt(i + 1);
-      temp = deck[index];
-      deck[index] = deck[i];
-      deck[i] = temp;
+      temp = deck.get(index);
+      deck.add(index, deck.get(i));
+      deck.add(i, temp);
     }
   }
   
   public Card drawCard(){
-    numCards--;
-    return deck[numCards];
+    Card toDraw = deck.get(deck.size() - 1);
+    deck.remove(deck.size() - 1);
+    return toDraw;
   }
   
   public int replenishDeck(Card x[]){
-    if((numCards == 0) && (numCards + x.length <= 108)){
+    if((deck.size() == 0) && (deck.size() + x.length <= 108)){
       for(int i = 0; i < x.length; i++){
-        deck[i] = x[i];
+        deck.add(x[i]);
       }
-      numCards = x.length;
-      return numCards;
+      return deck.size();
     }
     return 0;
   }
