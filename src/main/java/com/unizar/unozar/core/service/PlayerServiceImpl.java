@@ -9,6 +9,7 @@ import com.unizar.unozar.core.controller.resources.AuthenticationRequest;
 import com.unizar.unozar.core.controller.resources.AuthenticationResponse;
 import com.unizar.unozar.core.controller.resources.CreatePlayerRequest;
 import com.unizar.unozar.core.controller.resources.DeletePlayerRequest;
+import com.unizar.unozar.core.controller.resources.ReadPlayerRequest;
 import com.unizar.unozar.core.controller.resources.TokenRequest;
 import com.unizar.unozar.core.controller.resources.TokenResponse;
 import com.unizar.unozar.core.controller.resources.UpdatePlayerRequest;
@@ -41,8 +42,9 @@ public class PlayerServiceImpl implements PlayerService{
   }
   
   @Override
-  public PlayerDTO read(String id){
-    PlayerDTO player = new PlayerDTO(findPlayer(id));
+  public PlayerDTO read(ReadPlayerRequest request){
+    System.out.println("Hola desde read");
+    PlayerDTO player = new PlayerDTO(findPlayer(request.getPlayerId()));
     return player;
   }
 
