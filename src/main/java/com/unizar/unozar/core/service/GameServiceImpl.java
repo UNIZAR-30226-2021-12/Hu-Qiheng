@@ -61,6 +61,7 @@ public class GameServiceImpl implements GameService{
   public TokenResponse create(CreateGameRequest request){
     String id = request.getToken().substring(0, 32);
     Player owner = findPlayer(id);
+    checkToken(owner, request.getToken().substring(32));
     checkPlayerNotInGame(owner);
     Game toCreate = new Game(request.getIsPrivate(), request.getMaxPlayers(),
         request.getNumBots(), id);
