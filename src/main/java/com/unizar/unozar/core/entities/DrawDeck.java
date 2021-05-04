@@ -4,19 +4,19 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-import javax.persistence.CascadeType;
+
 import javax.persistence.Column;
+import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
-import javax.persistence.OrderColumn;
 import javax.persistence.Table;
 
+import com.unizar.unozar.core.Card;
+import com.unizar.unozar.core.exceptions.Como;
 import com.unizar.unozar.core.exceptions.DeckFull;
+import com.unizar.unozar.core.exceptions.DrawDeckNotEmpty;
 
 @Entity
 @Table(name = "DRAW_DECK")
@@ -27,90 +27,65 @@ public class DrawDeck{
   @GeneratedValue(strategy = GenerationType.AUTO)
   private int id;
   
-  @OneToMany(mappedBy = "drawDeck", cascade = CascadeType.ALL,
-      orphanRemoval = true)
-  private List<Card> deck;
-  
-  @JoinColumn(name = "GAME_ID")
-  @OneToOne
-  private Game game;
+  @ElementCollection
+  private List<String> deck;
   
   public DrawDeck(){
-    deck = new ArrayList<Card>();
+    deck = new ArrayList<String>();
     this.addNumbers();
     this.addSpecials();
   }
   
-  public void addCard(Card toAdd){
-    if(deck.size() < 108){
-      deck.add(toAdd);
-    }else{
+  public void addCard(String toAdd){
+    Card.checkCard(toAdd);
+    if(deck.size() >= 108){
       throw new DeckFull("HOW?!?!?!?");
     }
+    deck.add(toAdd);
   }
   
-  private boolean addCard(int number, int color, int specialFunct){
-    if(deck.size() < 108){
-      deck.add(new Card(number, color, specialFunct));
-      return true;
+  // Adds the numeric cards to the deck
+  private void addNumbers(){
+    // Zeros go just once
+    addCard("0RX");
+    addCard("0YX");
+    addCard("0GX");
+    addCard("0BX");
+    // All the others go twice
+    for(int i = 1; i < 10; i++){
+      char c = (char)(i + '0');
+      addCard(c+"RX");
+      addCard(c+"RX");
+      addCard(c+"YX");
+      addCard(c+"YX");
+      addCard(c+"GX");
+      addCard(c+"GX");
+      addCard(c+"BX");
+      addCard(c+"BX");
     }
-    return false;
   }
   
-  private int addNumber(int number, int color){
-    if(addCard(number, color, Card.NONE)){
-      return 1;
-    }
-    return 0;
-  }
-
-  private int addSpecial(int color, int specialFunct){
-    if(addCard(Card.NONE, color, specialFunct)){
-      return 1;
-    }
-    return 0;
-  }
-  
-  private boolean addNumbers(){
-    int colors[] = Card.BASIC_COLORS;
-    int cardsAdded = 0;
+  // Adds the special cards to the deck
+  private void addSpecials(){
+    String spec[] = Card.BASIC_SPEC;
+    String colors[] = Card.BASIC_COLORS;
+    // Colored special cards
     for(int i = 0; i < colors.length; i++){
-      cardsAdded += addNumber(0, colors[i]);
-      for(int j = 1; j <= 9; j++){
-        cardsAdded += addNumber(j, colors[i]);
-        cardsAdded += addNumber(j, colors[i]);
+      for(int j = 0; j < spec.length; j++){
+        addCard(Card.NONE + colors[i] + spec[j]);
+        addCard(Card.NONE + colors[i] + spec[j]);
       }
     }
-    if(cardsAdded == 76){
-      return true;
-    }
-    return false;
-  }
-  
-  private boolean addSpecials(){
-    int specialFunct[] = Card.BASIC_SPECIAL_FUNCT;
-    int colors[] = Card.BASIC_COLORS;
-    int cardsAdded = 0;
-
-    for(int i = 0; i < colors.length; i++){
-      for(int j = 0; j < specialFunct.length; j++){
-        cardsAdded += addSpecial(colors[i], specialFunct[j]);
-        cardsAdded += addSpecial(colors[i], specialFunct[j]);
-      }
-    }
+    // Black special cards
     for(int i = 0; i < 4; i++){
-      cardsAdded += addSpecial(Card.BLACK, Card.DRAW_FOUR);
-      cardsAdded += addSpecial(Card.BLACK, Card.CHANGE_COLOR);
+      addCard(Card.NONE + Card.BLACK + Card.DRAW_FOUR);
+      addCard(Card.NONE + Card.BLACK + Card.CHANGE_COLOR);
     }
-    if(cardsAdded == 32){
-      return true;
-    }
-    return false;
   }
   
   public void shuffle(){
     int index;
-    Card temp;
+    String temp;
     Random random = new Random();
     for(int i = deck.size() - 1; i > 0; i--){
       index = random.nextInt(i + 1);
@@ -120,19 +95,26 @@ public class DrawDeck{
     }
   }
   
-  public Card drawCard(){
-    Card toDraw = deck.get(deck.size() - 1);
+  public String drawCard(){
+    String toDraw = deck.get(deck.size() - 1);
     deck.remove(deck.size() - 1);
     return toDraw;
   }
   
-  public int replenishDeck(Card x[]){
-    if((deck.size() == 0) && (deck.size() + x.length <= 108)){
-      for(int i = 0; i < x.length; i++){
-        deck.add(x[i]);
-      }
-      return deck.size();
+  public void replenishDeck(String x[]){
+    if(deck.size()!= 0){
+      throw new DrawDeckNotEmpty("The draw deck is not empty");
     }
-    return 0;
+    if(x.length > 108){
+      throw new Como("WHAT?! no quiero ni preguntar");
+    }
+    for(int i = 0; i < x.length; i++){
+      addCard(x[i]);
+    }
   }
+  
+  /////////////////////////
+  // Getters and Setters //
+  /////////////////////////
+  
 }

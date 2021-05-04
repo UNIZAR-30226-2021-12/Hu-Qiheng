@@ -16,6 +16,7 @@ import javax.persistence.Table;
 
 import org.hibernate.annotations.GenericGenerator;
 
+import com.unizar.unozar.core.Card;
 import com.unizar.unozar.core.exceptions.CardNotFound;
 import com.unizar.unozar.core.exceptions.Como;
 import com.unizar.unozar.core.exceptions.IncorrectTurn;
@@ -52,13 +53,16 @@ public class Game{
   @Column(name = "PLAYERS")
   private String playersIds[];
   
-  @OneToMany(mappedBy = "game", cascade = CascadeType.ALL, orphanRemoval = true)
+  @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+  @JoinColumn(name = "PLAYERS_DECKS", referencedColumnName = "id")
   private List<PlayerDeck> playersDecks;
   
-  @OneToOne(mappedBy = "game", cascade = CascadeType.ALL, orphanRemoval = true)
+  @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
+  @JoinColumn(name = "DRAW_DECK")
   private DrawDeck drawDeck;
   
-  @OneToOne(mappedBy = "game", cascade = CascadeType.ALL, orphanRemoval = true)
+  @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
+  @JoinColumn(name = "DISCARD_DECK")
   private DiscardDeck discardDeck;
   
   @Column(name = "TURN")
@@ -121,7 +125,7 @@ public class Game{
       endChecked[i] = false;
     }
     drawDeck = new DrawDeck();
-    discardDeck = new DiscardDeck(this);
+    discardDeck = new DiscardDeck();
     turn = 0;
     specialEvent = NOT_STARTED;
     normalFlow = true;
@@ -223,8 +227,8 @@ public class Game{
   private void startDrawDeck(){
     boolean done = false;
     while(!done){
-      Card top = drawDeck.drawCard();
-      if(top.getColor() != Card.BLACK){
+      String top = drawDeck.drawCard();
+      if(!Card.isBlack(top)){
         discardDeck.startDeck(top);
         done = true;
       }else{
@@ -262,7 +266,7 @@ public class Game{
       throw new IncorrectTurn("It is not the player's turn");
     }
     if(playersDecks.get(playerNum).getNumCards() <= cardToMove){
-      throw new CardNotFound("The player do not have that many cards");
+      throw new CardNotFound("The player does not have that many cards");
     }
   }
   
@@ -384,12 +388,20 @@ public class Game{
     return playersNumCards;
   }
   
-  public String getPlayerCards(int playerNum){
-    return playersDecks.get(playerNum).toString();
+  public String[] getPlayerCards(int playerNum){
+    return playersDecks.get(playerNum).getCards();
   }
   
   public void setDiscardDeck(DiscardDeck deck){
     discardDeck = deck;
+  }
+  
+  public void setDrawDeck(DrawDeck deck){
+    drawDeck = deck;
+  }
+  
+  public void setPlayerDeck(int index, PlayerDeck deck){
+    playersDecks.add(index, deck);
   }
 
 }

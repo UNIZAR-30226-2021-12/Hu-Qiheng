@@ -8,11 +8,14 @@ import org.springframework.http.HttpStatus;
 import com.unizar.unozar.core.exceptions.CardNotFound;
 import com.unizar.unozar.core.exceptions.Como;
 import com.unizar.unozar.core.exceptions.DeckFull;
+import com.unizar.unozar.core.exceptions.DiscardDeckEmpty;
 import com.unizar.unozar.core.exceptions.DiscardDeckNotEmpty;
+import com.unizar.unozar.core.exceptions.DrawDeckNotEmpty;
 import com.unizar.unozar.core.exceptions.EmailInUse;
 import com.unizar.unozar.core.exceptions.GameFull;
 import com.unizar.unozar.core.exceptions.GameNotFound;
 import com.unizar.unozar.core.exceptions.GameNotFull;
+import com.unizar.unozar.core.exceptions.IncorrectCard;
 import com.unizar.unozar.core.exceptions.IncorrectTurn;
 import com.unizar.unozar.core.exceptions.InvalidIdentity;
 import com.unizar.unozar.core.exceptions.InvalidPassword;
@@ -29,8 +32,8 @@ public class EndpointAdvice{
   @ExceptionHandler({CardNotFound.class})
   @ResponseStatus(HttpStatus.I_AM_A_TEAPOT) // 418
   public String cardNotFound(CardNotFound e){
-    System.out.println("The player do not have that many cards");
-    return "The player do not have that many cards";
+    System.out.println(e.getMessage());
+    return e.getMessage();
   }
   
   @ExceptionHandler({Como.class})
@@ -47,11 +50,25 @@ public class EndpointAdvice{
     return "HOW?!?";
   }
   
+  @ExceptionHandler({DiscardDeckEmpty.class})
+  @ResponseStatus(HttpStatus.I_AM_A_TEAPOT) // 418
+  public String discardDeckEmpty(DiscardDeckEmpty e){
+    System.out.println(e.getMessage());
+    return e.getMessage();
+  }
+  
   @ExceptionHandler({DiscardDeckNotEmpty.class})
   @ResponseStatus(HttpStatus.I_AM_A_TEAPOT) // 418
   public String discardDeckNotEmpty(DiscardDeckNotEmpty e){
     System.out.println("The discard deck already has cards");
     return "The discard deck already has cards";
+  }
+  
+  @ExceptionHandler({DrawDeckNotEmpty.class})
+  @ResponseStatus(HttpStatus.I_AM_A_TEAPOT) // 418
+  public String drawDeckNotEmpty(DrawDeckNotEmpty e){
+    System.out.println("The draw deck is not empty");
+    return "The draw deck is not empty";
   }
   
   @ExceptionHandler({EmailInUse.class})
@@ -80,6 +97,13 @@ public class EndpointAdvice{
   public String gameNotFull(GameNotFull e){
     System.out.println("Only games with all the players can start");
     return "Only games with all the players can start";
+  }
+  
+  @ExceptionHandler({IncorrectCard.class})
+  @ResponseStatus(HttpStatus.I_AM_A_TEAPOT) // 418
+  public String incorrectCard(IncorrectCard e){
+    System.out.println("That's not a card");
+    return "That's not a card";
   }
   
   @ExceptionHandler({IncorrectTurn.class})

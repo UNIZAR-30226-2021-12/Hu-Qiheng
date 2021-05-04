@@ -5,16 +5,18 @@ import java.util.List;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
+import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
-import javax.persistence.OrderColumn;
 import javax.persistence.Table;
 
+import com.unizar.unozar.core.Card;
+import com.unizar.unozar.core.exceptions.DeckFull;
+import com.unizar.unozar.core.exceptions.DiscardDeckEmpty;
 import com.unizar.unozar.core.exceptions.DiscardDeckNotEmpty;
 
 @Entity
@@ -25,48 +27,45 @@ public class DiscardDeck{
   @GeneratedValue(strategy = GenerationType.AUTO)
   private int id;
   
-  @OneToMany(mappedBy = "discardDeck", cascade = CascadeType.ALL,
-      orphanRemoval = true)
-  private List<Card> deck;
-  
-  @JoinColumn(name = "GAME_ID")
-  @OneToOne
-  private Game game;
+  @ElementCollection
+  private List<String> deck;
   
   public DiscardDeck(){
-    deck = new ArrayList<Card>();
+    deck = new ArrayList<String>();
   }
   
-  public DiscardDeck(Game game){
-    deck = new ArrayList<Card>();
-    this.game = game;
-  }
-  
-  public void startDeck(Card top){
+  public void startDeck(String top){
     if(deck.size() == 0){
       deck.add(top);
     }
     throw new DiscardDeckNotEmpty("The discard deck already has cards");
   }
   
-  public boolean playCard(Card toPlay){
-    if((deck.size() < 108) && isPlayable(toPlay)){
+  public boolean playCard(String toPlay){
+    if(deck.size() >= 108){
+      throw new DeckFull("PERO PERO PERO PERO COMO?!");
+    }
+    if(isPlayable(toPlay)){
       deck.add(toPlay);
       return true;
     }
     return false;
   }
   
-  private boolean isPlayable(Card toPlay){
-    if(toPlay.isRelatedWith(deck.get(deck.size() - 1)) || 
-        (toPlay.getColor() == Card.BLACK)){
+  private boolean isPlayable(String toPlay){
+    if(deck.size() == 0){
+      throw new DiscardDeckEmpty("The discard deck is empty");
+    }
+    Card.checkCard(toPlay);
+    if(Card.areCardsRelated(deck.get(deck.size() - 1), toPlay) || 
+        (Card.isBlack(toPlay))){
       return true;
     }
     return false;
   }
   
-  public Card[] emptyDeckButTop(){
-    Card surplusDeck[] = new Card[deck.size() - 1];
+  public String[] emptyDeckButTop(){
+    String surplusDeck[] = new String[deck.size() - 1];
     for(int i = 0; i < deck.size() - 1; i++){
       surplusDeck[i] = deck.get(i);
       deck.remove(i);
@@ -74,15 +73,20 @@ public class DiscardDeck{
     return surplusDeck;
   }
   
+  /////////////////////////
+  // Getters and Setters //
+  /////////////////////////
+  
   public int getNumCards(){
     System.out.println("Hola desde getnumcards #X\n");
     return deck.size();
   }
   
-  public Card getTop(){
+  public String getTop(){
     if(deck.size() == 0){
       return null;
     }
     return deck.get(deck.size() - 1);
   }
+
 }

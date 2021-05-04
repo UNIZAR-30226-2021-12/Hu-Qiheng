@@ -4,15 +4,18 @@ import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 
-import com.unizar.unozar.core.DTO.GameDTO;
 import com.unizar.unozar.core.controller.resources.CreateGameRequest;
 import com.unizar.unozar.core.controller.resources.DrawCardsRequest;
+import com.unizar.unozar.core.controller.resources.GameResponse;
 import com.unizar.unozar.core.controller.resources.JoinGameRequest;
 import com.unizar.unozar.core.controller.resources.PlayCardRequest;
 import com.unizar.unozar.core.controller.resources.TokenRequest;
+import com.unizar.unozar.core.controller.resources.TokenResponse;
 import com.unizar.unozar.core.entities.DiscardDeck;
+import com.unizar.unozar.core.entities.DrawDeck;
 import com.unizar.unozar.core.entities.Game;
 import com.unizar.unozar.core.entities.Player;
+import com.unizar.unozar.core.entities.PlayerDeck;
 import com.unizar.unozar.core.exceptions.Como;
 import com.unizar.unozar.core.exceptions.GameFull;
 import com.unizar.unozar.core.exceptions.GameNotFound;
@@ -24,7 +27,9 @@ import com.unizar.unozar.core.exceptions.PlayerNotFound;
 import com.unizar.unozar.core.exceptions.PlayerNotInGame;
 import com.unizar.unozar.core.exceptions.PlayerNotOwner;
 import com.unizar.unozar.core.repository.DiscardDeckRepository;
+import com.unizar.unozar.core.repository.DrawDeckRepository;
 import com.unizar.unozar.core.repository.GameRepository;
+import com.unizar.unozar.core.repository.PlayerDeckRepository;
 import com.unizar.unozar.core.repository.PlayerRepository;
 
 @Service
@@ -36,60 +41,73 @@ public class GameServiceImpl implements GameService{
 
   private final DiscardDeckRepository discardDeckRepository;
   
+  private final DrawDeckRepository drawDeckRepository;
+  
+  private final PlayerDeckRepository playerDeckRepository;
+  
   public GameServiceImpl(GameRepository gameRepository, 
       PlayerRepository playerRepository, 
-      DiscardDeckRepository discardDeckRepository){
+      DiscardDeckRepository discardDeckRepository,
+      DrawDeckRepository drawDeckRepository,
+      PlayerDeckRepository playerDeckRepository){
     this.gameRepository = gameRepository;
     this.playerRepository = playerRepository;
     this.discardDeckRepository = discardDeckRepository;
+    this.drawDeckRepository = drawDeckRepository;
+    this.playerDeckRepository = playerDeckRepository;
   }
   
   @Override
-  public Void create(CreateGameRequest request){
+  public TokenResponse create(CreateGameRequest request){
     String id = request.getToken().substring(0, 32);
     Player owner = findPlayer(id);
     checkPlayerNotInGame(owner);
     Game toCreate = new Game(request.getIsPrivate(), request.getMaxPlayers(),
         request.getNumBots(), id);
-    DiscardDeck discardDeck = new DiscardDeck(toCreate);
-    toCreate.setDiscardDeck(discardDeck);
-    gameRepository.save(toCreate);
-    discardDeckRepository.save(discardDeck);
     owner.setGameId(toCreate.getId());
+    
+    DiscardDeck discardDeck = new DiscardDeck();
+    toCreate.setDiscardDeck(discardDeck);
+    discardDeckRepository.save(discardDeck);
+    
+    DrawDeck drawDeck = new DrawDeck();
+    toCreate.setDrawDeck(drawDeck);
+    drawDeckRepository.save(drawDeck);
+    
+    for(int i = 0; i < request.getMaxPlayers(); i++){
+      PlayerDeck playerDeck = new PlayerDeck();
+      toCreate.setPlayerDeck(i, playerDeck);
+      playerDeckRepository.save(playerDeck);
+    }
+    
+    String newToken = id + owner.updateSession(); 
     playerRepository.save(owner);
-    return null;
+    gameRepository.save(toCreate);
+    return new TokenResponse(newToken);
   }
   
   @Override
-  public GameDTO read(TokenRequest request){
-    System.out.println("Hola desde read #1\n");
+  public GameResponse read(TokenRequest request){
     Player inGame = findPlayer(request.getToken().substring(0, 32));
-    System.out.println("Hola desde read #2\n");
     checkToken(inGame, request.getToken().substring(32));
-    System.out.println("Hola desde read #3\n");
     checkPlayerInGame(inGame);
-    System.out.println("Hola desde read #4\n");
     Optional<Game> toFind = gameRepository.findById(inGame.getGameId());
-    System.out.println("Hola desde read #5\n");
     if(!toFind.isPresent()){
       throw new GameNotFound("The game does not exist");
     }
-    System.out.println("Hola desde read #6\n");
     Game toRead = toFind.get();
-    System.out.println("Hola desde read #7\n");
     int playerNum = toRead.getPlayerNum(inGame.getId());
-    System.out.println("Hola desde read #8\n");
     if(playerNum == -1){
       throw new PlayerNotInGame("The player is not in the game");
     }
-    System.out.println("Hola desde read #9\n");
-    GameDTO read = new GameDTO(toRead, playerNum);
-    System.out.println("Hola desde read #10\n");
-    return read;
+    
+    String newToken = inGame.getId() + inGame.updateSession();
+    playerRepository.save(inGame);
+    return new GameResponse(toRead, playerNum, newToken);
   }
 
   @Override
-  public Void join(JoinGameRequest request){
+  public TokenResponse join(JoinGameRequest request){
     Player requester = findPlayer(request.getToken().substring(0,32));
     checkToken(requester, request.getToken().substring(32));
     checkPlayerNotInGame(requester);
@@ -104,12 +122,13 @@ public class GameServiceImpl implements GameService{
     toJoin.addPlayer(requester.getId());
     requester.setGameId(toJoin.getId());
     gameRepository.save(toJoin);
+    String newToken = requester.getId() + requester.updateSession();
     playerRepository.save(requester);
-    return null;
+    return new TokenResponse(newToken);
   }
 
   @Override
-  public Void start(TokenRequest request){
+  public TokenResponse start(TokenRequest request){
     Player requester = findPlayer(request.getToken().substring(0,32));
     checkToken(requester, request.getToken().substring(32));
     checkPlayerInGame(requester);
@@ -129,11 +148,13 @@ public class GameServiceImpl implements GameService{
     }
     toStart.startGame();
     gameRepository.save(toStart);
-    return null;
+    String newToken = requester.getId() + requester.updateSession();
+    playerRepository.save(requester);
+    return new TokenResponse(newToken);
   }
   
   @Override
-  public Void playCard(PlayCardRequest request){
+  public TokenResponse playCard(PlayCardRequest request){
     Player requester = findPlayer(request.getToken().substring(0,32));
     checkToken(requester, request.getToken().substring(32));
     checkPlayerInGame(requester);
@@ -145,11 +166,13 @@ public class GameServiceImpl implements GameService{
     toPlay.playCard(requester.getId(), request.getCardToPlay(), 
         request.getHasSaidUnozar(), request.getColorSelected());
     gameRepository.save(toPlay);
-    return null;
+    String newToken = requester.getId() + requester.updateSession();
+    playerRepository.save(requester);
+    return new TokenResponse(newToken);
   }
   
   @Override
-  public Void drawCards(DrawCardsRequest request){
+  public TokenResponse drawCards(DrawCardsRequest request){
     Player requester = findPlayer(request.getToken().substring(0,32));
     checkToken(requester, request.getToken().substring(32));
     checkPlayerInGame(requester);
@@ -161,11 +184,13 @@ public class GameServiceImpl implements GameService{
     toPlay.drawCards(requester.getId(), request.getCardsToDraw(), 
         request.getHasSaidUnozar());
     gameRepository.save(toPlay);
-    return null;
+    String newToken = requester.getId() + requester.updateSession();
+    playerRepository.save(requester);
+    return new TokenResponse(newToken);
   }
   
   @Override
-  public Void quit(TokenRequest request){
+  public TokenResponse quit(TokenRequest request){
     Player requester = findPlayer(request.getToken().substring(0,32));
     checkToken(requester, request.getToken().substring(32));
     checkPlayerInGame(requester);
@@ -177,8 +202,6 @@ public class GameServiceImpl implements GameService{
     if(!toQuit.quitPlayer(requester.getId())){
       throw new PlayerNotInGame("The player is not in the game");
     }
-    requester.setGameId(Player.NONE);
-    playerRepository.save(requester);
     if(toQuit.getOwner().equals(toQuit.EMPTY)){
       if(toQuit.hasAnyPlayer()){
         int maxPlayers = toQuit.getMaxPlayers();
@@ -197,8 +220,11 @@ public class GameServiceImpl implements GameService{
       }else{
         gameRepository.delete(toQuit);
       }
-    } 
-    return null;
+    }
+    requester.setGameId(Player.NONE);
+    String newToken = requester.getId() + requester.updateSession();
+    playerRepository.save(requester);
+    return new TokenResponse(newToken);
   }
   
   public Player findPlayer(String id){ 

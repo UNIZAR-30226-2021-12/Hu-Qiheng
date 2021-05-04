@@ -1,9 +1,9 @@
-package com.unizar.unozar.core.DTO;
+package com.unizar.unozar.core.controller.resources;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.unizar.unozar.core.entities.Game;
 
-public class GameDTO{
+public class GameResponse{
 
   @JsonProperty
   public String gameId;
@@ -15,7 +15,7 @@ public class GameDTO{
   public String topDiscard;
   
   @JsonProperty
-  public String playerCards;
+  public String[] playerCards;
   
   @JsonProperty
   public int turn;
@@ -34,8 +34,11 @@ public class GameDTO{
   
   @JsonProperty
   public boolean gameFinished;
+  
+  @JsonProperty
+  public String token;
 
-  public GameDTO(Game game, int playerNum){
+  public GameResponse(Game game, int playerNum, String newToken){
     gameId = game.getId();
     maxPlayers = game.getMaxPlayers();
     topDiscard = game.getTopDiscardString();
@@ -50,6 +53,7 @@ public class GameDTO{
     gamePaused = game.isGamePaused();
     gameFinished = game.isGameFinished();
     playerCards = game.getPlayerCards(playerNum);
+    token = newToken;
   }
   
 }

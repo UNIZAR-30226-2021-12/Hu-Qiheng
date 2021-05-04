@@ -9,12 +9,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.unizar.unozar.core.DTO.GameDTO;
 import com.unizar.unozar.core.controller.resources.CreateGameRequest;
 import com.unizar.unozar.core.controller.resources.DrawCardsRequest;
+import com.unizar.unozar.core.controller.resources.GameResponse;
 import com.unizar.unozar.core.controller.resources.JoinGameRequest;
 import com.unizar.unozar.core.controller.resources.PlayCardRequest;
 import com.unizar.unozar.core.controller.resources.TokenRequest;
+import com.unizar.unozar.core.controller.resources.TokenResponse;
 import com.unizar.unozar.core.service.GameService;
 
 @RestController
@@ -31,44 +32,39 @@ public class GameController{
   }
   
   @PostMapping(value = "/create")
-  public ResponseEntity<Void>
+  public ResponseEntity<TokenResponse>
       create(@RequestBody CreateGameRequest request){
-    gameService.create(request);
-    return ResponseEntity.ok().build();
+    return ResponseEntity.ok(gameService.create(request));
   }
   
   @PostMapping(value = "/read")
-  public ResponseEntity<GameDTO>
+  public ResponseEntity<GameResponse>
       read(@RequestBody TokenRequest request){
     return ResponseEntity.ok(gameService.read(request));
   }
   
   @PostMapping(value = "/join")
-  public ResponseEntity<Void>
+  public ResponseEntity<TokenResponse>
       join(@RequestBody JoinGameRequest request){
-    gameService.join(request);
-    return ResponseEntity.ok().build();
+    return ResponseEntity.ok(gameService.join(request));
   }
   
   @PostMapping(value = "/start")
-  public ResponseEntity<Void>
+  public ResponseEntity<TokenResponse>
       start(@RequestBody TokenRequest request){
-    gameService.start(request);
-    return ResponseEntity.ok().build();
+    return ResponseEntity.ok(gameService.start(request));
   }
   
   @PostMapping(value = "/playCard")
-  public ResponseEntity<Void>
+  public ResponseEntity<TokenResponse>
       playCard(@RequestBody PlayCardRequest request){
-    gameService.playCard(request);
-    return ResponseEntity.ok().build();
+    return ResponseEntity.ok(gameService.playCard(request));
   }
   
   @PostMapping(value = "/drawCards")
-  public ResponseEntity<Void>
+  public ResponseEntity<TokenResponse>
       drawCards(@RequestBody DrawCardsRequest request){
-    gameService.drawCards(request);
-    return ResponseEntity.ok().build();
+    return ResponseEntity.ok(gameService.drawCards(request));
   }
   
   
@@ -80,10 +76,9 @@ public class GameController{
 //  }
   
   @PostMapping(value = "/quit")
-  public ResponseEntity<Void>
+  public ResponseEntity<TokenResponse>
       quit(@RequestBody TokenRequest request){
-    gameService.quit(request);
-    return ResponseEntity.ok().build();
+    return ResponseEntity.ok(gameService.quit(request));
   }
   
 }

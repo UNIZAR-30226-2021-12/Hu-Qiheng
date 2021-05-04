@@ -10,11 +10,11 @@ public class JoinGameRequest{
   @JsonProperty
   private String token;
 
-  public String getGameId() {
+  public String getGameId(){
     return gameId;
   }
 
-  public String getToken() {
+  public String getToken(){
     return token;
   }
   
