@@ -66,6 +66,7 @@ public class GameServiceImpl implements GameService{
     Game toCreate = new Game(request.getIsPrivate(), request.getMaxPlayers(),
         request.getNumBots(), id);
     owner.setGameId(toCreate.getId());
+    gameRepository.save(toCreate);
     
     DiscardDeck discardDeck = new DiscardDeck();
     toCreate.setDiscardDeck(discardDeck);
