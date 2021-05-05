@@ -14,6 +14,7 @@ import javax.persistence.Table;
 import org.hibernate.annotations.GenericGenerator;
 
 import com.unizar.unozar.core.Card;
+import com.unizar.unozar.core.exceptions.CardNotFound;
 import com.unizar.unozar.core.exceptions.Como;
 import com.unizar.unozar.core.exceptions.DeckFull;
 import com.unizar.unozar.core.exceptions.DiscardDeckEmpty;
@@ -220,7 +221,8 @@ public class Game{
       throw new GameAlreadyStarted("You can not start a started game");
     }
     specialEvent = NONE;
-    startDrawDeck();
+    addNumbers();
+    addSpecials();
     shuffleDrawDeck();
     for(int i = 0; i < maxPlayers; i++){
       for(int j = 0; j < 7; j++){
@@ -231,11 +233,6 @@ public class Game{
       }
     }
   }
-
-  private void startDrawDeck(){
-    
-    
-  }
   
   public void addCard(List<String> deck, String toAdd){
     Card.checkCard(toAdd);
@@ -245,58 +242,19 @@ public class Game{
     deck.add(toAdd);
   }
 
-  // Adds the numeric cards to the draw deck
-  private void addNumbers(){
-    // Zeros go just once
-    addCard(drawDeck, "0RX");
-    addCard(drawDeck, "0YX");
-    addCard(drawDeck, "0GX");
-    addCard(drawDeck, "0BX");
-    // All the others go twice
-    for(int i = 1; i < 10; i++){
-      char c = (char)(i + '0');
-      addCard(drawDeck, c+"RX");
-      addCard(drawDeck, c+"RX");
-      addCard(drawDeck, c+"YX");
-      addCard(drawDeck, c+"YX");
-      addCard(drawDeck, c+"GX");
-      addCard(drawDeck, c+"GX");
-      addCard(drawDeck, c+"BX");
-      addCard(drawDeck, c+"BX");
+  private void startDiscardDeck(){
+    boolean done = false;
+    while(!done){
+      String top = drawCard();
+      if(!Card.isBlack(top)){
+        discardDeck.startDeck(top);
+        done = true;
+      }else{
+        addCard(top);
+        shuffleDrawDeck();
+      }
     }
   }
-
-//  // Adds the special cards to the draw deck
-//  private void addSpecials(){
-//    String spec[] = Card.BASIC_SPEC;
-//    String colors[] = Card.BASIC_COLORS;
-//    // Colored special cards
-//    for(int i = 0; i < colors.length; i++){
-//      for(int j = 0; j < spec.length; j++){
-//        addCard(Card.NONE + colors[i] + spec[j]);
-//        addCard(Card.NONE + colors[i] + spec[j]);
-//      }
-//    }
-//    // Black special cards
-//    for(int i = 0; i < 4; i++){
-//      addCard(Card.NONE + Card.BLACK + Card.DRAW_FOUR);
-//      addCard(Card.NONE + Card.BLACK + Card.CHANGE_COLOR);
-//    }
-//  }
-//
-//  private void startDiscardDeck(){
-//    boolean done = false;
-//    while(!done){
-//      String top = drawCard();
-//      if(!Card.isBlack(top)){
-//        discardDeck.startDeck(top);
-//        done = true;
-//      }else{
-//        addCard(top);
-//        shuffleDrawDeck();
-//      }
-//    }
-//  }
   
   public boolean isGameStarted(){
     if(specialEvent != NOT_STARTED){
@@ -316,19 +274,20 @@ public class Game{
     return false;
   }
   
-//  public void playCard(String playerId, int cardToMove, 
-//      boolean hasSaidUnozar, String colorSelected){
-//    int playerNum = getPlayerNum(playerId);
-//    if(playerNum == -1){
-//      throw new PlayerNotInGame("The player is not in the game");
-//    }
-//    if(playerNum != turn){
-//      throw new IncorrectTurn("It is not the player's turn");
-//    }
-//    if(playersDecks.get(playerNum).getNumCards() <= cardToMove){
-//      throw new CardNotFound("The player does not have that many cards");
-//    }
-//  }
+  public void playCard(String playerId, int cardToMove, 
+      boolean hasSaidUnozar, String colorSelected){
+    int playerNum = getPlayerNum(playerId);
+    if(playerNum == -1){
+      throw new PlayerNotInGame("The player is not in the game");
+    }
+    if(playerNum != turn){
+      throw new IncorrectTurn("It is not the player's turn");
+    }
+    if(getPlayerDeckNumCards(getPlayerNum(playerId)) <= cardToMove){
+      throw new CardNotFound("The player does not have that many cards");
+    }
+    //play
+  }
   
   public void drawCards(String playerId, int cardsToDraw, 
       boolean hasSaidUnozar){
@@ -360,6 +319,67 @@ public class Game{
     }
   }
   
+  public void shuffleDrawDeck(){
+    int index;
+    String temp;
+    Random random = new Random();
+    for(int i = drawDeck.size() - 1; i > 0; i--){
+      index = random.nextInt(i + 1);
+      temp = drawDeck.get(index);
+      drawDeck.add(index, drawDeck.get(i));
+      drawDeck.add(i, temp);
+    }
+  }
+  
+  public String drawCard(){
+    String toDraw = drawDeck.get(drawDeck.size() - 1);
+    drawDeck.remove(drawDeck.size() - 1);
+    return toDraw;
+  }
+  
+  /////////////////////
+  // Private methods //
+  /////////////////////
+  
+  // Adds the numeric cards to the draw deck
+  private void addNumbers(){
+    // Zeros go just once
+    addCard(drawDeck, "0RX");
+    addCard(drawDeck, "0YX");
+    addCard(drawDeck, "0GX");
+    addCard(drawDeck, "0BX");
+    // All the others go twice
+    for(int i = 1; i < 10; i++){
+      char c = (char)(i + '0');
+      addCard(drawDeck, c+"RX");
+      addCard(drawDeck, c+"RX");
+      addCard(drawDeck, c+"YX");
+      addCard(drawDeck, c+"YX");
+      addCard(drawDeck, c+"GX");
+      addCard(drawDeck, c+"GX");
+      addCard(drawDeck, c+"BX");
+      addCard(drawDeck, c+"BX");
+    }
+  }
+
+  // Adds the special cards to the draw deck
+  private void addSpecials(){
+    String spec[] = Card.BASIC_SPEC;
+    String colors[] = Card.BASIC_COLORS;
+    // Colored special cards
+    for(int i = 0; i < colors.length; i++){
+      for(int j = 0; j < spec.length; j++){
+        addCard(drawDeck, Card.NONE + colors[i] + spec[j]);
+        addCard(drawDeck, Card.NONE + colors[i] + spec[j]);
+      }
+    }
+    // Black special cards
+    for(int i = 0; i < 4; i++){
+      addCard(drawDeck, Card.NONE + Card.BLACK + Card.DRAW_FOUR);
+      addCard(drawDeck, Card.NONE + Card.BLACK + Card.CHANGE_COLOR);
+    }
+  }
+  
   private void finishedDraw(String playerId, int cardsToDraw, 
       boolean hasSaidUnozar){
     // TODO Auto-generated method stub
@@ -387,25 +407,6 @@ public class Game{
   private void notStartedDraw(String playerId, int cardsToDraw, 
       boolean hasSaidUnozar){
     // TODO Auto-generated method stub
-    
-  }
-  
-  public void shuffleDrawDeck(){
-    int index;
-    String temp;
-    Random random = new Random();
-    for(int i = drawDeck.size() - 1; i > 0; i--){
-      index = random.nextInt(i + 1);
-      temp = drawDeck.get(index);
-      drawDeck.add(index, drawDeck.get(i));
-      drawDeck.add(i, temp);
-    }
-  }
-  
-  public String drawCard(){
-    String toDraw = drawDeck.get(drawDeck.size() - 1);
-    drawDeck.remove(drawDeck.size() - 1);
-    return toDraw;
   }
   
   /////////////////////////

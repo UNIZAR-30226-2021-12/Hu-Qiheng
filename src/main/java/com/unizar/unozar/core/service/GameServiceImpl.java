@@ -5,7 +5,7 @@ import java.util.Optional;
 import org.springframework.stereotype.Service;
 
 import com.unizar.unozar.core.controller.resources.CreateGameRequest;
-import com.unizar.unozar.core.controller.resources.DrawCardsRequest;
+import com.unizar.unozar.core.controller.resources.DrawRequest;
 import com.unizar.unozar.core.controller.resources.GameResponse;
 import com.unizar.unozar.core.controller.resources.JoinGameRequest;
 import com.unizar.unozar.core.controller.resources.PlayCardRequest;
@@ -141,7 +141,7 @@ public class GameServiceImpl implements GameService{
   }
   
   @Override
-  public TokenResponse drawCards(DrawCardsRequest request){
+  public TokenResponse draw(DrawRequest request){
     Player requester = findPlayer(request.getToken().substring(0,32));
     checkToken(requester, request.getToken().substring(32));
     checkPlayerInGame(requester);
