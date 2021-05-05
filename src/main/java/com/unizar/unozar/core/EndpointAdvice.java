@@ -8,6 +8,7 @@ import org.springframework.http.HttpStatus;
 import com.unizar.unozar.core.exceptions.CardNotFound;
 import com.unizar.unozar.core.exceptions.Como;
 import com.unizar.unozar.core.exceptions.DeckFull;
+import com.unizar.unozar.core.exceptions.DeckNotFound;
 import com.unizar.unozar.core.exceptions.DiscardDeckEmpty;
 import com.unizar.unozar.core.exceptions.DiscardDeckNotEmpty;
 import com.unizar.unozar.core.exceptions.DrawDeckNotEmpty;
@@ -42,12 +43,19 @@ public class EndpointAdvice{
     System.out.println("CoMoJAJAJSjasjdashd");
     return "CoMoJAJAJSjasjdashd";
   }
-  
+
   @ExceptionHandler({DeckFull.class})
   @ResponseStatus(HttpStatus.I_AM_A_TEAPOT) // 418
   public String deckFull(DeckFull e){
     System.out.println("HOW?!?");
     return "HOW?!?";
+  }
+  
+  @ExceptionHandler({DeckNotFound.class})
+  @ResponseStatus(HttpStatus.I_AM_A_TEAPOT) // 418
+  public String deckNotFound(DeckNotFound e){
+    System.out.println(e.getMessage());
+    return e.getMessage();
   }
   
   @ExceptionHandler({DiscardDeckEmpty.class})

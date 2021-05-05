@@ -45,10 +45,7 @@ public class GameResponse{
     turn = game.getTurn();
     playersIds = new String[maxPlayers];
     playersIds = game.getPlayersIds();
-    playersNumCards = new int[maxPlayers];
-    for (int i = 0; i < maxPlayers; i++){
-      playersNumCards[i] = game.getPlayerNumCards(i);
-    }
+    playersNumCards =  game.getPlayersDecksNumCards();
     gameStarted = game.isGameStarted();
     gamePaused = game.isGamePaused();
     gameFinished = game.isGameFinished();

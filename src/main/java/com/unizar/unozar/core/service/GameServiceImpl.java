@@ -26,10 +26,7 @@ import com.unizar.unozar.core.exceptions.PlayerIsPlaying;
 import com.unizar.unozar.core.exceptions.PlayerNotFound;
 import com.unizar.unozar.core.exceptions.PlayerNotInGame;
 import com.unizar.unozar.core.exceptions.PlayerNotOwner;
-import com.unizar.unozar.core.repository.DiscardDeckRepository;
-import com.unizar.unozar.core.repository.DrawDeckRepository;
 import com.unizar.unozar.core.repository.GameRepository;
-import com.unizar.unozar.core.repository.PlayerDeckRepository;
 import com.unizar.unozar.core.repository.PlayerRepository;
 
 @Service
@@ -38,23 +35,11 @@ public class GameServiceImpl implements GameService{
   private final GameRepository gameRepository;
   
   private final PlayerRepository playerRepository;
-
-  private final DiscardDeckRepository discardDeckRepository;
-  
-  private final DrawDeckRepository drawDeckRepository;
-  
-  private final PlayerDeckRepository playerDeckRepository;
   
   public GameServiceImpl(GameRepository gameRepository, 
-      PlayerRepository playerRepository, 
-      DiscardDeckRepository discardDeckRepository,
-      DrawDeckRepository drawDeckRepository,
-      PlayerDeckRepository playerDeckRepository){
+      PlayerRepository playerRepository){
     this.gameRepository = gameRepository;
     this.playerRepository = playerRepository;
-    this.discardDeckRepository = discardDeckRepository;
-    this.drawDeckRepository = drawDeckRepository;
-    this.playerDeckRepository = playerDeckRepository;
   }
   
   @Override
@@ -65,26 +50,11 @@ public class GameServiceImpl implements GameService{
     checkPlayerNotInGame(owner);
     Game toCreate = new Game(request.getIsPrivate(), request.getMaxPlayers(),
         request.getNumBots(), id);
-    owner.setGameId(toCreate.getId());
     gameRepository.save(toCreate);
     
-    DiscardDeck discardDeck = new DiscardDeck();
-    toCreate.setDiscardDeck(discardDeck);
-    discardDeckRepository.save(discardDeck);
-    
-    DrawDeck drawDeck = new DrawDeck();
-    toCreate.setDrawDeck(drawDeck);
-    drawDeckRepository.save(drawDeck);
-    
-    for(int i = 0; i < request.getMaxPlayers(); i++){
-      PlayerDeck playerDeck = new PlayerDeck();
-      toCreate.setPlayerDeck(i, playerDeck);
-      playerDeckRepository.save(playerDeck);
-    }
-    
+    owner.setGameId(toCreate.getId());
     String newToken = id + owner.updateSession(); 
     playerRepository.save(owner);
-    gameRepository.save(toCreate);
     return new TokenResponse(newToken);
   }
   
@@ -148,7 +118,7 @@ public class GameServiceImpl implements GameService{
     if(toStart.hasSpace()){
       throw new GameNotFull("Only games with all the players can start");
     }
-    toStart.startGame();
+    //toStart.startGame();
     gameRepository.save(toStart);
     String newToken = requester.getId() + requester.updateSession();
     playerRepository.save(requester);
@@ -165,8 +135,8 @@ public class GameServiceImpl implements GameService{
       throw new GameNotFound("The game does not exist");
     }
     Game toPlay = toFind.get();
-    toPlay.playCard(requester.getId(), request.getCardToPlay(), 
-        request.getHasSaidUnozar(), request.getColorSelected());
+//    toPlay.playCard(requester.getId(), request.getCardToPlay(), 
+//        request.getHasSaidUnozar(), request.getColorSelected());
     gameRepository.save(toPlay);
     String newToken = requester.getId() + requester.updateSession();
     playerRepository.save(requester);

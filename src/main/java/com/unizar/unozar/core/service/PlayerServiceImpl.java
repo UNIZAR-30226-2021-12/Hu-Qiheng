@@ -43,7 +43,6 @@ public class PlayerServiceImpl implements PlayerService{
   
   @Override
   public PlayerDTO read(ReadPlayerRequest request){
-    System.out.println("Hola desde read");
     PlayerDTO player = new PlayerDTO(findPlayer(request.getPlayerId()));
     return player;
   }
