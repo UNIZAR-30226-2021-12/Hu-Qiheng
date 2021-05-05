@@ -13,6 +13,7 @@ import com.unizar.unozar.core.exceptions.DiscardDeckEmpty;
 import com.unizar.unozar.core.exceptions.DiscardDeckNotEmpty;
 import com.unizar.unozar.core.exceptions.DrawDeckNotEmpty;
 import com.unizar.unozar.core.exceptions.EmailInUse;
+import com.unizar.unozar.core.exceptions.GameAlreadyStarted;
 import com.unizar.unozar.core.exceptions.GameFull;
 import com.unizar.unozar.core.exceptions.GameNotFound;
 import com.unizar.unozar.core.exceptions.GameNotFull;
@@ -40,15 +41,15 @@ public class EndpointAdvice{
   @ExceptionHandler({Como.class})
   @ResponseStatus(HttpStatus.I_AM_A_TEAPOT) // 418
   public String como(Como e){
-    System.out.println("CoMoJAJAJSjasjdashd");
-    return "CoMoJAJAJSjasjdashd";
+    System.out.println(e.getMessage());
+    return e.getMessage();
   }
 
   @ExceptionHandler({DeckFull.class})
   @ResponseStatus(HttpStatus.I_AM_A_TEAPOT) // 418
   public String deckFull(DeckFull e){
-    System.out.println("HOW?!?");
-    return "HOW?!?";
+    System.out.println(e.getMessage());
+    return e.getMessage();
   }
   
   @ExceptionHandler({DeckNotFound.class})
@@ -68,113 +69,120 @@ public class EndpointAdvice{
   @ExceptionHandler({DiscardDeckNotEmpty.class})
   @ResponseStatus(HttpStatus.I_AM_A_TEAPOT) // 418
   public String discardDeckNotEmpty(DiscardDeckNotEmpty e){
-    System.out.println("The discard deck already has cards");
-    return "The discard deck already has cards";
+    System.out.println(e.getMessage());
+    return e.getMessage();
   }
   
   @ExceptionHandler({DrawDeckNotEmpty.class})
   @ResponseStatus(HttpStatus.I_AM_A_TEAPOT) // 418
   public String drawDeckNotEmpty(DrawDeckNotEmpty e){
-    System.out.println("The draw deck is not empty");
-    return "The draw deck is not empty";
+    System.out.println(e.getMessage());
+    return e.getMessage();
   }
   
   @ExceptionHandler({EmailInUse.class})
   @ResponseStatus(HttpStatus.I_AM_A_TEAPOT) // 418
   public String emailInUse(EmailInUse e){
-    System.out.println("The email is already in use");
-    return "The email is already in use";
+    System.out.println(e.getMessage());
+    return e.getMessage();
+  }
+  
+  @ExceptionHandler({GameAlreadyStarted.class})
+  @ResponseStatus(HttpStatus.I_AM_A_TEAPOT) // 418
+  public String gameAlreadyStarted(GameAlreadyStarted e){
+    System.out.println(e.getMessage());
+    return e.getMessage();
   }
   
   @ExceptionHandler({GameFull.class})
   @ResponseStatus(HttpStatus.I_AM_A_TEAPOT) // 418
   public String gameFull(GameFull e){
-    System.out.println("The game has no space for another player");
-    return "The game has no space for another player";
+    System.out.println(e.getMessage());
+    return e.getMessage();
   }
   
   @ExceptionHandler({GameNotFound.class})
   @ResponseStatus(HttpStatus.I_AM_A_TEAPOT) // 418
   public String gameNotFound(GameNotFound e){
-    System.out.println("The game does not exist");
-    return "The game does not exist";
+    System.out.println(e.getMessage());
+    return e.getMessage();
   }
   
   @ExceptionHandler({GameNotFull.class})
   @ResponseStatus(HttpStatus.I_AM_A_TEAPOT) // 418
   public String gameNotFull(GameNotFull e){
-    System.out.println("Only games with all the players can start");
-    return "Only games with all the players can start";
+    System.out.println(e.getMessage());
+    return e.getMessage();
   }
   
   @ExceptionHandler({IncorrectCard.class})
   @ResponseStatus(HttpStatus.I_AM_A_TEAPOT) // 418
   public String incorrectCard(IncorrectCard e){
-    System.out.println("That's not a card");
-    return "That's not a card";
+    System.out.println(e.getMessage());
+    return e.getMessage();
   }
   
   @ExceptionHandler({IncorrectTurn.class})
   @ResponseStatus(HttpStatus.I_AM_A_TEAPOT) // 418
   public String incorrectTurn(IncorrectTurn e){
-    System.out.println("It is not the player's turn");
-    return "It is not the player's turn";
+    System.out.println(e.getMessage());
+    return e.getMessage();
   }
   
   @ExceptionHandler({InvalidIdentity.class})
   @ResponseStatus(HttpStatus.I_AM_A_TEAPOT) // 418
   public String invalidIdentity(InvalidIdentity e){
-    System.out.println("The requester's id does not match with the given id");
-    return "The requester's id does not match with the given id";
+    System.out.println(e.getMessage());
+    return e.getMessage();
   }
   
   @ExceptionHandler({InvalidPassword.class})
   @ResponseStatus(HttpStatus.I_AM_A_TEAPOT) // 418
   public String invalidPassword(InvalidPassword e){
-    System.out.println("Invalid password");
-    return "Invalid password";
+    System.out.println(e.getMessage());
+    return e.getMessage();
   }
   
   @ExceptionHandler({InvalidToken.class})
   @ResponseStatus(HttpStatus.I_AM_A_TEAPOT) // 418
   public String invalidToken(InvalidToken e){
-    System.out.println("Invalid token");
-    return "Invalid token";
+    System.out.println(e.getMessage());
+    return e.getMessage();
   }
   
   @ExceptionHandler({PlayerIsNotPlaying.class})
   @ResponseStatus(HttpStatus.I_AM_A_TEAPOT) // 418
   public String playerIsNotPlaying(PlayerIsNotPlaying e){
-    System.out.println("The player is not on a game");
-    return "The player is not on a game";
+    System.out.println(e.getMessage());
+    return e.getMessage();
   }
   
   @ExceptionHandler({PlayerIsPlaying.class})
   @ResponseStatus(HttpStatus.I_AM_A_TEAPOT) // 418
   public String playerIsPlaying(PlayerIsPlaying e){
-    System.out.println("The player is currently on a game");
-    return "The player is currently on a game";
+    System.out.println(e.getMessage());
+    return e.getMessage();
   }
   
   @ExceptionHandler({PlayerNotFound.class})
   @ResponseStatus(HttpStatus.I_AM_A_TEAPOT) // 418
   public String playerNotFound(PlayerNotFound e){
-    System.out.println("Id does not exist in the system");
-    return "Id does not exist in the system";
+    System.out.println(e.getMessage());
+    return e.getMessage();
   }
   
   @ExceptionHandler({PlayerNotInGame.class})
   @ResponseStatus(HttpStatus.I_AM_A_TEAPOT) // 418
   public String playerNotInGame(PlayerNotInGame e){
-    System.out.println("The player is not in the game");
-    return "The player is not in the game";
+    System.out.println(e.getMessage());
+    return e.getMessage();
   }
   
   @ExceptionHandler({PlayerNotOwner.class})
   @ResponseStatus(HttpStatus.I_AM_A_TEAPOT) // 418
   public String playerNotOwner(PlayerNotOwner e){
-    System.out.println("Only the owner can start a game");
-    return "Only the owner can start a game";
+    System.out.println(e.getMessage());
+    return e.getMessage();
   }
   
 }

@@ -41,12 +41,16 @@ public class GameResponse{
   public GameResponse(Game game, int playerNum, String newToken){
     gameId = game.getId();
     maxPlayers = game.getMaxPlayers();
-    topDiscard = game.getTopDiscardString();
     turn = game.getTurn();
     playersIds = new String[maxPlayers];
     playersIds = game.getPlayersIds();
     playersNumCards =  game.getPlayersDecksNumCards();
     gameStarted = game.isGameStarted();
+    if(gameStarted){
+      topDiscard = game.getTopDiscardString();  
+    }else{
+      topDiscard = "";
+    }
     gamePaused = game.isGamePaused();
     gameFinished = game.isGameFinished();
     playerCards = game.getPlayerCards(playerNum);

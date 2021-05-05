@@ -4,23 +4,20 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 import org.hibernate.annotations.GenericGenerator;
 
 import com.unizar.unozar.core.Card;
-import com.unizar.unozar.core.exceptions.CardNotFound;
 import com.unizar.unozar.core.exceptions.Como;
+import com.unizar.unozar.core.exceptions.DeckFull;
 import com.unizar.unozar.core.exceptions.DiscardDeckEmpty;
+import com.unizar.unozar.core.exceptions.GameAlreadyStarted;
 import com.unizar.unozar.core.exceptions.IncorrectTurn;
 import com.unizar.unozar.core.exceptions.PlayerNotFound;
 import com.unizar.unozar.core.exceptions.PlayerNotInGame;
@@ -92,7 +89,7 @@ public class Game{
   @Column(name = "END_CHECKED")
   private boolean endChecked[];
   
-  public Game(){ // Don't even look at this
+  public Game(){ // Don't even dare to look at this
     isPrivate = true;
     maxPlayers = 4;
     numBots = 0;
@@ -218,24 +215,76 @@ public class Game{
     return false;
   }
   
-//  public boolean startGame(){
-//    if(specialEvent != NOT_STARTED){
-//      return false;
-//    }
-//    specialEvent = NONE;
-//    shuffleDrawDeck();
-//    for(int i = 0; i < maxPlayers; i++){
-//      for(int j = 0; j < 7; j++){
-//        PlayerDeck pd = playersDecks.get(i);
-//        pd.addCard(drawCard());
-//        playersDecks.add(i, pd);
+  public void startGame(){
+    if(specialEvent != NOT_STARTED){
+      throw new GameAlreadyStarted("You can not start a started game");
+    }
+    specialEvent = NONE;
+    startDrawDeck();
+    shuffleDrawDeck();
+    for(int i = 0; i < maxPlayers; i++){
+      for(int j = 0; j < 7; j++){
+        playerZeroDeck.add(drawCard());
+        playerOneDeck.add(drawCard());
+        playerTwoDeck.add(drawCard());
+        playerThreeDeck.add(drawCard());
+      }
+    }
+  }
+
+  private void startDrawDeck(){
+    
+    
+  }
+  
+  public void addCard(List<String> deck, String toAdd){
+    Card.checkCard(toAdd);
+    if(deck.size() >= 108){
+      throw new DeckFull("HOW?!?!?!?");
+    }
+    deck.add(toAdd);
+  }
+
+  // Adds the numeric cards to the draw deck
+  private void addNumbers(){
+    // Zeros go just once
+    addCard(drawDeck, "0RX");
+    addCard(drawDeck, "0YX");
+    addCard(drawDeck, "0GX");
+    addCard(drawDeck, "0BX");
+    // All the others go twice
+    for(int i = 1; i < 10; i++){
+      char c = (char)(i + '0');
+      addCard(drawDeck, c+"RX");
+      addCard(drawDeck, c+"RX");
+      addCard(drawDeck, c+"YX");
+      addCard(drawDeck, c+"YX");
+      addCard(drawDeck, c+"GX");
+      addCard(drawDeck, c+"GX");
+      addCard(drawDeck, c+"BX");
+      addCard(drawDeck, c+"BX");
+    }
+  }
+
+//  // Adds the special cards to the draw deck
+//  private void addSpecials(){
+//    String spec[] = Card.BASIC_SPEC;
+//    String colors[] = Card.BASIC_COLORS;
+//    // Colored special cards
+//    for(int i = 0; i < colors.length; i++){
+//      for(int j = 0; j < spec.length; j++){
+//        addCard(Card.NONE + colors[i] + spec[j]);
+//        addCard(Card.NONE + colors[i] + spec[j]);
 //      }
 //    }
-//    startDrawDeck();
-//    return true;
+//    // Black special cards
+//    for(int i = 0; i < 4; i++){
+//      addCard(Card.NONE + Card.BLACK + Card.DRAW_FOUR);
+//      addCard(Card.NONE + Card.BLACK + Card.CHANGE_COLOR);
+//    }
 //  }
-
-//  private void startDrawDeck(){
+//
+//  private void startDiscardDeck(){
 //    boolean done = false;
 //    while(!done){
 //      String top = drawCard();
