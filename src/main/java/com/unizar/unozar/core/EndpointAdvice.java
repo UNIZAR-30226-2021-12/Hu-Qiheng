@@ -5,6 +5,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.http.HttpStatus;
 
+import com.unizar.unozar.core.exceptions.AlreadyFriends;
 import com.unizar.unozar.core.exceptions.CardNotFound;
 import com.unizar.unozar.core.exceptions.Como;
 import com.unizar.unozar.core.exceptions.DeckFull;
@@ -17,6 +18,7 @@ import com.unizar.unozar.core.exceptions.GameAlreadyStarted;
 import com.unizar.unozar.core.exceptions.GameFull;
 import com.unizar.unozar.core.exceptions.GameNotFound;
 import com.unizar.unozar.core.exceptions.GameNotFull;
+import com.unizar.unozar.core.exceptions.IncorrectAction;
 import com.unizar.unozar.core.exceptions.IncorrectCard;
 import com.unizar.unozar.core.exceptions.IncorrectTurn;
 import com.unizar.unozar.core.exceptions.InvalidIdentity;
@@ -30,6 +32,13 @@ import com.unizar.unozar.core.exceptions.PlayerNotOwner;
 
 @RestControllerAdvice
 public class EndpointAdvice{
+  
+  @ExceptionHandler({PlayerNotOwner.class})
+  @ResponseStatus(HttpStatus.I_AM_A_TEAPOT) // 418
+  public String alreadyFriends(AlreadyFriends e){
+    System.out.println(e.getMessage());
+    return e.getMessage();
+  }
   
   @ExceptionHandler({CardNotFound.class})
   @ResponseStatus(HttpStatus.I_AM_A_TEAPOT) // 418
@@ -111,6 +120,13 @@ public class EndpointAdvice{
   @ExceptionHandler({GameNotFull.class})
   @ResponseStatus(HttpStatus.I_AM_A_TEAPOT) // 418
   public String gameNotFull(GameNotFull e){
+    System.out.println(e.getMessage());
+    return e.getMessage();
+  }
+  
+  @ExceptionHandler({IncorrectAction.class})
+  @ResponseStatus(HttpStatus.I_AM_A_TEAPOT) // 418
+  public String incorrectAction(IncorrectAction e){
     System.out.println(e.getMessage());
     return e.getMessage();
   }

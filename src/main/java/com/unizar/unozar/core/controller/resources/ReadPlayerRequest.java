@@ -10,4 +10,5 @@ public class ReadPlayerRequest{
   public String getPlayerId(){
     return playerId;
   }
+  
 }

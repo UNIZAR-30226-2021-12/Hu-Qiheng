@@ -16,6 +16,8 @@ import com.unizar.unozar.core.controller.resources.AuthenticationRequest;
 import com.unizar.unozar.core.controller.resources.AuthenticationResponse;
 import com.unizar.unozar.core.controller.resources.CreatePlayerRequest;
 import com.unizar.unozar.core.controller.resources.DeletePlayerRequest;
+import com.unizar.unozar.core.controller.resources.FriendListResponse;
+import com.unizar.unozar.core.controller.resources.FriendRequest;
 import com.unizar.unozar.core.controller.resources.ReadPlayerRequest;
 import com.unizar.unozar.core.controller.resources.TokenRequest;
 import com.unizar.unozar.core.controller.resources.TokenResponse;
@@ -70,6 +72,24 @@ public class PlayerController{
   public ResponseEntity<AuthenticationResponse> 
       refreshToken(@RequestBody TokenRequest request){
     return ResponseEntity.ok(playerService.refreshToken(request));
+  }
+  
+  @PostMapping(value = "/addFriend")
+  public ResponseEntity<TokenResponse>
+      addFriend(@RequestBody FriendRequest request){
+    return ResponseEntity.ok(playerService.addFriend(request));
+  }
+   
+  @PostMapping(value = "/readFriends")
+  public ResponseEntity<FriendListResponse>
+      readFriendList(@RequestBody TokenRequest request){
+    return ResponseEntity.ok(playerService.readFriendList(request));
+  }
+  
+  @PostMapping(value = "/deleteFriend")
+  public ResponseEntity<TokenResponse>
+      deleteFriend(@RequestBody FriendRequest request){
+    return ResponseEntity.ok(playerService.deleteFriend(request));
   }
   
 }

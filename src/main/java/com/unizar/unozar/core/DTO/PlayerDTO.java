@@ -12,7 +12,13 @@ public class PlayerDTO{
   public String email;
   
   @JsonProperty
+  public int avatarId;
+  
+  @JsonProperty
   public String alias;
+  
+  @JsonProperty
+  public int money;
   
   @JsonProperty
   public String gameId;
@@ -33,9 +39,13 @@ public class PlayerDTO{
     id = toTransfer.getId();
     System.out.println(id);
     email = toTransfer.getEmail();
-    System.out.println(email);
+    System.out.println(email);    
+    avatarId = toTransfer.getAvatarId();
+    System.out.println(avatarId);
     alias = toTransfer.getAlias();
     System.out.println(alias);
+    money = toTransfer.getMoney();
+    System.out.println(money);
     gameId = toTransfer.getGameId();
     System.out.println(gameId);
     privateWins = toTransfer.getPrivateWins();

@@ -5,6 +5,8 @@ import com.unizar.unozar.core.controller.resources.AuthenticationRequest;
 import com.unizar.unozar.core.controller.resources.AuthenticationResponse;
 import com.unizar.unozar.core.controller.resources.CreatePlayerRequest;
 import com.unizar.unozar.core.controller.resources.DeletePlayerRequest;
+import com.unizar.unozar.core.controller.resources.FriendListResponse;
+import com.unizar.unozar.core.controller.resources.FriendRequest;
 import com.unizar.unozar.core.controller.resources.ReadPlayerRequest;
 import com.unizar.unozar.core.controller.resources.TokenRequest;
 import com.unizar.unozar.core.controller.resources.TokenResponse;
@@ -23,5 +25,11 @@ public interface PlayerService{
   public AuthenticationResponse authentication(AuthenticationRequest request);
   
   public AuthenticationResponse refreshToken(TokenRequest request);
+  
+  public TokenResponse addFriend(FriendRequest request);
+
+  public FriendListResponse readFriendList(TokenRequest request);
+  
+  public TokenResponse deleteFriend(FriendRequest request);
 
 }

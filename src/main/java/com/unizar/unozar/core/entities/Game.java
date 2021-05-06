@@ -13,12 +13,13 @@ import javax.persistence.Table;
 
 import org.hibernate.annotations.GenericGenerator;
 
-import com.unizar.unozar.core.Card;
 import com.unizar.unozar.core.exceptions.CardNotFound;
 import com.unizar.unozar.core.exceptions.Como;
 import com.unizar.unozar.core.exceptions.DeckFull;
 import com.unizar.unozar.core.exceptions.DiscardDeckEmpty;
 import com.unizar.unozar.core.exceptions.GameAlreadyStarted;
+import com.unizar.unozar.core.exceptions.IncorrectAction;
+import com.unizar.unozar.core.exceptions.IncorrectCard;
 import com.unizar.unozar.core.exceptions.IncorrectTurn;
 import com.unizar.unozar.core.exceptions.PlayerNotFound;
 import com.unizar.unozar.core.exceptions.PlayerNotInGame;
@@ -27,14 +28,36 @@ import com.unizar.unozar.core.exceptions.PlayerNotInGame;
 @Table(name = "GAME")
 public class Game{
   
-  private final int NOT_STARTED = -1;
-  private final int NONE = 0;
-  private final int DRAW_TWO = 1;
-  private final int DRAW_FOUR = 2;
-  private final int FINISHED = 3;
+  private final static int NOT_STARTED = -1;
+  private final static int PLAYING = 0;
+  private final static int HAS_TO_DRAW_TWO = 1;
+  private final static int HAS_TO_DRAW_FOUR = 2;
+  private final static int FINISHED = 3;
   
-  public final String BOT = "BOT";
-  public final String EMPTY = "EMPTY";
+  public final static String BOT = "BOT";
+  public final static String EMPTY = "EMPTY";
+  
+  // Card constants
+  // Special value
+  private final static String NONE = "X";
+
+  // Colors
+  private final static String BLACK = "X";
+  private final static String RED = "R";
+  private final static String YELLOW = "Y";
+  private final static String GREEN = "G";
+  private final static String BLUE = "B";
+
+  private final static String BASIC_COLORS[] = {RED, YELLOW, GREEN, BLUE};
+
+  // Special functions
+  private final static String REVERSE = "R";
+  private final static String SKIP = "S";
+  private final static String DRAW_TWO = "2";
+  private final static String DRAW_FOUR = "4";
+  private final static String CHANGE_COLOR = "C";
+
+  private final static String BASIC_SPEC[] = {REVERSE, SKIP, DRAW_TWO};
   
   @Id
   @Column(name = "ID")
@@ -55,28 +78,28 @@ public class Game{
   private String playersIds[];
   
   @ElementCollection
-  private List<String> playerZeroDeck;
+  private List<String> playerZeroDeck = new ArrayList<String>();
   
   @ElementCollection
-  private List<String> playerOneDeck;
+  private List<String> playerOneDeck = new ArrayList<String>();
   
   @ElementCollection
-  private List<String> playerTwoDeck;
+  private List<String> playerTwoDeck = new ArrayList<String>();
   
   @ElementCollection
-  private List<String> playerThreeDeck;
+  private List<String> playerThreeDeck = new ArrayList<String>();
   
   @ElementCollection
-  private List<String> drawDeck;
+  private List<String> drawDeck = new ArrayList<String>();
   
   @ElementCollection
-  private List<String> discardDeck;
+  private List<String> discardDeck = new ArrayList<String>();
   
   @Column(name = "TURN")
   private int turn;
   
-  @Column(name = "SPECIAL_EVENT")
-  private int specialEvent;
+  @Column(name = "STATUS")
+  private int status;
   
   @Column(name = "NORMAL_FLOW")
   private boolean normalFlow;
@@ -100,14 +123,8 @@ public class Game{
       playersIds[i] = "";
       endChecked[i] = false;
     }
-    playerZeroDeck = new ArrayList<String>();
-    playerOneDeck = new ArrayList<String>();
-    playerTwoDeck = new ArrayList<String>();
-    playerThreeDeck = new ArrayList<String>();
-    drawDeck = new ArrayList<String>();
-    discardDeck = new ArrayList<String>();
     turn = 0;
-    specialEvent = NOT_STARTED;
+    status = NOT_STARTED;
     normalFlow = true;
     isPaused = false;
     winner = 0;
@@ -129,14 +146,8 @@ public class Game{
       playersIds[i] = EMPTY;
       endChecked[i] = false;
     }
-    playerZeroDeck = new ArrayList<String>();
-    playerOneDeck = new ArrayList<String>();
-    playerTwoDeck = new ArrayList<String>();
-    playerThreeDeck = new ArrayList<String>();
-    drawDeck = new ArrayList<String>();
-    discardDeck = new ArrayList<String>();
     turn = 0;
-    specialEvent = NOT_STARTED;
+    status = NOT_STARTED;
     normalFlow = true;
     isPaused = false;
     winner = 0;
@@ -156,7 +167,7 @@ public class Game{
     return false;
   }
   
-  // Returns true if the player was quited from the game, false otherwise
+  // Returns true if the player was quit from the game, false otherwise
   public boolean quitPlayer(String playerId){
     if(!this.hasPlayer(playerId)){
       return false;
@@ -217,25 +228,29 @@ public class Game{
   }
   
   public void startGame(){
-    if(specialEvent != NOT_STARTED){
+    if(status != NOT_STARTED){
       throw new GameAlreadyStarted("You can not start a started game");
     }
-    specialEvent = NONE;
+    status = PLAYING;
     addNumbers();
     addSpecials();
     shuffleDrawDeck();
-    for(int i = 0; i < maxPlayers; i++){
-      for(int j = 0; j < 7; j++){
-        playerZeroDeck.add(drawCard());
-        playerOneDeck.add(drawCard());
+    for(int j = 0; j < 7; j++){
+      switch (maxPlayers){
+      case 4:
+        playerThreeDeck.add(drawCard());        
+      case 3: 
         playerTwoDeck.add(drawCard());
-        playerThreeDeck.add(drawCard());
+      case 2:
+        playerOneDeck.add(drawCard());
+        playerZeroDeck.add(drawCard());     
       }
     }
+    startDiscardDeck();
   }
   
   public void addCard(List<String> deck, String toAdd){
-    Card.checkCard(toAdd);
+    checkCard(toAdd);
     if(deck.size() >= 108){
       throw new DeckFull("HOW?!?!?!?");
     }
@@ -246,18 +261,18 @@ public class Game{
     boolean done = false;
     while(!done){
       String top = drawCard();
-      if(!Card.isBlack(top)){
-        discardDeck.startDeck(top);
+      if(!isBlack(top)){
+        discardDeck.add(top);
         done = true;
       }else{
-        addCard(top);
+        drawDeck.add(top);
         shuffleDrawDeck();
       }
     }
   }
   
   public boolean isGameStarted(){
-    if(specialEvent != NOT_STARTED){
+    if(status != NOT_STARTED){
       return true;
     }
     return false;
@@ -268,7 +283,7 @@ public class Game{
   }
   
   public boolean isGameFinished(){
-    if(specialEvent == FINISHED){
+    if(status == FINISHED){
       return true;
     }
     return false;
@@ -283,12 +298,84 @@ public class Game{
     if(playerNum != turn){
       throw new IncorrectTurn("It is not the player's turn");
     }
+    if(status != PLAYING){
+      throw new IncorrectAction("Now is not the moment to play a card");
+    }
     if(getPlayerDeckNumCards(getPlayerNum(playerId)) <= cardToMove){
       throw new CardNotFound("The player does not have that many cards");
     }
-    //play
+    String cardToPlay = getDeckByPlayerNum(playerNum).get(cardToMove);
+    if(isCardPlayable(cardToPlay)){
+      if(isBlack(cardToPlay)){
+        cardToPlay = "X" + colorSelected + cardToPlay.charAt(2);
+        checkCard(cardToPlay);
+      }
+      discardDeck.add(cardToPlay);
+      getDeckByPlayerNum(playerNum).remove(cardToMove);
+      if(getDeckByPlayerNum(playerNum).size() == 0){
+        winner = playerNum;
+        status = FINISHED;
+      }else{
+        checkUnozar(playerNum, hasSaidUnozar);
+        updateGameStatus(true);
+      }
+    }else{
+      throw new IncorrectCard("That card cannot be played now");
+    }
   }
   
+  private void checkUnozar(int playerNum, boolean hasSaidUnozar){
+    if(getDeckByPlayerNum(playerNum).size() == 1){
+      if(!hasSaidUnozar){
+        getDeckByPlayerNum(playerNum).add(drawCard());
+      }
+    }else if(hasSaidUnozar){
+      getDeckByPlayerNum(playerNum).add(drawCard());
+    }
+  }
+
+  private void updateGameStatus(boolean cardPlayedInThisTurn){
+    if(cardPlayedInThisTurn){
+      String top = discardDeck.get(discardDeck.size() - 1);
+      switch(Character.toString(top.charAt(2))){
+      case REVERSE:
+        normalFlow = !normalFlow;
+        if(normalFlow){
+          turn = (turn + 1) % (maxPlayers - 1);
+        }else{
+          advanceReverseTurn();
+        }
+        status = PLAYING;
+        break;
+      case SKIP:
+        if(normalFlow){
+          turn = (turn + 1) % (maxPlayers - 1);
+          turn = (turn + 1) % (maxPlayers - 1);
+        }else{
+          advanceReverseTurn();
+          advanceReverseTurn();
+        }
+        status = PLAYING;
+        break;
+      case DRAW_TWO:
+        status = HAS_TO_DRAW_TWO;
+        break;
+      case DRAW_FOUR:
+        status = HAS_TO_DRAW_FOUR;
+        break;
+      }
+    }else{
+      status = PLAYING;
+    }
+  }
+
+  private void advanceReverseTurn(){
+    turn--;
+    if(turn == -1){
+      turn = maxPlayers - 1;
+    }
+  }
+
   public void drawCards(String playerId, int cardsToDraw, 
       boolean hasSaidUnozar){
     int playerNum = getPlayerNum(playerId);
@@ -298,17 +385,17 @@ public class Game{
     if(playerNum != turn){
       throw new IncorrectTurn("It is not the player's turn");
     }
-    switch(specialEvent){
+    switch(status){
     case NOT_STARTED:
       notStartedDraw(playerId, cardsToDraw, hasSaidUnozar);
       break;
-    case NONE:
+    case PLAYING:
       noneDraw(playerId, cardsToDraw, hasSaidUnozar);
       break;
-    case DRAW_TWO:
+    case HAS_TO_DRAW_TWO:
       drawTwoDraw(playerId, cardsToDraw, hasSaidUnozar);
       break;
-    case DRAW_FOUR:
+    case HAS_TO_DRAW_FOUR:
       drawFourDraw(playerId, cardsToDraw, hasSaidUnozar);
       break;
     case FINISHED:
@@ -364,19 +451,19 @@ public class Game{
 
   // Adds the special cards to the draw deck
   private void addSpecials(){
-    String spec[] = Card.BASIC_SPEC;
-    String colors[] = Card.BASIC_COLORS;
+    String spec[] = BASIC_SPEC;
+    String colors[] = BASIC_COLORS;
     // Colored special cards
     for(int i = 0; i < colors.length; i++){
       for(int j = 0; j < spec.length; j++){
-        addCard(drawDeck, Card.NONE + colors[i] + spec[j]);
-        addCard(drawDeck, Card.NONE + colors[i] + spec[j]);
+        addCard(drawDeck, NONE + colors[i] + spec[j]);
+        addCard(drawDeck, NONE + colors[i] + spec[j]);
       }
     }
     // Black special cards
     for(int i = 0; i < 4; i++){
-      addCard(drawDeck, Card.NONE + Card.BLACK + Card.DRAW_FOUR);
-      addCard(drawDeck, Card.NONE + Card.BLACK + Card.CHANGE_COLOR);
+      addCard(drawDeck, NONE + BLACK + DRAW_FOUR);
+      addCard(drawDeck, NONE + BLACK + CHANGE_COLOR);
     }
   }
   
@@ -407,6 +494,65 @@ public class Game{
   private void notStartedDraw(String playerId, int cardsToDraw, 
       boolean hasSaidUnozar){
     // TODO Auto-generated method stub
+  }
+  
+  //////////////////
+  // Card methods //
+  //////////////////
+  // Check if the given String is a correct card, throws IncorrectCard otherwise
+  private void checkCard(String card){
+    // Check incorrect length
+    if(card.length() != 3){
+      throw new IncorrectCard("That's not a card");
+    }
+    char number = card.charAt(0);
+    char color = card.charAt(1);
+    char spec = card.charAt(2);
+    // Check incorrect number
+    if((number != 'X') && (!Character.isDigit(number))){
+      throw new IncorrectCard("That's not a card");
+    }
+    // Check incorrect color
+    if((color != 'R') && (color != 'Y') && (color != 'G') && (color != 'B') && 
+        (color != 'X')){
+      throw new IncorrectCard("That's not a card");
+    }
+    // Check incorrect spec
+    if((spec != 'R') && (spec != 'S') && (spec != '2') && (spec != '4') &&
+        (spec != 'C') && (spec != 'X')){
+      throw new IncorrectCard("That's not a card");
+    }
+  }
+  
+  // Check if given card can be played
+  private boolean isCardPlayable(String card){
+    if(discardDeck.size() == 0){
+      throw new DiscardDeckEmpty("Cannot play cards with empty discard deck");
+    }
+    String top = discardDeck.get(discardDeck.size() - 1);
+    // Check if same number
+    char numberOne = top.charAt(0);
+    char numberTwo = card.charAt(0);
+    if(Character.isDigit(numberOne) && (numberOne == numberTwo)){
+      return true;
+    }
+    // Check if same color or card to play is black
+    char colorOne = top.charAt(1);
+    char colorTwo = card.charAt(1);
+    if(((colorOne != 'X') && (colorOne == colorTwo)) || isBlack(card)){
+      return true;
+    }
+    // Check if same spec
+    char specOne = top.charAt(2);
+    char specTwo = card.charAt(2);
+    if((specOne != 'X') && (specOne == specTwo)){
+      return true;
+    }
+    return false;
+  }
+  
+  private boolean isBlack(String card){
+    return Character.toString(card.charAt(1)).equals(BLACK);
   }
   
   /////////////////////////

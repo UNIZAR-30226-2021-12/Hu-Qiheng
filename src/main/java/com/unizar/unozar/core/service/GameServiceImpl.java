@@ -132,8 +132,8 @@ public class GameServiceImpl implements GameService{
       throw new GameNotFound("The game does not exist");
     }
     Game toPlay = toFind.get();
-//    toPlay.playCard(requester.getId(), request.getCardToPlay(), 
-//        request.getHasSaidUnozar(), request.getColorSelected());
+    toPlay.playCard(requester.getId(), request.getCardToPlay(), 
+        request.getHasSaidUnozar(), request.getColorSelected());
     gameRepository.save(toPlay);
     String newToken = requester.getId() + requester.updateSession();
     playerRepository.save(requester);
@@ -171,15 +171,15 @@ public class GameServiceImpl implements GameService{
     if(!toQuit.quitPlayer(requester.getId())){
       throw new PlayerNotInGame("The player is not in the game");
     }
-    if(toQuit.getOwner().equals(toQuit.EMPTY)){
+    if(toQuit.getOwner().equals(Game.EMPTY)){
       if(toQuit.hasAnyPlayer()){
         int maxPlayers = toQuit.getMaxPlayers();
         int numBots = toQuit.getNumBots();
         String playersIds[] = new String[maxPlayers];
         playersIds = toQuit.getPlayersIds();
         for(int i = numBots + 1; i < maxPlayers; i++){
-          if((!playersIds[i].equals(toQuit.EMPTY)) && 
-              (!playersIds[i].equals(toQuit.BOT))){
+          if((!playersIds[i].equals(Game.EMPTY)) && 
+              (!playersIds[i].equals(Game.BOT))){
             if(!toQuit.toOwner(playersIds[i])){
               throw new Como("asjdioajeoi");
             }

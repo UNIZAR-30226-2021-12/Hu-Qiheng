@@ -1,14 +1,19 @@
 package com.unizar.unozar.core.entities;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.persistence.Column;
+import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
 import org.hibernate.annotations.GenericGenerator;
+
+import com.unizar.unozar.core.exceptions.AlreadyFriends;
 
 @Entity
 @Table(name = "PLAYER")
@@ -25,11 +30,17 @@ public class Player{
   @Column(name = "EMAIL", unique = true, nullable = false)
   private String email;
 
+  @Column(name = "AVATAR_ID", nullable = false)
+  private int avatarId;
+  
   @Column(name = "ALIAS", nullable = false)
   private String alias;
 
   @Column(name = "PASSWORD", nullable = false)
   private String password;
+  
+  @Column(name = "MONEY", nullable = false)
+  private int money;
   
   @Column(name = "GAME_ID", nullable = false)
   private String gameId;
@@ -49,28 +60,37 @@ public class Player{
   @Column(name = "PUBLIC_TOTAL", nullable = false)
   private int publicTotal;
   
+  @ElementCollection
+  private List<String> friendList;
+  
   public Player(){
     email = "email";
+    avatarId = 0;
     alias = "alias";
     password = "password";
+    money = 100; // Yet to decide
     gameId = NONE;
     session = 0;
     privateWins = 0;
     privateTotal = 0;
     publicWins = 0;
     publicTotal = 0;
+    friendList = new ArrayList<String>();
   }
   
   public Player(String email, String alias, String password){
     this.email = email;
+    avatarId = 0;
     this.alias = alias;
     this.password = password;
+    money = 100; // Yet to decide
     gameId = NONE;
     session = -601;
     privateWins = 0;
     privateTotal = 0;
     publicWins = 0;
     publicTotal = 0;
+    friendList = new ArrayList<String>();
   }
   
   // Retrieves today's seconds
@@ -89,7 +109,7 @@ public class Player{
     return session;
   }
 
-  // Retrieves true if the given session equals the saved session and the time 
+  // Returns true if the given session equals the saved session and the time 
   // since last session update is minor than 600 seconds, otherwise retrieves 
   // false
   public boolean checkSession(String givenSession){
@@ -127,7 +147,7 @@ public class Player{
     return false;
   }
   
-  // Retrieves true if the player is currently on a game, false otherwise
+  // Returns true if the player is currently on a game, false otherwise
   public boolean isInAGame(){
     if(gameId.equals(NONE)){
       return false;
@@ -135,6 +155,18 @@ public class Player{
     return true;
   }
 
+  // Adds a new friend to the friend list if it is not in it yet
+  public void addNewFriend(String friendId){
+    if(friendList.contains(friendId)){
+      throw new AlreadyFriends("You already have that friend");
+    }
+    friendList.add(friendId);
+  }
+  
+  public void deleteFriend(String friendId){
+    friendList.remove(friendId);
+  }
+  
   /////////////////////////
   // Getters and Setters //
   /////////////////////////
@@ -147,12 +179,20 @@ public class Player{
     return alias;
   }
 
+  public int getAvatarId(){
+    return avatarId;
+  }
+
   public String getEmail(){
     return email;
   }
 
   public String getPassword(){
     return password;
+  }
+
+  public int getMoney(){
+    return money;
   }
 
   public String getGameId(){
@@ -174,17 +214,29 @@ public class Player{
   public int getPrivateTotal(){
     return privateTotal;
   }
+  
+  public List<String> getFriendList(){
+    return friendList;
+  }
 
   public void setAlias(String alias){
     this.alias = alias;
   }
 
+  public void setAvatarId(int avatarId){
+    this.avatarId = avatarId;
+  }
+  
   public void setEmail(String email){
     this.email = email;
   }
 
   public void setPassword(String password){
     this.password = password;
+  }
+  
+  public void setMoney(int money){
+    this.money = money;
   }
   
   public void setGameId(String game_id){
