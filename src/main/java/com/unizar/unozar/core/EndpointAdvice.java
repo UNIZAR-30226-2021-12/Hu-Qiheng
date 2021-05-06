@@ -33,7 +33,7 @@ import com.unizar.unozar.core.exceptions.PlayerNotOwner;
 @RestControllerAdvice
 public class EndpointAdvice{
   
-  @ExceptionHandler({PlayerNotOwner.class})
+  @ExceptionHandler({AlreadyFriends.class})
   @ResponseStatus(HttpStatus.I_AM_A_TEAPOT) // 418
   public String alreadyFriends(AlreadyFriends e){
     System.out.println(e.getMessage());
