@@ -26,7 +26,12 @@ public class FriendListResponse {
     this.alias = alias;
     this.emails = emails;
     this.avatarIds = avatarIds;
-    System.out.println(this.friendIds.length);
+    if(this.friendIds.length > 0) {
+      System.out.println(this.friendIds[0]);
+      System.out.println(this.alias[0]);
+      System.out.println(this.emails[0]);
+      System.out.println(this.avatarIds[0]);
+    }
   }
   
 }

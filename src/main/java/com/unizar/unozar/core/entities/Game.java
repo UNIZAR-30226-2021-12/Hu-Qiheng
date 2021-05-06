@@ -399,8 +399,9 @@ public class Game{
     case FINISHED:
       throw new IncorrectAction("The game is over");
     default:
-      //throw new 
+      throw new Como("¡¿Pero cómo!?"); 
     }
+    updateGameStatus(false);
   }
   
   public void shuffleDrawDeck(){
@@ -464,11 +465,6 @@ public class Game{
     }
   }
   
-  private void finishedDraw(String playerId, boolean hasSaidUnozar){
-    // TODO Auto-generated method stub
-    
-  }
-
   private void drawFourDraw(String playerId, boolean hasSaidUnozar){
     // TODO Auto-generated method stub
     

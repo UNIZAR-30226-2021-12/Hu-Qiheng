@@ -37,25 +37,15 @@ public class PlayerDTO{
   
   public PlayerDTO(Player toTransfer){
     id = toTransfer.getId();
-    System.out.println(id);
     email = toTransfer.getEmail();
-    System.out.println(email);    
     avatarId = toTransfer.getAvatarId();
-    System.out.println(avatarId);
     alias = toTransfer.getAlias();
-    System.out.println(alias);
     money = toTransfer.getMoney();
-    System.out.println(money);
     gameId = toTransfer.getGameId();
-    System.out.println(gameId);
     privateWins = toTransfer.getPrivateWins();
-    System.out.println(privateWins);
     privateTotal = toTransfer.getPrivateTotal();
-    System.out.println(privateTotal);
     publicWins = toTransfer.getPublicWins();
-    System.out.println(publicWins);
     publicTotal = toTransfer.getPublicTotal();
-    System.out.println(publicTotal);
   }
 
 }
