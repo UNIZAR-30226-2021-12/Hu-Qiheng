@@ -376,8 +376,7 @@ public class Game{
     }
   }
 
-  public void drawCards(String playerId, int cardsToDraw, 
-      boolean hasSaidUnozar){
+  public void drawCards(String playerId, boolean hasSaidUnozar){
     int playerNum = getPlayerNum(playerId);
     if(playerNum == -1){
       throw new PlayerNotInGame("The player is not in the game");
@@ -387,20 +386,18 @@ public class Game{
     }
     switch(status){
     case NOT_STARTED:
-      notStartedDraw(playerId, cardsToDraw, hasSaidUnozar);
-      break;
+      throw new IncorrectAction("The game is yet to start");
     case PLAYING:
-      noneDraw(playerId, cardsToDraw, hasSaidUnozar);
+      noneDraw(playerId, hasSaidUnozar);
       break;
     case HAS_TO_DRAW_TWO:
-      drawTwoDraw(playerId, cardsToDraw, hasSaidUnozar);
+      drawTwoDraw(playerId, hasSaidUnozar);
       break;
     case HAS_TO_DRAW_FOUR:
-      drawFourDraw(playerId, cardsToDraw, hasSaidUnozar);
+      drawFourDraw(playerId, hasSaidUnozar);
       break;
     case FINISHED:
-      finishedDraw(playerId, cardsToDraw, hasSaidUnozar);
-      break;
+      throw new IncorrectAction("The game is over");
     default:
       //throw new 
     }
@@ -467,35 +464,26 @@ public class Game{
     }
   }
   
-  private void finishedDraw(String playerId, int cardsToDraw, 
-      boolean hasSaidUnozar){
+  private void finishedDraw(String playerId, boolean hasSaidUnozar){
     // TODO Auto-generated method stub
     
   }
 
-  private void drawFourDraw(String playerId, int cardsToDraw, 
-      boolean hasSaidUnozar){
+  private void drawFourDraw(String playerId, boolean hasSaidUnozar){
     // TODO Auto-generated method stub
     
   }
 
-  private void drawTwoDraw(String playerId, int cardsToDraw, 
-      boolean hasSaidUnozar){
+  private void drawTwoDraw(String playerId, boolean hasSaidUnozar){
     // TODO Auto-generated method stub
     
   }
 
-  private void noneDraw(String playerId, int cardsToDraw, 
-      boolean hasSaidUnozar){
+  private void noneDraw(String playerId, boolean hasSaidUnozar){
     // TODO Auto-generated method stub
     
   }
 
-  private void notStartedDraw(String playerId, int cardsToDraw, 
-      boolean hasSaidUnozar){
-    // TODO Auto-generated method stub
-  }
-  
   //////////////////
   // Card methods //
   //////////////////

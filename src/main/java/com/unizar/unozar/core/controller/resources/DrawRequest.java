@@ -6,19 +6,12 @@ public class DrawRequest{
   
   @JsonProperty
   private String token;
-  
-  @JsonProperty
-  private int cardsToDraw;
-  
+
   @JsonProperty
   private boolean hasSaidUnozar;
 
   public String getToken(){
     return token;
-  }
-
-  public int getCardsToDraw(){
-    return cardsToDraw;
   }
 
   public boolean getHasSaidUnozar(){

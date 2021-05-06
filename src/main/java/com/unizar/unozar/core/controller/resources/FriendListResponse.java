@@ -26,6 +26,7 @@ public class FriendListResponse {
     this.alias = alias;
     this.emails = emails;
     this.avatarIds = avatarIds;
+    System.out.println(this.friendIds.length);
   }
   
 }

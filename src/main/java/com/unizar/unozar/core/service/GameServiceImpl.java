@@ -150,8 +150,7 @@ public class GameServiceImpl implements GameService{
       throw new GameNotFound("The game does not exist");
     }
     Game toPlay = toFind.get();
-    toPlay.drawCards(requester.getId(), request.getCardsToDraw(), 
-        request.getHasSaidUnozar());
+    toPlay.drawCards(requester.getId(), request.getHasSaidUnozar());
     gameRepository.save(toPlay);
     String newToken = requester.getId() + requester.updateSession();
     playerRepository.save(requester);
