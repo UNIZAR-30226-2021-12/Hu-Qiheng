@@ -54,7 +54,7 @@ public class Game{
   private final static String REVERSE = "R";
   private final static String SKIP = "S";
   private final static String DRAW_TWO = "2";
-  private final static String DRAW_FOUR = "4";
+  private final String DRAW_FOUR = "4";
   private final static String CHANGE_COLOR = "C";
 
   private final static String BASIC_SPEC[] = {REVERSE, SKIP, DRAW_TWO};
