@@ -33,9 +33,6 @@ public class GameResponse{
   public boolean gamePaused;
   
   @JsonProperty
-  public boolean gameFinished;
-  
-  @JsonProperty
   public String token;
 
   public GameResponse(Game game, int playerNum, String newToken){
@@ -52,7 +49,6 @@ public class GameResponse{
       topDiscard = "";
     }
     gamePaused = game.isGamePaused();
-    gameFinished = game.isGameFinished();
     playerCards = game.getPlayerCards(playerNum);
     token = newToken;
   }

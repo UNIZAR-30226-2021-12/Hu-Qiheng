@@ -1,7 +1,6 @@
 package com.unizar.unozar.core.service;
 
 import com.unizar.unozar.core.controller.resources.CreateGameRequest;
-import com.unizar.unozar.core.controller.resources.DrawRequest;
 import com.unizar.unozar.core.controller.resources.GameResponse;
 import com.unizar.unozar.core.controller.resources.JoinGameRequest;
 import com.unizar.unozar.core.controller.resources.PlayCardRequest;
@@ -20,7 +19,7 @@ public interface GameService{
 
   public TokenResponse playCard(PlayCardRequest request);
 
-  public TokenResponse draw(DrawRequest request);
+  public TokenResponse draw(TokenRequest request);
   
   public TokenResponse quit(TokenRequest request);
 

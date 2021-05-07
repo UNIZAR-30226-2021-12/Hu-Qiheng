@@ -5,7 +5,6 @@ import java.util.Optional;
 import org.springframework.stereotype.Service;
 
 import com.unizar.unozar.core.controller.resources.CreateGameRequest;
-import com.unizar.unozar.core.controller.resources.DrawRequest;
 import com.unizar.unozar.core.controller.resources.GameResponse;
 import com.unizar.unozar.core.controller.resources.JoinGameRequest;
 import com.unizar.unozar.core.controller.resources.PlayCardRequest;
@@ -57,22 +56,24 @@ public class GameServiceImpl implements GameService{
   
   @Override
   public GameResponse read(TokenRequest request){
-    Player inGame = findPlayer(request.getToken().substring(0, 32));
-    checkToken(inGame, request.getToken().substring(32));
-    checkPlayerInGame(inGame);
-    Optional<Game> toFind = gameRepository.findById(inGame.getGameId());
-    if(!toFind.isPresent()){
-      throw new GameNotFound("The game does not exist");
+    Player requester = findPlayer(request.getToken().substring(0, 32));
+    checkToken(requester, request.getToken().substring(32));
+    checkPlayerInGame(requester);
+    Game toRead = findGame(requester.getGameId());
+    int playerNum = toRead.getPlayerNum(requester.getId());
+    String newToken = requester.getId() + requester.updateSession();
+    GameResponse response = new GameResponse(toRead, playerNum, newToken);
+    if(toRead.isGameFinished()){
+      toRead.finishPlayer(playerNum);
+      requester.setGameId(Player.NONE);
+      if(toRead.isEmpty()){
+        gameRepository.delete(toRead);
+      }else{
+        gameRepository.save(toRead);
+      }
     }
-    Game toRead = toFind.get();
-    int playerNum = toRead.getPlayerNum(inGame.getId());
-    if(playerNum == -1){
-      throw new PlayerNotInGame("The player is not in the game");
-    }
-    
-    String newToken = inGame.getId() + inGame.updateSession();
-    playerRepository.save(inGame);
-    return new GameResponse(toRead, playerNum, newToken);
+    playerRepository.save(requester);
+    return response;
   }
 
   @Override
@@ -80,11 +81,7 @@ public class GameServiceImpl implements GameService{
     Player requester = findPlayer(request.getToken().substring(0,32));
     checkToken(requester, request.getToken().substring(32));
     checkPlayerNotInGame(requester);
-    Optional<Game> toFind = gameRepository.findById(request.getGameId());
-    if(!toFind.isPresent()){
-      throw new GameNotFound("The game does not exist");
-    }
-    Game toJoin = toFind.get();
+    Game toJoin = findGame(requester.getGameId());
     if(!toJoin.hasSpace()){
       throw new GameFull("The game has no space for another player");
     }
@@ -101,11 +98,7 @@ public class GameServiceImpl implements GameService{
     Player requester = findPlayer(request.getToken().substring(0,32));
     checkToken(requester, request.getToken().substring(32));
     checkPlayerInGame(requester);
-    Optional<Game> toFind = gameRepository.findById(requester.getGameId());
-    if(!toFind.isPresent()){
-      throw new GameNotFound("The game does not exist");
-    }
-    Game toStart = toFind.get();
+    Game toStart = findGame(requester.getGameId());
     if(!toStart.hasPlayer(requester.getId())){
       throw new PlayerNotInGame("The player is not in the game");
     }
@@ -115,7 +108,7 @@ public class GameServiceImpl implements GameService{
     if(toStart.hasSpace()){
       throw new GameNotFull("Only games with all the players can start");
     }
-    //toStart.startGame();
+    toStart.startGame();
     gameRepository.save(toStart);
     String newToken = requester.getId() + requester.updateSession();
     playerRepository.save(requester);
@@ -127,11 +120,7 @@ public class GameServiceImpl implements GameService{
     Player requester = findPlayer(request.getToken().substring(0,32));
     checkToken(requester, request.getToken().substring(32));
     checkPlayerInGame(requester);
-    Optional<Game> toFind = gameRepository.findById(requester.getGameId());
-    if(!toFind.isPresent()){
-      throw new GameNotFound("The game does not exist");
-    }
-    Game toPlay = toFind.get();
+    Game toPlay = findGame(requester.getGameId());
     toPlay.playCard(requester.getId(), request.getCardToPlay(), 
         request.getHasSaidUnozar(), request.getColorSelected());
     gameRepository.save(toPlay);
@@ -141,16 +130,12 @@ public class GameServiceImpl implements GameService{
   }
   
   @Override
-  public TokenResponse draw(DrawRequest request){
+  public TokenResponse draw(TokenRequest request){
     Player requester = findPlayer(request.getToken().substring(0,32));
     checkToken(requester, request.getToken().substring(32));
     checkPlayerInGame(requester);
-    Optional<Game> toFind = gameRepository.findById(requester.getGameId());
-    if(!toFind.isPresent()){
-      throw new GameNotFound("The game does not exist");
-    }
-    Game toPlay = toFind.get();
-    toPlay.drawCards(requester.getId(), request.getHasSaidUnozar());
+    Game toPlay = findGame(requester.getGameId());
+    toPlay.drawCards(requester.getId());
     gameRepository.save(toPlay);
     String newToken = requester.getId() + requester.updateSession();
     playerRepository.save(requester);
@@ -162,11 +147,7 @@ public class GameServiceImpl implements GameService{
     Player requester = findPlayer(request.getToken().substring(0,32));
     checkToken(requester, request.getToken().substring(32));
     checkPlayerInGame(requester);
-    Optional<Game> toFind = gameRepository.findById(requester.getGameId());
-    if(!toFind.isPresent()){
-      throw new GameNotFound("The game does not exist");
-    }
-    Game toQuit = toFind.get();
+    Game toQuit = findGame(requester.getGameId());
     if(!toQuit.quitPlayer(requester.getId())){
       throw new PlayerNotInGame("The player is not in the game");
     }
@@ -197,8 +178,16 @@ public class GameServiceImpl implements GameService{
   
   public Player findPlayer(String id){ 
     Optional<Player> toFind = playerRepository.findById(id);
-    if (!toFind.isPresent()){
+    if(!toFind.isPresent()){
       throw new PlayerNotFound("Id does not exist in the system");
+    }
+    return toFind.get();
+  }
+  
+  public Game findGame(String id){
+    Optional<Game> toFind = gameRepository.findById(id);
+    if(!toFind.isPresent()){
+      throw new GameNotFound("The game does not exists");
     }
     return toFind.get();
   }

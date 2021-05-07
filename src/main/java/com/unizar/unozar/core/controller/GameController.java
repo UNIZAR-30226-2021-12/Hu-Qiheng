@@ -10,7 +10,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.unizar.unozar.core.controller.resources.CreateGameRequest;
-import com.unizar.unozar.core.controller.resources.DrawRequest;
 import com.unizar.unozar.core.controller.resources.GameResponse;
 import com.unizar.unozar.core.controller.resources.JoinGameRequest;
 import com.unizar.unozar.core.controller.resources.PlayCardRequest;
@@ -63,7 +62,7 @@ public class GameController{
   
   @PostMapping(value = "/draw")
   public ResponseEntity<TokenResponse>
-      drawCards(@RequestBody DrawRequest request){
+      drawCards(@RequestBody TokenRequest request){
     return ResponseEntity.ok(gameService.draw(request));
   }
   

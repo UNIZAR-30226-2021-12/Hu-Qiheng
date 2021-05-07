@@ -78,7 +78,7 @@ public class PlayerServiceImpl implements PlayerService{
   public Void delete(DeletePlayerRequest request){
     Player toDelete = findPlayer(request.getToken().substring(0, 32));
     checkToken(toDelete, request.getToken().substring(32));
-    if (!toDelete.getGameId().equals(Player.NONE)){
+    if(!toDelete.getGameId().equals(Player.NONE)){
       throw new PlayerIsPlaying("The player is on a game");
     }
     playerRepository.delete(toDelete);

@@ -69,7 +69,7 @@ public class Game{
   private boolean isPrivate;
   
   @Column(name = "MAX_PLAYERS")
-  private int maxPlayers;
+  private int totalPlayers;
   
   @Column(name = "NUM_BOTS")
   private int numBots;
@@ -107,19 +107,16 @@ public class Game{
   @Column(name = "IS_PAUSED")
   private boolean isPaused;
   
-  @Column(name = "WINNER")
-  private int winner;
-  
   @Column(name = "END_CHECKED")
   private boolean endChecked[];
   
   public Game(){ // Don't even dare to look at this
     isPrivate = true;
-    maxPlayers = 4;
+    totalPlayers = 4;
     numBots = 0;
-    playersIds = new String[maxPlayers];
-    endChecked = new boolean[maxPlayers];
-    for (int i = 0; i < maxPlayers; i++){
+    playersIds = new String[totalPlayers];
+    endChecked = new boolean[totalPlayers];
+    for (int i = 0; i < totalPlayers; i++){
       playersIds[i] = "";
       endChecked[i] = false;
     }
@@ -127,22 +124,21 @@ public class Game{
     status = NOT_STARTED;
     normalFlow = true;
     isPaused = false;
-    winner = 0;
   }
   
-  public Game(boolean isPrivate, int maxPlayers, int numBots, String player){
+  public Game(boolean isPrivate, int totalPlayers, int numBots, String player){
     this.isPrivate = isPrivate;
-    this.maxPlayers = maxPlayers;
+    this.totalPlayers = totalPlayers;
     this.numBots = numBots;
-    playersIds = new String[maxPlayers];
-    endChecked = new boolean[maxPlayers];
+    playersIds = new String[totalPlayers];
+    endChecked = new boolean[totalPlayers];
     playersIds[0] = player;
     endChecked[0] = false;
     for (int i = 1; i < 1 + numBots; i++){
       playersIds[i] = BOT;
       endChecked[i] = false;
     }
-    for (int i = 1 + numBots; i < maxPlayers; i++){
+    for (int i = 1 + numBots; i < totalPlayers; i++){
       playersIds[i] = EMPTY;
       endChecked[i] = false;
     }
@@ -150,7 +146,6 @@ public class Game{
     status = NOT_STARTED;
     normalFlow = true;
     isPaused = false;
-    winner = 0;
   }
   
   // Returns true if the player was added to the game, false otherwise
@@ -158,7 +153,7 @@ public class Game{
     if(this.hasPlayer(playerId)){
       return false;
     }
-    for(int i = 1 + numBots; i < maxPlayers; i++){
+    for(int i = 1 + numBots; i < totalPlayers; i++){
       if(playersIds[i].equals(EMPTY)){
         playersIds[i] = playerId;
         return true;
@@ -172,7 +167,7 @@ public class Game{
     if(!this.hasPlayer(playerId)){
       return false;
     }
-    for(int i = 0; i < maxPlayers; i++){
+    for(int i = 0; i < totalPlayers; i++){
       if(playersIds[i].equals(playerId)){
         playersIds[i] = EMPTY;
         return true;
@@ -185,7 +180,7 @@ public class Game{
     if(!this.hasPlayer(newOwnerId)){
       return false;
     }
-    for(int i = 0; i < maxPlayers; i++){
+    for(int i = 0; i < totalPlayers; i++){
       if(playersIds[i].equals(newOwnerId)){
         if(!playersIds[0].equals(EMPTY)){
           throw new Como("AWHDIASHD");
@@ -200,7 +195,7 @@ public class Game{
   
   // Returns true if there is place for someone else, false otherwise
   public boolean hasSpace(){
-    for(int i = 1 + numBots; i < maxPlayers; i++){
+    for(int i = 1 + numBots; i < totalPlayers; i++){
       if(playersIds[i].equals(EMPTY)){
         return true;
       }
@@ -210,7 +205,7 @@ public class Game{
   
   // Returns true if the player is currently in the game, false otherwise
   public boolean hasPlayer(String player){
-    for(int i = 0; i < maxPlayers; i++){
+    for(int i = 0; i < totalPlayers; i++){
       if(playersIds[i].equals(player)){
         return true;
       }
@@ -219,7 +214,7 @@ public class Game{
   }
   
   public boolean hasAnyPlayer(){
-    for(int i = 0; i < maxPlayers; i++){
+    for(int i = 0; i < totalPlayers; i++){
       if(!playersIds[i].equals(BOT) && !playersIds[i].equals(EMPTY)){
         return true;
       }
@@ -236,7 +231,7 @@ public class Game{
     addSpecials();
     shuffleDrawDeck();
     for(int j = 0; j < 7; j++){
-      switch (maxPlayers){
+      switch (totalPlayers){
       case 4:
         playerThreeDeck.add(drawCard());        
       case 3: 
@@ -313,8 +308,8 @@ public class Game{
       discardDeck.add(cardToPlay);
       getDeckByPlayerNum(playerNum).remove(cardToMove);
       if(getDeckByPlayerNum(playerNum).size() == 0){
-        winner = playerNum;
         status = FINISHED;
+        finishBots();
       }else{
         checkUnozar(playerNum, hasSaidUnozar);
         updateGameStatus(true);
@@ -324,16 +319,6 @@ public class Game{
     }
   }
   
-  private void checkUnozar(int playerNum, boolean hasSaidUnozar){
-    if(getDeckByPlayerNum(playerNum).size() == 1){
-      if(!hasSaidUnozar){
-        getDeckByPlayerNum(playerNum).add(drawCard());
-      }
-    }else if(hasSaidUnozar){
-      getDeckByPlayerNum(playerNum).add(drawCard());
-    }
-  }
-
   private void updateGameStatus(boolean cardPlayedInThisTurn){
     if(cardPlayedInThisTurn){
       String top = discardDeck.get(discardDeck.size() - 1);
@@ -341,7 +326,7 @@ public class Game{
       case REVERSE:
         normalFlow = !normalFlow;
         if(normalFlow){
-          turn = (turn + 1) % (maxPlayers - 1);
+          turn = (turn + 1) % (totalPlayers - 1);
         }else{
           advanceReverseTurn();
         }
@@ -349,8 +334,8 @@ public class Game{
         break;
       case SKIP:
         if(normalFlow){
-          turn = (turn + 1) % (maxPlayers - 1);
-          turn = (turn + 1) % (maxPlayers - 1);
+          turn = (turn + 1) % (totalPlayers - 1);
+          turn = (turn + 1) % (totalPlayers - 1);
         }else{
           advanceReverseTurn();
           advanceReverseTurn();
@@ -372,11 +357,11 @@ public class Game{
   private void advanceReverseTurn(){
     turn--;
     if(turn == -1){
-      turn = maxPlayers - 1;
+      turn = totalPlayers - 1;
     }
   }
 
-  public void drawCards(String playerId, boolean hasSaidUnozar){
+  public void drawCards(String playerId){
     int playerNum = getPlayerNum(playerId);
     if(playerNum == -1){
       throw new PlayerNotInGame("The player is not in the game");
@@ -388,13 +373,13 @@ public class Game{
     case NOT_STARTED:
       throw new IncorrectAction("The game is yet to start");
     case PLAYING:
-      noneDraw(playerId, hasSaidUnozar);
+      noneDraw();
       break;
     case HAS_TO_DRAW_TWO:
-      drawTwoDraw(playerId, hasSaidUnozar);
+      drawTwoDraw();
       break;
     case HAS_TO_DRAW_FOUR:
-      drawFourDraw(playerId, hasSaidUnozar);
+      drawFourDraw();
       break;
     case FINISHED:
       throw new IncorrectAction("The game is over");
@@ -404,7 +389,45 @@ public class Game{
     updateGameStatus(false);
   }
   
-  public void shuffleDrawDeck(){
+  public String drawCard(){
+    String toDraw = drawDeck.get(drawDeck.size() - 1);
+    drawDeck.remove(drawDeck.size() - 1);
+    if(drawDeck.size() == 0){
+      while(discardDeck.size() > 1){
+        drawDeck.add(discardDeck.get(0));
+        discardDeck.remove(0);
+      }
+      shuffleDrawDeck();
+    }
+    return toDraw;
+  }
+  
+  public void finishPlayer(int playerNum){
+    endChecked[playerNum] = true;
+  }
+  
+  public boolean isEmpty(){
+    for(int i = 0; i < totalPlayers; i++){
+      if(endChecked[i] == false){
+        return false;
+      }
+    }
+    return true;
+  }
+  
+  /////////////////////
+  // Private methods //
+  /////////////////////
+  
+  private void finishBots(){
+    for(int i = 0; i < totalPlayers; i++){
+      if(playersIds[i].equals(BOT)){
+        endChecked[i] = true;
+      }
+    }
+  }
+  
+  private void shuffleDrawDeck(){
     int index;
     String temp;
     Random random = new Random();
@@ -416,15 +439,16 @@ public class Game{
     }
   }
   
-  public String drawCard(){
-    String toDraw = drawDeck.get(drawDeck.size() - 1);
-    drawDeck.remove(drawDeck.size() - 1);
-    return toDraw;
+  private void checkUnozar(int playerNum, boolean hasSaidUnozar){
+    if(getDeckByPlayerNum(playerNum).size() == 1){
+      if(!hasSaidUnozar){
+        getDeckByPlayerNum(playerNum).add(drawCard());
+      }
+    }else if(hasSaidUnozar){
+      getDeckByPlayerNum(playerNum).add(drawCard());
+    }
   }
-  
-  /////////////////////
-  // Private methods //
-  /////////////////////
+
   
   // Adds the numeric cards to the draw deck
   private void addNumbers(){
@@ -465,24 +489,46 @@ public class Game{
     }
   }
   
-  private void drawFourDraw(String playerId, boolean hasSaidUnozar){
-    // TODO Auto-generated method stub
-    
+  private void drawFourDraw(){
+    if(drawDeck.size() + discardDeck.size() > 2){
+      List<String> deck = getDeckByPlayerNum(turn);
+      for(int i = 0; i < deck.size(); i++){
+        if(isCardPlayable(deck.get(i))){
+          throw new IncorrectAction("You can't draw if you can play a card");
+        }
+      }
+      deck.add(drawCard());
+      deck.add(drawCard());
+      deck.add(drawCard());
+      deck.add(drawCard());
+    }
   }
 
-  private void drawTwoDraw(String playerId, boolean hasSaidUnozar){
-    // TODO Auto-generated method stub
-    
+  private void drawTwoDraw(){
+    if(drawDeck.size() + discardDeck.size() > 2){
+      List<String> deck = getDeckByPlayerNum(turn);
+      for(int i = 0; i < deck.size(); i++){
+        if(isCardPlayable(deck.get(i))){
+          throw new IncorrectAction("You can't draw if you can play a card");
+        }
+      }
+      deck.add(drawCard());
+      deck.add(drawCard());
+    }
   }
 
-  private void noneDraw(String playerId, boolean hasSaidUnozar){
-    // TODO Auto-generated method stub
-    
+  private void noneDraw(){
+    if(drawDeck.size() + discardDeck.size() > 1){
+      List<String> deck = getDeckByPlayerNum(turn);
+      for(int i = 0; i < deck.size(); i++){
+        if(isCardPlayable(deck.get(i))){
+          throw new IncorrectAction("You can't draw if you can play a card");
+        }
+      }
+      deck.add(drawCard());
+    }
   }
 
-  //////////////////
-  // Card methods //
-  //////////////////
   // Check if the given String is a correct card, throws IncorrectCard otherwise
   private void checkCard(String card){
     // Check incorrect length
@@ -548,7 +594,7 @@ public class Game{
   }
   
   public int getMaxPlayers(){
-    return maxPlayers;
+    return totalPlayers;
   }
   
   public int getNumBots(){
@@ -556,12 +602,12 @@ public class Game{
   }
   
   public int getPlayerNum(String playerId){
-    for(int i = 0; i < maxPlayers; i++){
+    for(int i = 0; i < totalPlayers; i++){
       if(playersIds[i].equals(playerId)){
         return i;
       }
     }
-    return -1;
+    throw new PlayerNotInGame("The player is not in the game");
   }
   
   public String getTopDiscardString(){
@@ -592,7 +638,7 @@ public class Game{
   }
   
   private List<String> getDeckByPlayerNum(int playerNum){
-    if(playerNum > maxPlayers - 1){
+    if(playerNum > totalPlayers - 1){
       throw new PlayerNotFound("There is not that many players");
     }
     switch(playerNum){
@@ -610,8 +656,8 @@ public class Game{
   }
 
   public int[] getPlayersDecksNumCards(){
-    int playersNumCards[] = new int[maxPlayers];
-    for (int i = 0; i < maxPlayers; i++){
+    int playersNumCards[] = new int[totalPlayers];
+    for (int i = 0; i < totalPlayers; i++){
       playersNumCards[i] = getPlayerDeckNumCards(i);
     }
     return playersNumCards;
