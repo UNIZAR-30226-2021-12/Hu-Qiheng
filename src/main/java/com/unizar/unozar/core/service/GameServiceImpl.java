@@ -4,6 +4,7 @@ import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 
+import com.unizar.unozar.core.Values;
 import com.unizar.unozar.core.controller.resources.CreateGameRequest;
 import com.unizar.unozar.core.controller.resources.GameResponse;
 import com.unizar.unozar.core.controller.resources.JoinGameRequest;
@@ -151,15 +152,15 @@ public class GameServiceImpl implements GameService{
     if(!toQuit.quitPlayer(requester.getId())){
       throw new PlayerNotInGame("The player is not in the game");
     }
-    if(toQuit.getOwner().equals(Game.EMPTY)){
+    if(toQuit.getOwner().equals(Values.EMPTY)){
       if(toQuit.hasAnyPlayer()){
         int maxPlayers = toQuit.getMaxPlayers();
         int numBots = toQuit.getNumBots();
         String playersIds[] = new String[maxPlayers];
         playersIds = toQuit.getPlayersIds();
         for(int i = numBots + 1; i < maxPlayers; i++){
-          if((!playersIds[i].equals(Game.EMPTY)) && 
-              (!playersIds[i].equals(Game.BOT))){
+          if((!playersIds[i].equals(Values.EMPTY)) && 
+              (!playersIds[i].equals(Values.BOT))){
             if(!toQuit.toOwner(playersIds[i])){
               throw new Como("asjdioajeoi");
             }

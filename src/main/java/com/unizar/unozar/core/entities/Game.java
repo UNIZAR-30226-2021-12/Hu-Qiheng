@@ -13,6 +13,7 @@ import javax.persistence.Table;
 
 import org.hibernate.annotations.GenericGenerator;
 
+import com.unizar.unozar.core.Values;
 import com.unizar.unozar.core.exceptions.CardNotFound;
 import com.unizar.unozar.core.exceptions.Como;
 import com.unizar.unozar.core.exceptions.DeckFull;
@@ -27,37 +28,6 @@ import com.unizar.unozar.core.exceptions.PlayerNotInGame;
 @Entity
 @Table(name = "GAME")
 public class Game{
-  
-  private final static int NOT_STARTED = -1;
-  private final static int PLAYING = 0;
-  private final static int HAS_TO_DRAW_TWO = 1;
-  private final static int HAS_TO_DRAW_FOUR = 2;
-  private final static int FINISHED = 3;
-  
-  public final static String BOT = "BOT";
-  public final static String EMPTY = "EMPTY";
-  
-  // Card constants
-  // Special value
-  private final static String NONE = "X";
-
-  // Colors
-  private final static String BLACK = "X";
-  private final static String RED = "R";
-  private final static String YELLOW = "Y";
-  private final static String GREEN = "G";
-  private final static String BLUE = "B";
-
-  private final static String BASIC_COLORS[] = {RED, YELLOW, GREEN, BLUE};
-
-  // Special functions
-  private final static String REVERSE = "R";
-  private final static String SKIP = "S";
-  private final static String DRAW_TWO = "2";
-  private final String DRAW_FOUR = "4";
-  private final static String CHANGE_COLOR = "C";
-
-  private final static String BASIC_SPEC[] = {REVERSE, SKIP, DRAW_TWO};
   
   @Id
   @Column(name = "ID")
@@ -121,7 +91,7 @@ public class Game{
       endChecked[i] = false;
     }
     turn = 0;
-    status = NOT_STARTED;
+    status = Values.NOT_STARTED;
     normalFlow = true;
     isPaused = false;
   }
@@ -135,15 +105,15 @@ public class Game{
     playersIds[0] = player;
     endChecked[0] = false;
     for (int i = 1; i < 1 + numBots; i++){
-      playersIds[i] = BOT;
+      playersIds[i] = Values.BOT;
       endChecked[i] = false;
     }
     for (int i = 1 + numBots; i < totalPlayers; i++){
-      playersIds[i] = EMPTY;
+      playersIds[i] = Values.EMPTY;
       endChecked[i] = false;
     }
     turn = 0;
-    status = NOT_STARTED;
+    status = Values.NOT_STARTED;
     normalFlow = true;
     isPaused = false;
   }
@@ -154,7 +124,7 @@ public class Game{
       return false;
     }
     for(int i = 1 + numBots; i < totalPlayers; i++){
-      if(playersIds[i].equals(EMPTY)){
+      if(playersIds[i].equals(Values.EMPTY)){
         playersIds[i] = playerId;
         return true;
       }
@@ -169,7 +139,7 @@ public class Game{
     }
     for(int i = 0; i < totalPlayers; i++){
       if(playersIds[i].equals(playerId)){
-        playersIds[i] = EMPTY;
+        playersIds[i] = Values.EMPTY;
         return true;
       }
     }
@@ -182,11 +152,11 @@ public class Game{
     }
     for(int i = 0; i < totalPlayers; i++){
       if(playersIds[i].equals(newOwnerId)){
-        if(!playersIds[0].equals(EMPTY)){
+        if(!playersIds[0].equals(Values.EMPTY)){
           throw new Como("AWHDIASHD");
         }
         playersIds[0] = playersIds[i];
-        playersIds[i] = EMPTY;
+        playersIds[i] = Values.EMPTY;
         return true;
       }
     }
@@ -196,7 +166,7 @@ public class Game{
   // Returns true if there is place for someone else, false otherwise
   public boolean hasSpace(){
     for(int i = 1 + numBots; i < totalPlayers; i++){
-      if(playersIds[i].equals(EMPTY)){
+      if(playersIds[i].equals(Values.EMPTY)){
         return true;
       }
     }
@@ -215,7 +185,7 @@ public class Game{
   
   public boolean hasAnyPlayer(){
     for(int i = 0; i < totalPlayers; i++){
-      if(!playersIds[i].equals(BOT) && !playersIds[i].equals(EMPTY)){
+      if(!playersIds[i].equals(Values.BOT) && !playersIds[i].equals(Values.EMPTY)){
         return true;
       }
     }
@@ -223,10 +193,10 @@ public class Game{
   }
   
   public void startGame(){
-    if(status != NOT_STARTED){
+    if(status != Values.NOT_STARTED){
       throw new GameAlreadyStarted("You can not start a started game");
     }
-    status = PLAYING;
+    status = Values.PLAYING;
     addNumbers();
     addSpecials();
     shuffleDrawDeck();
@@ -267,7 +237,7 @@ public class Game{
   }
   
   public boolean isGameStarted(){
-    if(status != NOT_STARTED){
+    if(status != Values.NOT_STARTED){
       return true;
     }
     return false;
@@ -278,7 +248,7 @@ public class Game{
   }
   
   public boolean isGameFinished(){
-    if(status == FINISHED){
+    if(status == Values.FINISHED){
       return true;
     }
     return false;
@@ -293,7 +263,7 @@ public class Game{
     if(playerNum != turn){
       throw new IncorrectTurn("It is not the player's turn");
     }
-    if(status != PLAYING){
+    if(status != Values.PLAYING){
       throw new IncorrectAction("Now is not the moment to play a card");
     }
     if(getPlayerDeckNumCards(getPlayerNum(playerId)) <= cardToMove){
@@ -308,7 +278,7 @@ public class Game{
       discardDeck.add(cardToPlay);
       getDeckByPlayerNum(playerNum).remove(cardToMove);
       if(getDeckByPlayerNum(playerNum).size() == 0){
-        status = FINISHED;
+        status = Values.FINISHED;
         finishBots();
       }else{
         checkUnozar(playerNum, hasSaidUnozar);
@@ -323,16 +293,16 @@ public class Game{
     if(cardPlayedInThisTurn){
       String top = discardDeck.get(discardDeck.size() - 1);
       switch(Character.toString(top.charAt(2))){
-      case REVERSE:
+      case Values.REVERSE:
         normalFlow = !normalFlow;
         if(normalFlow){
           turn = (turn + 1) % (totalPlayers - 1);
         }else{
           advanceReverseTurn();
         }
-        status = PLAYING;
+        status = Values.PLAYING;
         break;
-      case SKIP:
+      case Values.SKIP:
         if(normalFlow){
           turn = (turn + 1) % (totalPlayers - 1);
           turn = (turn + 1) % (totalPlayers - 1);
@@ -340,17 +310,17 @@ public class Game{
           advanceReverseTurn();
           advanceReverseTurn();
         }
-        status = PLAYING;
+        status = Values.PLAYING;
         break;
-      case DRAW_TWO:
-        status = HAS_TO_DRAW_TWO;
+      case Values.DRAW_TWO:
+        status = Values.HAS_TO_DRAW_TWO;
         break;
-      case DRAW_FOUR:
-        status = HAS_TO_DRAW_FOUR;
+      case Values.DRAW_FOUR:
+        status = Values.HAS_TO_DRAW_FOUR;
         break;
       }
     }else{
-      status = PLAYING;
+      status = Values.PLAYING;
     }
   }
 
@@ -370,18 +340,18 @@ public class Game{
       throw new IncorrectTurn("It is not the player's turn");
     }
     switch(status){
-    case NOT_STARTED:
+    case Values.NOT_STARTED:
       throw new IncorrectAction("The game is yet to start");
-    case PLAYING:
+    case Values.PLAYING:
       noneDraw();
       break;
-    case HAS_TO_DRAW_TWO:
+    case Values.HAS_TO_DRAW_TWO:
       drawTwoDraw();
       break;
-    case HAS_TO_DRAW_FOUR:
+    case Values.HAS_TO_DRAW_FOUR:
       drawFourDraw();
       break;
-    case FINISHED:
+    case Values.FINISHED:
       throw new IncorrectAction("The game is over");
     default:
       throw new Como("¡¿Pero cómo!?"); 
@@ -421,7 +391,7 @@ public class Game{
   
   private void finishBots(){
     for(int i = 0; i < totalPlayers; i++){
-      if(playersIds[i].equals(BOT)){
+      if(playersIds[i].equals(Values.BOT)){
         endChecked[i] = true;
       }
     }
@@ -473,19 +443,19 @@ public class Game{
 
   // Adds the special cards to the draw deck
   private void addSpecials(){
-    String spec[] = BASIC_SPEC;
-    String colors[] = BASIC_COLORS;
+    String spec[] = Values.BASIC_SPEC;
+    String colors[] = Values.BASIC_COLORS;
     // Colored special cards
     for(int i = 0; i < colors.length; i++){
       for(int j = 0; j < spec.length; j++){
-        addCard(drawDeck, NONE + colors[i] + spec[j]);
-        addCard(drawDeck, NONE + colors[i] + spec[j]);
+        addCard(drawDeck, Values.NONE + colors[i] + spec[j]);
+        addCard(drawDeck, Values.NONE + colors[i] + spec[j]);
       }
     }
     // Black special cards
     for(int i = 0; i < 4; i++){
-      addCard(drawDeck, NONE + BLACK + DRAW_FOUR);
-      addCard(drawDeck, NONE + BLACK + CHANGE_COLOR);
+      addCard(drawDeck, Values.NONE + Values.BLACK + Values.DRAW_FOUR);
+      addCard(drawDeck, Values.NONE + Values.BLACK + Values.CHANGE_COLOR);
     }
   }
   
@@ -582,7 +552,7 @@ public class Game{
   }
   
   private boolean isBlack(String card){
-    return Character.toString(card.charAt(1)).equals(BLACK);
+    return Character.toString(card.charAt(1)).equals(Values.BLACK);
   }
   
   /////////////////////////
