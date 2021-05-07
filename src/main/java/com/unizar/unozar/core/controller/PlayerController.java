@@ -82,8 +82,8 @@ public class PlayerController{
    
   @PostMapping(value = "/readFriends")
   public ResponseEntity<FriendListResponse>
-      readFriendList(@RequestBody TokenRequest request){
-    return ResponseEntity.ok(playerService.readFriendList(request));
+      readFriends(@RequestBody TokenRequest request){
+    return ResponseEntity.ok(playerService.readFriends(request));
   }
   
   @PostMapping(value = "/deleteFriend")

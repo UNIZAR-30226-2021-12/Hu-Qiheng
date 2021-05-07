@@ -28,7 +28,7 @@ public interface PlayerService{
   
   public TokenResponse addFriend(FriendRequest request);
 
-  public FriendListResponse readFriendList(TokenRequest request);
+  public FriendListResponse readFriends(TokenRequest request);
   
   public TokenResponse deleteFriend(FriendRequest request);
 

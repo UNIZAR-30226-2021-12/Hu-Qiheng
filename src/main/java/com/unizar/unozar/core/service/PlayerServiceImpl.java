@@ -139,7 +139,7 @@ public class PlayerServiceImpl implements PlayerService{
   }
 
   @Override
-  public FriendListResponse readFriendList(TokenRequest request){
+  public FriendListResponse readFriends(TokenRequest request){
     Player toReadFriends = findPlayer(request.getToken().substring(0, 32));
     checkToken(toReadFriends, request.getToken().substring(32));
     List<String> l = toReadFriends.getFriendList();

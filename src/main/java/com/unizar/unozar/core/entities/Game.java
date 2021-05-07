@@ -68,7 +68,7 @@ public class Game{
   @Column(name = "IS_PRIVATE")
   private boolean isPrivate;
   
-  @Column(name = "MAX_PLAYERS")
+  @Column(name = "TOTAL_PLAYERS")
   private int totalPlayers;
   
   @Column(name = "NUM_BOTS")
@@ -490,7 +490,7 @@ public class Game{
   }
   
   private void drawFourDraw(){
-    if(drawDeck.size() + discardDeck.size() > 2){
+    if(drawDeck.size() + discardDeck.size() > 4){
       List<String> deck = getDeckByPlayerNum(turn);
       for(int i = 0; i < deck.size(); i++){
         if(isCardPlayable(deck.get(i))){
