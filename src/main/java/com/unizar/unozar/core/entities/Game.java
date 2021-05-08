@@ -103,6 +103,9 @@ public class Game{
   
   public Game(boolean isPrivate, int totalPlayers, int numBots, String player){
     this.isPrivate = isPrivate;
+    if((!isPrivate) && (numBots > 0)){
+      throw new IncorrectAction("You can not create a public game with bots");
+    }
     this.totalPlayers = totalPlayers;
     this.numBots = numBots;
     playersIds = new String[totalPlayers];
@@ -403,13 +406,83 @@ public class Game{
     }
     if(now - lastMark > Values.TURN_TIME){
       updateLastMark();
-      //CAMBIO DE TURNO JAJAJAJAJA
+      playersIds[turn] = Values.BOT;
+      makeIAMove();
+      
     }
   }
   
   /////////////////////
   // Private methods //
   /////////////////////
+  
+  private boolean canPlayCards(){
+    List<String> deck = getDeckByPlayerNum(turn);
+    for(int i = 0; i < deck.size(); i++){
+      if(isCardPlayable(deck.get(i))){
+        return true;
+      }
+    }
+    return false;
+  }
+  
+  private void drawIA(){
+    switch(status){
+    case Values.NOT_STARTED:
+      throw new IncorrectAction("The game is yet to start");
+    case Values.PLAYING:
+      if(drawDeck.size() + discardDeck.size() > 1){
+        List<String> deck = getDeckByPlayerNum(turn);
+        deck.add(drawCard());
+      }
+      break;
+    case Values.HAS_TO_DRAW_TWO:
+      if(drawDeck.size() + discardDeck.size() > 2){
+        List<String> deck = getDeckByPlayerNum(turn);
+        deck.add(drawCard());
+        deck.add(drawCard());
+      }
+      break;
+    case Values.HAS_TO_DRAW_FOUR:
+      if(drawDeck.size() + discardDeck.size() > 4){
+        List<String> deck = getDeckByPlayerNum(turn);
+        deck.add(drawCard());
+        deck.add(drawCard());
+        deck.add(drawCard());
+        deck.add(drawCard());
+      }
+      break;
+    case Values.FINISHED:
+      throw new IncorrectAction("The game is over");
+    default:
+      throw new Como("¡¿Pero cómo!?"); 
+    }
+    updateGameStatus(true);
+  }
+  
+  private void moveIA(){
+    // Priority A: check if next player is about to finish and IA has draw cards
+    if(true){
+      
+    }else if(true){ // Priority B: check for numeric cards
+      
+    }else if(true){ // Priority C: check for basic special cards
+      
+    }else if(true){ // Priority D: check for +2 cards
+      
+    }else{ // Priority E: any card is fine
+      
+    }
+    updateGameStatus(true);
+  }
+  
+  private void makeIAMove(){
+    if(canPlayCards()){
+      drawIA();
+    }else{
+      moveIA();
+    }
+  }
   
   private void updateLastMark(){
     int now = getTodaySeconds();
@@ -502,12 +575,10 @@ public class Game{
   
   private void drawFourDraw(){
     if(drawDeck.size() + discardDeck.size() > 4){
-      List<String> deck = getDeckByPlayerNum(turn);
-      for(int i = 0; i < deck.size(); i++){
-        if(isCardPlayable(deck.get(i))){
-          throw new IncorrectAction("You can't draw if you can play a card");
-        }
+      if(!canPlayCards()){
+        throw new IncorrectAction("You can't draw if you can play a card");
       }
+      List<String> deck = getDeckByPlayerNum(turn);
       deck.add(drawCard());
       deck.add(drawCard());
       deck.add(drawCard());
@@ -517,12 +588,10 @@ public class Game{
 
   private void drawTwoDraw(){
     if(drawDeck.size() + discardDeck.size() > 2){
-      List<String> deck = getDeckByPlayerNum(turn);
-      for(int i = 0; i < deck.size(); i++){
-        if(isCardPlayable(deck.get(i))){
-          throw new IncorrectAction("You can't draw if you can play a card");
-        }
+      if(!canPlayCards()){
+        throw new IncorrectAction("You can't draw if you can play a card");
       }
+      List<String> deck = getDeckByPlayerNum(turn);
       deck.add(drawCard());
       deck.add(drawCard());
     }
@@ -530,12 +599,10 @@ public class Game{
 
   private void noneDraw(){
     if(drawDeck.size() + discardDeck.size() > 1){
-      List<String> deck = getDeckByPlayerNum(turn);
-      for(int i = 0; i < deck.size(); i++){
-        if(isCardPlayable(deck.get(i))){
-          throw new IncorrectAction("You can't draw if you can play a card");
-        }
+      if(!canPlayCards()){
+        throw new IncorrectAction("You can't draw if you can play a card");
       }
+      List<String> deck = getDeckByPlayerNum(turn);
       deck.add(drawCard());
     }
   }
