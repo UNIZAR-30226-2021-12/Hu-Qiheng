@@ -6,34 +6,40 @@ import com.unizar.unozar.core.entities.Player;
 public class PlayerDTO{
   
   @JsonProperty
-  public String id;
+  private String id;
   
   @JsonProperty
-  public String email;
+  private String email;
   
   @JsonProperty
-  public int avatarId;
+  private int avatarId;
   
   @JsonProperty
-  public String alias;
+  private String alias;
   
   @JsonProperty
-  public int money;
+  private int money;
   
   @JsonProperty
-  public String gameId;
+  private int[] unlockables;
   
   @JsonProperty
-  public int privateWins;
+  private boolean giftClaimedToday;
   
   @JsonProperty
-  public int privateTotal;
+  private String gameId;
   
   @JsonProperty
-  public int publicWins;
+  private int privateWins;
   
   @JsonProperty
-  public int publicTotal;
+  private int privateTotal;
+  
+  @JsonProperty
+  private int publicWins;
+  
+  @JsonProperty
+  private int publicTotal;
   
   public PlayerDTO(Player toTransfer){
     id = toTransfer.getId();
@@ -41,6 +47,8 @@ public class PlayerDTO{
     avatarId = toTransfer.getAvatarId();
     alias = toTransfer.getAlias();
     money = toTransfer.getMoney();
+    unlockables = toTransfer.getUnlockables().stream().mapToInt(i->i).toArray();
+    giftClaimedToday = toTransfer.isGiftClaimedToday();
     gameId = toTransfer.getGameId();
     privateWins = toTransfer.getPrivateWins();
     privateTotal = toTransfer.getPrivateTotal();

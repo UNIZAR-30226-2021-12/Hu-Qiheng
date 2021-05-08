@@ -9,12 +9,14 @@ import com.unizar.unozar.core.DTO.PlayerDTO;
 import com.unizar.unozar.core.controller.resources.AuthenticationRequest;
 import com.unizar.unozar.core.controller.resources.AuthenticationResponse;
 import com.unizar.unozar.core.controller.resources.CreatePlayerRequest;
+import com.unizar.unozar.core.controller.resources.DailyGiftResponse;
 import com.unizar.unozar.core.controller.resources.DeletePlayerRequest;
 import com.unizar.unozar.core.controller.resources.FriendListResponse;
 import com.unizar.unozar.core.controller.resources.FriendRequest;
 import com.unizar.unozar.core.controller.resources.ReadPlayerRequest;
 import com.unizar.unozar.core.controller.resources.TokenRequest;
 import com.unizar.unozar.core.controller.resources.TokenResponse;
+import com.unizar.unozar.core.controller.resources.UnlockRequest;
 import com.unizar.unozar.core.controller.resources.UpdatePlayerRequest;
 import com.unizar.unozar.core.entities.Player;
 import com.unizar.unozar.core.exceptions.EmailInUse;
@@ -108,21 +110,6 @@ public class PlayerServiceImpl implements PlayerService{
     playerRepository.save(toRefresh);
     return new AuthenticationResponse(toRefresh.getId(), token);
   }
-  
-  public Player findPlayer(String id){ 
-    Optional<Player> toFind = playerRepository.findById(id);
-    if(!toFind.isPresent()){
-      throw new PlayerNotFound("Id does not exist in the system");
-    }
-    return toFind.get();
-  }
-  
-  public Void checkToken(Player toCheck, String token){
-    if(!toCheck.checkSession(token)){
-      throw new InvalidIdentity("Invalid token");
-    }
-    return null;
-  }
 
   @Override
   public TokenResponse addFriend(FriendRequest request){
@@ -175,4 +162,38 @@ public class PlayerServiceImpl implements PlayerService{
     return new TokenResponse(token);
   }
 
+  @Override
+  public TokenResponse unlock(UnlockRequest request){
+    Player requester = findPlayer(request.getToken().substring(0, 32));
+    checkToken(requester, request.getToken().substring(32));
+    requester.unlock(request.getUnlockableId());
+    String token = requester.getId() + requester.updateSession();
+    playerRepository.save(requester);
+    return new TokenResponse(token);
+  }
+  
+  @Override
+  public DailyGiftResponse getDailyGift(TokenRequest request){
+    Player requester = findPlayer(request.getToken().substring(0,32));
+    checkToken(requester, request.getToken().substring(32));
+    int gift = requester.dailyGift();
+    String token = requester.getId() + requester.updateSession();
+    playerRepository.save(requester);
+    return new DailyGiftResponse(gift, token);
+  }
+  
+  public Player findPlayer(String id){ 
+    Optional<Player> toFind = playerRepository.findById(id);
+    if(!toFind.isPresent()){
+      throw new PlayerNotFound("Id does not exist in the system");
+    }
+    return toFind.get();
+  }
+  
+  public Void checkToken(Player toCheck, String token){
+    if(!toCheck.checkSession(token)){
+      throw new InvalidIdentity("Invalid token");
+    }
+    return null;
+  }
 }

@@ -66,7 +66,6 @@ public class GameController{
     return ResponseEntity.ok(gameService.draw(request));
   }
   
-  
 // Not implemented yet
 //  @GetMapping(value = "/pause")
 //  public ResponseEntity<Void>

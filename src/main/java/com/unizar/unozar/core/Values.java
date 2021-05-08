@@ -1,6 +1,15 @@
 package com.unizar.unozar.core;
 
 public class Values{
+  
+  public final static int SHOP[] = {100, 200, 300, 600, 1200, 1300};
+  
+  public final static int GIFTS[] = {10, 20, 30, 50, 100};
+  
+  public final static int TURN_TIME = 60;
+  public final static int PAUSE_EXTRA = 300;
+  public static final int DAY_SECONDS = 86400;
+  
   public final static int NOT_STARTED = -1;
   public final static int PLAYING = 0;
   public final static int HAS_TO_DRAW_TWO = 1;
@@ -31,4 +40,5 @@ public class Values{
   public final static String CHANGE_COLOR = "C";
 
   public final static String BASIC_SPEC[] = {REVERSE, SKIP, DRAW_TWO};
+
 }

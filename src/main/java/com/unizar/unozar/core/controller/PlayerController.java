@@ -15,12 +15,14 @@ import com.unizar.unozar.core.DTO.PlayerDTO;
 import com.unizar.unozar.core.controller.resources.AuthenticationRequest;
 import com.unizar.unozar.core.controller.resources.AuthenticationResponse;
 import com.unizar.unozar.core.controller.resources.CreatePlayerRequest;
+import com.unizar.unozar.core.controller.resources.DailyGiftResponse;
 import com.unizar.unozar.core.controller.resources.DeletePlayerRequest;
 import com.unizar.unozar.core.controller.resources.FriendListResponse;
 import com.unizar.unozar.core.controller.resources.FriendRequest;
 import com.unizar.unozar.core.controller.resources.ReadPlayerRequest;
 import com.unizar.unozar.core.controller.resources.TokenRequest;
 import com.unizar.unozar.core.controller.resources.TokenResponse;
+import com.unizar.unozar.core.controller.resources.UnlockRequest;
 import com.unizar.unozar.core.controller.resources.UpdatePlayerRequest;
 import com.unizar.unozar.core.service.PlayerService;
 
@@ -92,4 +94,15 @@ public class PlayerController{
     return ResponseEntity.ok(playerService.deleteFriend(request));
   }
   
+  @PostMapping(value = "/unlock")
+  public ResponseEntity<TokenResponse>
+      unlock(@RequestBody UnlockRequest request){
+    return ResponseEntity.ok(playerService.unlock(request));
+  }
+  
+  @PostMapping(value = "/getDailyGift")
+  public ResponseEntity<DailyGiftResponse>
+      getDailyGift(@RequestBody TokenRequest request){
+    return ResponseEntity.ok(playerService.getDailyGift(request));
+  }
 }

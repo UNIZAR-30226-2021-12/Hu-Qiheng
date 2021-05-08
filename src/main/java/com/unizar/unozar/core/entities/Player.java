@@ -3,6 +3,7 @@ package com.unizar.unozar.core.entities;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 import javax.persistence.Column;
 import javax.persistence.ElementCollection;
@@ -13,7 +14,9 @@ import javax.persistence.Table;
 
 import org.hibernate.annotations.GenericGenerator;
 
+import com.unizar.unozar.core.Values;
 import com.unizar.unozar.core.exceptions.AlreadyFriends;
+import com.unizar.unozar.core.exceptions.IncorrectAction;
 
 @Entity
 @Table(name = "PLAYER")
@@ -42,6 +45,12 @@ public class Player{
   @Column(name = "MONEY", nullable = false)
   private int money;
   
+  @ElementCollection
+  private List<Integer> unlockables = new ArrayList<Integer>();
+  
+  @Column(name = "LAST_GIFT_DAY", nullable = false)
+  private int lastGiftDay;
+  
   @Column(name = "GAME_ID", nullable = false)
   private String gameId;
   
@@ -61,7 +70,7 @@ public class Player{
   private int publicTotal;
   
   @ElementCollection
-  private List<String> friendList;
+  private List<String> friendList = new ArrayList<String>();
   
   public Player(){
     email = "email";
@@ -69,13 +78,13 @@ public class Player{
     alias = "alias";
     password = "password";
     money = 100; // Yet to decide
+    lastGiftDay = 0;
     gameId = NONE;
     session = 0;
     privateWins = 0;
     privateTotal = 0;
     publicWins = 0;
     publicTotal = 0;
-    friendList = new ArrayList<String>();
   }
   
   public Player(String email, String alias, String password){
@@ -84,13 +93,13 @@ public class Player{
     this.alias = alias;
     this.password = password;
     money = 100; // Yet to decide
+    lastGiftDay = 0;
     gameId = NONE;
     session = -601;
     privateWins = 0;
     privateTotal = 0;
     publicWins = 0;
     publicTotal = 0;
-    friendList = new ArrayList<String>();
   }
   
   // Retrieves today's seconds
@@ -167,6 +176,33 @@ public class Player{
     friendList.remove(friendId);
   }
   
+  public void unlock(int unlockableId){
+    if((unlockableId >= Values.SHOP.length) || (unlockableId < 0)){
+      throw new IncorrectAction("The unlockable does not exist");
+    }
+    if(unlockables.contains(unlockableId)){
+      throw new IncorrectAction("The user already has the unlockable");
+    }
+    if(money < Values.SHOP[unlockableId]){
+      throw new IncorrectAction("The user does not have enough money");
+    }
+    unlockables.add(unlockableId);
+    money -= Values.SHOP[unlockableId];
+  }
+  
+  public int dailyGift(){
+    LocalDateTime now = LocalDateTime.now();
+    if(lastGiftDay != now.getDayOfYear()){
+      throw new IncorrectAction("Player already claimed today's gift");
+    }
+    lastGiftDay = now.getDayOfYear();
+    return Values.GIFTS[new Random().nextInt(Values.GIFTS.length)];
+  }
+  
+  public boolean isGiftClaimedToday(){
+    return lastGiftDay == LocalDateTime.now().getDayOfYear();
+  }
+  
   /////////////////////////
   // Getters and Setters //
   /////////////////////////
@@ -217,6 +253,10 @@ public class Player{
   
   public List<String> getFriendList(){
     return friendList;
+  }
+  
+  public List<Integer> getUnlockables(){
+    return unlockables;
   }
 
   public void setAlias(String alias){

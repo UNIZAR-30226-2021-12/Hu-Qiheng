@@ -1,5 +1,6 @@
 package com.unizar.unozar.core.entities;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -71,6 +72,9 @@ public class Game{
   @Column(name = "STATUS")
   private int status;
   
+  @Column(name = "LAST_MARK")
+  private int lastMark;
+  
   @Column(name = "NORMAL_FLOW")
   private boolean normalFlow;
   
@@ -92,6 +96,7 @@ public class Game{
     }
     turn = 0;
     status = Values.NOT_STARTED;
+    lastMark = 0;
     normalFlow = true;
     isPaused = false;
   }
@@ -114,6 +119,7 @@ public class Game{
     }
     turn = 0;
     status = Values.NOT_STARTED;
+    lastMark = 0;
     normalFlow = true;
     isPaused = false;
   }
@@ -185,7 +191,8 @@ public class Game{
   
   public boolean hasAnyPlayer(){
     for(int i = 0; i < totalPlayers; i++){
-      if(!playersIds[i].equals(Values.BOT) && !playersIds[i].equals(Values.EMPTY)){
+      if(!playersIds[i].equals(Values.BOT) && 
+          !playersIds[i].equals(Values.EMPTY)){
         return true;
       }
     }
@@ -212,6 +219,7 @@ public class Game{
       }
     }
     startDiscardDeck();
+    updateLastMark();
   }
   
   public void addCard(List<String> deck, String toAdd){
@@ -322,6 +330,7 @@ public class Game{
     }else{
       status = Values.PLAYING;
     }
+    updateLastMark();
   }
 
   private void advanceReverseTurn(){
@@ -385,9 +394,41 @@ public class Game{
     return true;
   }
   
+  public void updateTurnIfNeeded(){
+    int now;
+    if(lastMark > Values.DAY_SECONDS){
+      now = getTodaySeconds() + Values.DAY_SECONDS;
+    }else{
+      now = getTodaySeconds();
+    }
+    if(now - lastMark > Values.TURN_TIME){
+      updateLastMark();
+      //CAMBIO DE TURNO JAJAJAJAJA
+    }
+  }
+  
   /////////////////////
   // Private methods //
   /////////////////////
+  
+  private void updateLastMark(){
+    int now = getTodaySeconds();
+    if((lastMark < Values.DAY_SECONDS) && (now < lastMark)){
+      lastMark = now + Values.DAY_SECONDS; 
+    }else{
+      lastMark = now;
+    }
+  }
+  
+  // Retrieves today's seconds
+  private int getTodaySeconds(){
+    LocalDateTime localDate = LocalDateTime.now();
+    int hours = localDate.getHour();
+    int minutes = localDate.getMinute();
+    int seconds = localDate.getSecond();
+    int newSession = hours * 3600 + minutes * 60 + seconds;
+    return newSession;
+  }
   
   private void finishBots(){
     for(int i = 0; i < totalPlayers; i++){

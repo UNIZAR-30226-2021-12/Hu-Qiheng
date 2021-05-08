@@ -72,6 +72,8 @@ public class GameServiceImpl implements GameService{
       }else{
         gameRepository.save(toRead);
       }
+    }else{
+      toRead.updateTurnIfNeeded();
     }
     playerRepository.save(requester);
     return response;
