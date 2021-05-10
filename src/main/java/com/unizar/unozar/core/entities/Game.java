@@ -20,6 +20,7 @@ import com.unizar.unozar.core.exceptions.Como;
 import com.unizar.unozar.core.exceptions.DeckFull;
 import com.unizar.unozar.core.exceptions.DiscardDeckEmpty;
 import com.unizar.unozar.core.exceptions.GameAlreadyStarted;
+import com.unizar.unozar.core.exceptions.GameFull;
 import com.unizar.unozar.core.exceptions.IncorrectAction;
 import com.unizar.unozar.core.exceptions.IncorrectCard;
 import com.unizar.unozar.core.exceptions.IncorrectTurn;
@@ -72,8 +73,8 @@ public class Game{
   @Column(name = "STATUS")
   private int status;
   
-  @Column(name = "LAST_MARK")
-  private int lastMark;
+  @Column(name = "NEXT_MARK")
+  private int nextMark;
   
   @Column(name = "NORMAL_FLOW")
   private boolean normalFlow;
@@ -96,7 +97,7 @@ public class Game{
     }
     turn = 0;
     status = Values.NOT_STARTED;
-    lastMark = 0;
+    nextMark = 0;
     normalFlow = true;
     isPaused = false;
   }
@@ -122,43 +123,43 @@ public class Game{
     }
     turn = 0;
     status = Values.NOT_STARTED;
-    lastMark = 0;
+    nextMark = 0;
     normalFlow = true;
     isPaused = false;
   }
   
-  // Returns true if the player was added to the game, false otherwise
-  public boolean addPlayer(String playerId){
+  public void addPlayer(String playerId){
     if(this.hasPlayer(playerId)){
-      return false;
+      throw new IncorrectAction("The player is already in the game");
     }
+    boolean added = false;
     for(int i = 1 + numBots; i < totalPlayers; i++){
       if(playersIds[i].equals(Values.EMPTY)){
         playersIds[i] = playerId;
-        return true;
+        added = true;
       }
     }
-    return false;
+    if(!added){
+      throw new GameFull("The game has no space for another player");
+    }
   }
   
-  // Returns true if the player was quit from the game, false otherwise
-  public boolean quitPlayer(String playerId){
+  public void quitPlayer(String playerId){
     if(!this.hasPlayer(playerId)){
-      return false;
+      throw new IncorrectAction("The player is not in the game");
     }
     for(int i = 0; i < totalPlayers; i++){
       if(playersIds[i].equals(playerId)){
         playersIds[i] = Values.EMPTY;
-        return true;
       }
     }
-    return false;
   }
   
-  public boolean toOwner(String newOwnerId){
+  public void toOwner(String newOwnerId){
     if(!this.hasPlayer(newOwnerId)){
-      return false;
+      throw new Como("QUE");
     }
+    boolean done = false;
     for(int i = 0; i < totalPlayers; i++){
       if(playersIds[i].equals(newOwnerId)){
         if(!playersIds[0].equals(Values.EMPTY)){
@@ -166,10 +167,12 @@ public class Game{
         }
         playersIds[0] = playersIds[i];
         playersIds[i] = Values.EMPTY;
-        return true;
+        done = true;
       }
     }
-    return false;
+    if(!done){
+      throw new Como("asjdioajeo");
+    }
   }
   
   // Returns true if there is place for someone else, false otherwise
@@ -222,7 +225,7 @@ public class Game{
       }
     }
     startDiscardDeck();
-    updateLastMark();
+    updateNextMark();
   }
   
   public void addCard(List<String> deck, String toAdd){
@@ -268,17 +271,15 @@ public class Game{
   public void playCard(String playerId, int cardToMove, 
       boolean hasSaidUnozar, String colorSelected){
     int playerNum = getPlayerNum(playerId);
-    if(playerNum == -1){
-      throw new PlayerNotInGame("The player is not in the game");
-    }
     if(playerNum != turn){
       throw new IncorrectTurn("It is not the player's turn");
     }
     if(status != Values.PLAYING){
       throw new IncorrectAction("Now is not the moment to play a card");
     }
-    if(getPlayerDeckNumCards(getPlayerNum(playerId)) <= cardToMove){
-      throw new CardNotFound("The player does not have that many cards");
+    if((getPlayerDeckNumCards(getPlayerNum(playerId)) <= cardToMove) &&
+        (cardToMove >= 0)){
+      throw new CardNotFound("The player does not have that card");
     }
     String cardToPlay = getDeckByPlayerNum(playerNum).get(cardToMove);
     if(isCardPlayable(cardToPlay)){
@@ -306,21 +307,10 @@ public class Game{
       switch(Character.toString(top.charAt(2))){
       case Values.REVERSE:
         normalFlow = !normalFlow;
-        if(normalFlow){
-          turn = (turn + 1) % (totalPlayers - 1);
-        }else{
-          advanceReverseTurn();
-        }
         status = Values.PLAYING;
         break;
       case Values.SKIP:
-        if(normalFlow){
-          turn = (turn + 1) % (totalPlayers - 1);
-          turn = (turn + 1) % (totalPlayers - 1);
-        }else{
-          advanceReverseTurn();
-          advanceReverseTurn();
-        }
+        advanceTurn();
         status = Values.PLAYING;
         break;
       case Values.DRAW_TWO:
@@ -333,14 +323,8 @@ public class Game{
     }else{
       status = Values.PLAYING;
     }
-    updateLastMark();
-  }
-
-  private void advanceReverseTurn(){
-    turn--;
-    if(turn == -1){
-      turn = totalPlayers - 1;
-    }
+    advanceTurn();
+    updateNextMark();
   }
 
   public void drawCards(String playerId){
@@ -351,23 +335,10 @@ public class Game{
     if(playerNum != turn){
       throw new IncorrectTurn("It is not the player's turn");
     }
-    switch(status){
-    case Values.NOT_STARTED:
-      throw new IncorrectAction("The game is yet to start");
-    case Values.PLAYING:
-      noneDraw();
-      break;
-    case Values.HAS_TO_DRAW_TWO:
-      drawTwoDraw();
-      break;
-    case Values.HAS_TO_DRAW_FOUR:
-      drawFourDraw();
-      break;
-    case Values.FINISHED:
-      throw new IncorrectAction("The game is over");
-    default:
-      throw new Como("¡¿Pero cómo!?"); 
+    if(!canPlayCards()){
+      throw new IncorrectAction("You can't draw if you can play a card");
     }
+    drawCardsByTurn();
     updateGameStatus(false);
   }
   
@@ -398,17 +369,10 @@ public class Game{
   }
   
   public void updateTurnIfNeeded(){
-    int now;
-    if(lastMark > Values.DAY_SECONDS){
-      now = getTodaySeconds() + Values.DAY_SECONDS;
-    }else{
-      now = getTodaySeconds();
-    }
-    if(now - lastMark > Values.TURN_TIME){
-      updateLastMark();
+    if(getTodaySeconds() >= nextMark){
+      updateNextMark();
       playersIds[turn] = Values.BOT;
       makeIAMove();
-      
     }
   }
   
@@ -416,36 +380,48 @@ public class Game{
   // Private methods //
   /////////////////////
   
-  private boolean canPlayCards(){
-    List<String> deck = getDeckByPlayerNum(turn);
-    for(int i = 0; i < deck.size(); i++){
-      if(isCardPlayable(deck.get(i))){
-        return true;
+  private int nextTurn(){
+    int nextTurn = turn;
+    if(normalFlow){
+      nextTurn = (turn + 1) % (totalPlayers - 1);
+    }else{
+      nextTurn--;
+      if(nextTurn == -1){
+        nextTurn = totalPlayers - 1;
       }
-    }
-    return false;
+    } 
+    return nextTurn;
   }
   
-  private void drawIA(){
+  private void advanceTurn(){
+    if(normalFlow){
+      turn = (turn + 1) % (totalPlayers - 1);
+    }else{
+      turn--;
+      if(turn == -1){
+        turn = totalPlayers - 1;
+      }
+    } 
+  }
+  
+  public void drawCardsByTurn(){ 
+    List<String> deck = getDeckByPlayerNum(turn);
     switch(status){
     case Values.NOT_STARTED:
       throw new IncorrectAction("The game is yet to start");
     case Values.PLAYING:
       if(drawDeck.size() + discardDeck.size() > 1){
-        List<String> deck = getDeckByPlayerNum(turn);
         deck.add(drawCard());
       }
       break;
     case Values.HAS_TO_DRAW_TWO:
       if(drawDeck.size() + discardDeck.size() > 2){
-        List<String> deck = getDeckByPlayerNum(turn);
         deck.add(drawCard());
         deck.add(drawCard());
       }
       break;
     case Values.HAS_TO_DRAW_FOUR:
       if(drawDeck.size() + discardDeck.size() > 4){
-        List<String> deck = getDeckByPlayerNum(turn);
         deck.add(drawCard());
         deck.add(drawCard());
         deck.add(drawCard());
@@ -457,18 +433,27 @@ public class Game{
     default:
       throw new Como("¡¿Pero cómo!?"); 
     }
-    updateGameStatus(true);
+  }
+  
+  private boolean canPlayCards(){
+    List<String> deck = getDeckByPlayerNum(turn);
+    for(int i = 0; i < deck.size(); i++){
+      if(isCardPlayable(deck.get(i))){
+        return true;
+      }
+    }
+    return false;
   }
   
   private void moveIA(){
     // Priority A: check if next player is about to finish and IA has draw cards
-    if(true){
+    if((getDeckByPlayerNum(nextTurn()).size() == 1) && (hasDrawCardsToPlay())){
       
-    }else if(true){ // Priority B: check for numeric cards
+    }else if(hasNumericCardsToPlay()){ // Priority B: check numeric cards
       
-    }else if(true){ // Priority C: check for basic special cards
+    }else if(hasSkipOrReverseToPlay()){ // Priority C: check basic special cards
       
-    }else if(true){ // Priority D: check for +2 cards
+    }else if(hasDrawTwoToPlay()){ // Priority D: check for +2 cards
       
     }else{ // Priority E: any card is fine
       
@@ -476,21 +461,77 @@ public class Game{
     updateGameStatus(true);
   }
   
+  private boolean hasDrawTwoToPlay(){
+    List<String> deck = getDeckByPlayerNum(turn);
+    String card;
+    for(int i = 0; i < deck.size(); i++){
+      card = deck.get(i);
+      if(isDrawTwoCard(card) && isCardPlayable(card)){
+        return true;
+      }
+    }
+    return false;
+  }
+
+  private boolean isDrawTwoCard(String card){
+    return Character.toString(card.charAt(2)).equals(Values.DRAW_TWO);    
+  }
+  
+  private boolean hasSkipOrReverseToPlay(){
+    List<String> deck = getDeckByPlayerNum(turn);
+    String card;
+    for(int i = 0; i < deck.size(); i++){
+      card = deck.get(i);
+      if(isSkipOrReverseCard(card) && isCardPlayable(card)){
+        return true;
+      }
+    }
+    return false;
+  }
+
+  private boolean isSkipOrReverseCard(String card){
+    return Character.toString(card.charAt(2)).equals(Values.SKIP) || 
+        Character.toString(card.charAt(2)).equals(Values.REVERSE);    
+  }
+  
+  private boolean hasNumericCardsToPlay(){
+    List<String> deck = getDeckByPlayerNum(turn);
+    String card;
+    for(int i = 0; i < deck.size(); i++){
+      card = deck.get(i);
+      if(isNumericCard(card) && isCardPlayable(card)){
+        return true;
+      }
+    }
+    return false;
+  }
+  
+  private boolean isNumericCard(String card){
+    return !Character.toString(card.charAt(0)).equals(Values.NONE);
+  }
+  
+  private boolean hasDrawCardsToPlay(){
+    List<String> deck = getDeckByPlayerNum(turn);
+    String card;
+    for(int i = 0; i < deck.size(); i++){
+      card = deck.get(i);
+      if(isDrawCard(card) && isCardPlayable(card)){
+        return true;
+      }
+    }
+    return false;
+  }
+  
   private void makeIAMove(){
     if(canPlayCards()){
-      drawIA();
+      drawCardsByTurn();
     }else{
       moveIA();
     }
   }
   
-  private void updateLastMark(){
-    int now = getTodaySeconds();
-    if((lastMark < Values.DAY_SECONDS) && (now < lastMark)){
-      lastMark = now + Values.DAY_SECONDS; 
-    }else{
-      lastMark = now;
-    }
+  private void updateNextMark(){
+    nextMark = (getTodaySeconds() + Values.TURN_TIME) % Values.DAY_SECONDS;
   }
   
   // Retrieves today's seconds
@@ -572,40 +613,6 @@ public class Game{
       addCard(drawDeck, Values.NONE + Values.BLACK + Values.CHANGE_COLOR);
     }
   }
-  
-  private void drawFourDraw(){
-    if(drawDeck.size() + discardDeck.size() > 4){
-      if(!canPlayCards()){
-        throw new IncorrectAction("You can't draw if you can play a card");
-      }
-      List<String> deck = getDeckByPlayerNum(turn);
-      deck.add(drawCard());
-      deck.add(drawCard());
-      deck.add(drawCard());
-      deck.add(drawCard());
-    }
-  }
-
-  private void drawTwoDraw(){
-    if(drawDeck.size() + discardDeck.size() > 2){
-      if(!canPlayCards()){
-        throw new IncorrectAction("You can't draw if you can play a card");
-      }
-      List<String> deck = getDeckByPlayerNum(turn);
-      deck.add(drawCard());
-      deck.add(drawCard());
-    }
-  }
-
-  private void noneDraw(){
-    if(drawDeck.size() + discardDeck.size() > 1){
-      if(!canPlayCards()){
-        throw new IncorrectAction("You can't draw if you can play a card");
-      }
-      List<String> deck = getDeckByPlayerNum(turn);
-      deck.add(drawCard());
-    }
-  }
 
   // Check if the given String is a correct card, throws IncorrectCard otherwise
   private void checkCard(String card){
@@ -658,10 +665,16 @@ public class Game{
     }
     return false;
   }
-  
+ 
   private boolean isBlack(String card){
     return Character.toString(card.charAt(1)).equals(Values.BLACK);
   }
+  
+  private boolean isDrawCard(String card){
+    return Character.toString(card.charAt(2)).equals(Values.DRAW_TWO) ||
+        Character.toString(card.charAt(2)).equals(Values.DRAW_FOUR);
+  }
+  
   
   /////////////////////////
   // Getters and Setters //

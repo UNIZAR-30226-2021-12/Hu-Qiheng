@@ -85,9 +85,6 @@ public class GameServiceImpl implements GameService{
     checkToken(requester, request.getToken().substring(32));
     checkPlayerNotInGame(requester);
     Game toJoin = findGame(requester.getGameId());
-    if(!toJoin.hasSpace()){
-      throw new GameFull("The game has no space for another player");
-    }
     toJoin.addPlayer(requester.getId());
     requester.setGameId(toJoin.getId());
     gameRepository.save(toJoin);
@@ -151,11 +148,9 @@ public class GameServiceImpl implements GameService{
     checkToken(requester, request.getToken().substring(32));
     checkPlayerInGame(requester);
     Game toQuit = findGame(requester.getGameId());
-    if(!toQuit.quitPlayer(requester.getId())){
-      throw new PlayerNotInGame("The player is not in the game");
-    }
+    toQuit.quitPlayer(requester.getId());
     if(toQuit.getOwner().equals(Values.EMPTY)){
-      if(toQuit.hasAnyPlayer()){
+      if(toQuit.hasAnyPlayer() && !toQuit.isGameStarted()){
         int maxPlayers = toQuit.getMaxPlayers();
         int numBots = toQuit.getNumBots();
         String playersIds[] = new String[maxPlayers];
@@ -163,9 +158,7 @@ public class GameServiceImpl implements GameService{
         for(int i = numBots + 1; i < maxPlayers; i++){
           if((!playersIds[i].equals(Values.EMPTY)) && 
               (!playersIds[i].equals(Values.BOT))){
-            if(!toQuit.toOwner(playersIds[i])){
-              throw new Como("asjdioajeoi");
-            }
+            toQuit.toOwner(playersIds[i]);
           }
         }
         gameRepository.save(toQuit);
