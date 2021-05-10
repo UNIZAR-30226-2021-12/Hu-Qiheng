@@ -13,8 +13,6 @@ import com.unizar.unozar.core.controller.resources.TokenRequest;
 import com.unizar.unozar.core.controller.resources.TokenResponse;
 import com.unizar.unozar.core.entities.Game;
 import com.unizar.unozar.core.entities.Player;
-import com.unizar.unozar.core.exceptions.Como;
-import com.unizar.unozar.core.exceptions.GameFull;
 import com.unizar.unozar.core.exceptions.GameNotFound;
 import com.unizar.unozar.core.exceptions.GameNotFull;
 import com.unizar.unozar.core.exceptions.InvalidIdentity;
@@ -73,7 +71,15 @@ public class GameServiceImpl implements GameService{
         gameRepository.save(toRead);
       }
     }else{
-      toRead.updateTurnIfNeeded();
+      String id = toRead.updateTurnIfNeeded();
+      if(id != Values.BOT && id != Values.NONE){
+        Player afk = findPlayer(id);
+        afk.setGameId(Player.NONE);
+        playerRepository.save(afk);
+        if(toRead.isEmpty()){
+          gameRepository.delete(toRead);
+        }
+      }
     }
     playerRepository.save(requester);
     return response;
@@ -111,6 +117,16 @@ public class GameServiceImpl implements GameService{
     toStart.startGame();
     gameRepository.save(toStart);
     String newToken = requester.getId() + requester.updateSession();
+    String[] playersInGame = toStart.getPlayersIds();
+    for(int i = 0; i < playersInGame.length; i++){
+      Player toUpdateStats = findPlayer(playersInGame[i]);
+      if(toStart.isPrivate()){
+        toUpdateStats.addPrivateTotal();
+      }else{
+        toUpdateStats.addPublicTotal();
+      }
+      playerRepository.save(toUpdateStats);
+    }
     playerRepository.save(requester);
     return new TokenResponse(newToken);
   }
@@ -124,6 +140,13 @@ public class GameServiceImpl implements GameService{
     toPlay.playCard(requester.getId(), request.getCardToPlay(), 
         request.getHasSaidUnozar(), request.getColorSelected());
     gameRepository.save(toPlay);
+    if(toPlay.isGameFinished()){
+      if(toPlay.isPrivate()){
+        requester.addPrivateWin();
+      }else{
+        requester.addPublicWin();
+      }
+    }
     String newToken = requester.getId() + requester.updateSession();
     playerRepository.save(requester);
     return new TokenResponse(newToken);
@@ -137,6 +160,19 @@ public class GameServiceImpl implements GameService{
     Game toPlay = findGame(requester.getGameId());
     toPlay.drawCards(requester.getId());
     gameRepository.save(toPlay);
+    String newToken = requester.getId() + requester.updateSession();
+    playerRepository.save(requester);
+    return new TokenResponse(newToken);
+  }
+  
+  @Override
+  public TokenResponse pause(TokenRequest request){
+    Player requester = findPlayer(request.getToken().substring(0,32));
+    checkToken(requester, request.getToken().substring(32));
+    checkPlayerInGame(requester);
+    Game toPause = findGame(requester.getGameId());
+    toPause.pause(requester.getId());
+    gameRepository.save(toPause);
     String newToken = requester.getId() + requester.updateSession();
     playerRepository.save(requester);
     return new TokenResponse(newToken);

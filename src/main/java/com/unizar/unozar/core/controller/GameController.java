@@ -66,12 +66,11 @@ public class GameController{
     return ResponseEntity.ok(gameService.draw(request));
   }
   
-// Not implemented yet
-//  @GetMapping(value = "/pause")
-//  public ResponseEntity<Void>
-//      pause(){
-//    return null;
-//  }
+  @PostMapping(value = "/pause")
+  public ResponseEntity<TokenResponse>
+      pause(@RequestBody TokenRequest request){
+    return ResponseEntity.ok(gameService.pause(request));
+  }
   
   @PostMapping(value = "/quit")
   public ResponseEntity<TokenResponse>

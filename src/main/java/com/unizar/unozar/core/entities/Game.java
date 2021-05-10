@@ -235,6 +235,10 @@ public class Game{
     }
     deck.add(toAdd);
   }
+  
+  public boolean isPrivate(){
+    return isPrivate;
+  }
 
   private void startDiscardDeck(){
     boolean done = false;
@@ -271,14 +275,18 @@ public class Game{
   public void playCard(String playerId, int cardToMove, 
       boolean hasSaidUnozar, String colorSelected){
     int playerNum = getPlayerNum(playerId);
+    playCardNumPlayer(playerNum, cardToMove, hasSaidUnozar, colorSelected);
+  }
+  
+  private void playCardNumPlayer(int playerNum, int cardToMove,
+      boolean hasSaidUnozar, String colorSelected){
     if(playerNum != turn){
       throw new IncorrectTurn("It is not the player's turn");
     }
     if(status != Values.PLAYING){
       throw new IncorrectAction("Now is not the moment to play a card");
     }
-    if((getPlayerDeckNumCards(getPlayerNum(playerId)) <= cardToMove) &&
-        (cardToMove >= 0)){
+    if((getPlayerDeckNumCards(playerNum) <= cardToMove) && (cardToMove >= 0)){
       throw new CardNotFound("The player does not have that card");
     }
     String cardToPlay = getDeckByPlayerNum(playerNum).get(cardToMove);
@@ -324,6 +332,7 @@ public class Game{
       status = Values.PLAYING;
     }
     advanceTurn();
+    isPaused = false;
     updateNextMark();
   }
 
@@ -368,17 +377,41 @@ public class Game{
     return true;
   }
   
-  public void updateTurnIfNeeded(){
+  public String updateTurnIfNeeded(){
+    String result = Values.NONE;
     if(getTodaySeconds() >= nextMark){
       updateNextMark();
+      result = playersIds[turn];
       playersIds[turn] = Values.BOT;
       makeIAMove();
     }
+    return result;
+  }
+  
+  public void pause(String playerId){
+    if(turn != getPlayerNum(playerId)){
+      throw new IncorrectAction("Cannot pause game if it is not your turn");
+    }
+    isPaused = true;
+    nextMark = (nextMark + Values.PAUSE_EXTRA) % Values.DAY_SECONDS;
   }
   
   /////////////////////
   // Private methods //
   /////////////////////
+  
+  private int previousTurn(){
+    int previousTurn = turn;
+    if(!normalFlow){
+      previousTurn = (turn + 1) % (totalPlayers - 1);
+    }else{
+      previousTurn--;
+      if(previousTurn == -1){
+        previousTurn = totalPlayers - 1;
+      }
+    } 
+    return previousTurn;
+  }
   
   private int nextTurn(){
     int nextTurn = turn;
@@ -404,7 +437,7 @@ public class Game{
     } 
   }
   
-  public void drawCardsByTurn(){ 
+  private void drawCardsByTurn(){ 
     List<String> deck = getDeckByPlayerNum(turn);
     switch(status){
     case Values.NOT_STARTED:
@@ -446,21 +479,96 @@ public class Game{
   }
   
   private void moveIA(){
+    int cardToMove = -1;
+    boolean unozar = false;
+    String colorSelected = "";
+    if(getDeckByPlayerNum(turn).size() == 2){
+      unozar = true;
+    }
     // Priority A: check if next player is about to finish and IA has draw cards
     if((getDeckByPlayerNum(nextTurn()).size() == 1) && (hasDrawCardsToPlay())){
-      
+      if (hasDrawTwoToPlay()){
+        cardToMove = findCard(Values.DRAW_TWO);
+      }else{
+        cardToMove = findCard(Values.DRAW_FOUR);
+        colorSelected= selectColor();
+      }
     }else if(hasNumericCardsToPlay()){ // Priority B: check numeric cards
-      
+      cardToMove = findCard(Values.NONE);
     }else if(hasSkipOrReverseToPlay()){ // Priority C: check basic special cards
-      
+      if(getDeckByPlayerNum(previousTurn()).size() == 1){
+        cardToMove = findCard(Values.SKIP);
+      }
+      if(cardToMove == -1){
+        cardToMove = findCard(Values.REVERSE);
+      }
+      if(cardToMove == -1){
+        cardToMove = findCard(Values.SKIP);
+      }
     }else if(hasDrawTwoToPlay()){ // Priority D: check for +2 cards
-      
+      cardToMove = findCard(Values.DRAW_TWO);
     }else{ // Priority E: any card is fine
-      
+      cardToMove = findCard(Values.CHANGE_COLOR);
+      if(cardToMove == -1){
+        cardToMove = findCard(Values.DRAW_FOUR);
+      }
+      colorSelected= selectColor();
     }
+    playCardNumPlayer(turn, cardToMove, unozar, colorSelected);
     updateGameStatus(true);
   }
+
+  private int findCard(String action){
+    String card;    
+    List<String> deck = getDeckByPlayerNum(turn);
+    for(int i = 0; i < deck.size(); i++){
+      card = deck.get(i);
+      if(Character.toString(card.charAt(2)).equals(action) && 
+          isCardPlayable(card)){
+        return i;
+      }
+    }
+    return -1;
+  }
   
+  private String selectColor(){
+    int numBlue = 0, numGreen = 0, numRed = 0, numYellow = 0, max;
+    String card;    
+    String color = Values.BLUE;
+    List<String> deck = getDeckByPlayerNum(turn);
+    for(int i = 0; i < deck.size(); i++){
+      card = deck.get(i);
+      switch(Character.toString(card.charAt(1))){
+      case Values.BLUE:
+        numBlue++;
+        break;
+      case Values.GREEN:
+        numGreen++;
+        break;
+      case Values.RED:
+        numRed++;
+        break;
+      case Values.YELLOW:
+        numYellow++;
+        break;
+      }
+    }
+    max = numBlue;
+    if(max < numGreen){
+      max = numGreen;
+      color = Values.GREEN;
+    }
+    if(max < numRed){
+      max = numRed;
+      color = Values.RED;
+    }
+    if(max < numYellow){
+      max = numGreen;
+      color = Values.YELLOW;
+    }
+    return color;
+  }
+
   private boolean hasDrawTwoToPlay(){
     List<String> deck = getDeckByPlayerNum(turn);
     String card;
@@ -523,10 +631,10 @@ public class Game{
   }
   
   private void makeIAMove(){
-    if(canPlayCards()){
-      drawCardsByTurn();
-    }else{
+    if(canPlayCards() && status == Values.PLAYING){
       moveIA();
+    }else{
+      drawCardsByTurn();
     }
   }
   

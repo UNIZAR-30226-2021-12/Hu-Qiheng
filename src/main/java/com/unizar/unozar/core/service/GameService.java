@@ -21,6 +21,8 @@ public interface GameService{
 
   public TokenResponse draw(TokenRequest request);
   
+  public TokenResponse pause(TokenRequest request);
+  
   public TokenResponse quit(TokenRequest request);
 
 }
