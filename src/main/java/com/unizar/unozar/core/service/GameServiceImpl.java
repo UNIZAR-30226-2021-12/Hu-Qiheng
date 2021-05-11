@@ -137,8 +137,8 @@ public class GameServiceImpl implements GameService{
     String newToken = requester.getId() + requester.updateSession();
     String[] playersInGame = toStart.getPlayersIds();
     for(int i = 0; i < playersInGame.length; i++){
-      if((playersInGame[i] != Values.BOT) && 
-          (playersInGame[i] != Values.EMPTY)){
+      if((!playersInGame[i].equals(Values.BOT)) && 
+          (!playersInGame[i].equals(Values.EMPTY))){
         System.out.println(playersInGame[i]);
         Player toUpdateStats = findPlayer(playersInGame[i]);
         if(toStart.isPrivate()){
