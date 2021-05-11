@@ -16,6 +16,7 @@ import com.unizar.unozar.core.entities.Game;
 import com.unizar.unozar.core.entities.Player;
 import com.unizar.unozar.core.exceptions.GameNotFound;
 import com.unizar.unozar.core.exceptions.GameNotFull;
+import com.unizar.unozar.core.exceptions.IncorrectAction;
 import com.unizar.unozar.core.exceptions.InvalidIdentity;
 import com.unizar.unozar.core.exceptions.PlayerIsNotPlaying;
 import com.unizar.unozar.core.exceptions.PlayerIsPlaying;
@@ -136,13 +137,15 @@ public class GameServiceImpl implements GameService{
     String newToken = requester.getId() + requester.updateSession();
     String[] playersInGame = toStart.getPlayersIds();
     for(int i = 0; i < playersInGame.length; i++){
-      Player toUpdateStats = findPlayer(playersInGame[i]);
-      if(toStart.isPrivate()){
-        toUpdateStats.addPrivateTotal();
-      }else{
-        toUpdateStats.addPublicTotal();
+      if(playersInGame[i] != Values.BOT){
+        Player toUpdateStats = findPlayer(playersInGame[i]);
+        if(toStart.isPrivate()){
+          toUpdateStats.addPrivateTotal();
+        }else{
+          toUpdateStats.addPublicTotal();
+        }
+        playerRepository.save(toUpdateStats);
       }
-      playerRepository.save(toUpdateStats);
     }
     playerRepository.save(requester);
     return new TokenResponse(newToken);

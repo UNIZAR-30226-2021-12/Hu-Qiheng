@@ -341,6 +341,9 @@ public class Game{
     if(playerNum == -1){
       throw new PlayerNotInGame("The player is not in the game");
     }
+    if(status == Values.NOT_STARTED){
+      throw new IncorrectAction("You only can draw in a started game");
+    }
     if(playerNum != turn){
       throw new IncorrectTurn("It is not the player's turn");
     }
@@ -389,6 +392,9 @@ public class Game{
   }
   
   public void pause(String playerId){
+    if(status == Values.NOT_STARTED){
+      throw new IncorrectAction("You only can draw in a started game");
+    }
     if(turn != getPlayerNum(playerId)){
       throw new IncorrectAction("Cannot pause game if it is not your turn");
     }
