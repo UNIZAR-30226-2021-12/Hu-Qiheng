@@ -9,6 +9,7 @@ import com.unizar.unozar.core.controller.resources.CreateGameRequest;
 import com.unizar.unozar.core.controller.resources.GameResponse;
 import com.unizar.unozar.core.controller.resources.JoinGameRequest;
 import com.unizar.unozar.core.controller.resources.PlayCardRequest;
+import com.unizar.unozar.core.controller.resources.RoomResponse;
 import com.unizar.unozar.core.controller.resources.TokenRequest;
 import com.unizar.unozar.core.controller.resources.TokenResponse;
 import com.unizar.unozar.core.entities.Game;
@@ -54,7 +55,19 @@ public class GameServiceImpl implements GameService{
   }
   
   @Override
-  public GameResponse read(TokenRequest request){
+  public RoomResponse readRoom(TokenRequest request){
+    Player requester = findPlayer(request.getToken().substring(0, 32));
+    checkToken(requester, request.getToken().substring(32));
+    checkPlayerInGame(requester);
+    Game toRead = findGame(requester.getGameId());
+    String newToken = requester.getId() + requester.updateSession();
+    RoomResponse response = new RoomResponse(toRead, newToken);
+    playerRepository.save(requester);
+    return response;
+  }
+  
+  @Override
+  public GameResponse readGame(TokenRequest request){
     Player requester = findPlayer(request.getToken().substring(0, 32));
     checkToken(requester, request.getToken().substring(32));
     checkPlayerInGame(requester);

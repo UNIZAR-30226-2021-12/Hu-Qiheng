@@ -13,6 +13,7 @@ import com.unizar.unozar.core.controller.resources.CreateGameRequest;
 import com.unizar.unozar.core.controller.resources.GameResponse;
 import com.unizar.unozar.core.controller.resources.JoinGameRequest;
 import com.unizar.unozar.core.controller.resources.PlayCardRequest;
+import com.unizar.unozar.core.controller.resources.RoomResponse;
 import com.unizar.unozar.core.controller.resources.TokenRequest;
 import com.unizar.unozar.core.controller.resources.TokenResponse;
 import com.unizar.unozar.core.service.GameService;
@@ -36,10 +37,16 @@ public class GameController{
     return ResponseEntity.ok(gameService.create(request));
   }
   
-  @PostMapping(value = "/read")
+  @PostMapping(value = "/readRoom")
+  public ResponseEntity<RoomResponse>
+      readRoom(@RequestBody TokenRequest request){
+    return ResponseEntity.ok(gameService.readRoom(request));
+  }
+  
+  @PostMapping(value = "/readGame")
   public ResponseEntity<GameResponse>
-      read(@RequestBody TokenRequest request){
-    return ResponseEntity.ok(gameService.read(request));
+      readGame(@RequestBody TokenRequest request){
+    return ResponseEntity.ok(gameService.readGame(request));
   }
   
   @PostMapping(value = "/join")

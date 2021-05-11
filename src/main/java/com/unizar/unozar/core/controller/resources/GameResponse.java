@@ -4,9 +4,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.unizar.unozar.core.entities.Game;
 
 public class GameResponse{
-
-  @JsonProperty
-  public String gameId;
   
   @JsonProperty
   public int maxPlayers;
@@ -25,9 +22,6 @@ public class GameResponse{
   
   @JsonProperty
   public int[] playersNumCards;
-
-  @JsonProperty
-  public boolean gameStarted;
   
   @JsonProperty
   public boolean gamePaused;
@@ -36,18 +30,12 @@ public class GameResponse{
   public String token;
 
   public GameResponse(Game game, int playerNum, String newToken){
-    gameId = game.getId();
     maxPlayers = game.getMaxPlayers();
     turn = game.getTurn();
     playersIds = new String[maxPlayers];
     playersIds = game.getPlayersIds();
     playersNumCards =  game.getPlayersDecksNumCards();
-    gameStarted = game.isGameStarted();
-    if(gameStarted){
-      topDiscard = game.getTopDiscardString();  
-    }else{
-      topDiscard = "";
-    }
+    topDiscard = game.getTopDiscardString();  
     gamePaused = game.isGamePaused();
     playerCards = game.getPlayerCards(playerNum);
     token = newToken;
