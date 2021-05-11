@@ -40,6 +40,7 @@ public class GameServiceImpl implements GameService{
   
   @Override
   public TokenResponse create(CreateGameRequest request){
+    System.out.println("create " + request.getToken());
     String id = request.getToken().substring(0, 32);
     Player owner = findPlayer(id);
     checkToken(owner, request.getToken().substring(32));
@@ -47,7 +48,6 @@ public class GameServiceImpl implements GameService{
     Game toCreate = new Game(request.getIsPrivate(), request.getMaxPlayers(),
         request.getNumBots(), id);
     gameRepository.save(toCreate);
-    
     owner.setGameId(toCreate.getId());
     String newToken = id + owner.updateSession(); 
     playerRepository.save(owner);
@@ -56,6 +56,7 @@ public class GameServiceImpl implements GameService{
   
   @Override
   public RoomResponse readRoom(TokenRequest request){
+    System.out.println("readRoom " + request.getToken());
     Player requester = findPlayer(request.getToken().substring(0, 32));
     checkToken(requester, request.getToken().substring(32));
     checkPlayerInGame(requester);
@@ -68,6 +69,7 @@ public class GameServiceImpl implements GameService{
   
   @Override
   public GameResponse readGame(TokenRequest request){
+    System.out.println("readGame " + request.getToken());
     Player requester = findPlayer(request.getToken().substring(0, 32));
     checkToken(requester, request.getToken().substring(32));
     checkPlayerInGame(requester);
@@ -100,6 +102,7 @@ public class GameServiceImpl implements GameService{
 
   @Override
   public TokenResponse join(JoinGameRequest request){
+    System.out.println("join " + request.getToken());
     Player requester = findPlayer(request.getToken().substring(0,32));
     checkToken(requester, request.getToken().substring(32));
     checkPlayerNotInGame(requester);
@@ -114,6 +117,7 @@ public class GameServiceImpl implements GameService{
 
   @Override
   public TokenResponse start(TokenRequest request){
+    System.out.println("start " + request.getToken());
     Player requester = findPlayer(request.getToken().substring(0,32));
     checkToken(requester, request.getToken().substring(32));
     checkPlayerInGame(requester);
@@ -146,6 +150,7 @@ public class GameServiceImpl implements GameService{
   
   @Override
   public TokenResponse playCard(PlayCardRequest request){
+    System.out.println("playCard " + request.getToken());
     Player requester = findPlayer(request.getToken().substring(0,32));
     checkToken(requester, request.getToken().substring(32));
     checkPlayerInGame(requester);
@@ -167,6 +172,7 @@ public class GameServiceImpl implements GameService{
   
   @Override
   public TokenResponse draw(TokenRequest request){
+    System.out.println("draw " + request.getToken());
     Player requester = findPlayer(request.getToken().substring(0,32));
     checkToken(requester, request.getToken().substring(32));
     checkPlayerInGame(requester);
@@ -180,6 +186,7 @@ public class GameServiceImpl implements GameService{
   
   @Override
   public TokenResponse pause(TokenRequest request){
+    System.out.println("pause " + request.getToken());
     Player requester = findPlayer(request.getToken().substring(0,32));
     checkToken(requester, request.getToken().substring(32));
     checkPlayerInGame(requester);
@@ -193,6 +200,7 @@ public class GameServiceImpl implements GameService{
   
   @Override
   public TokenResponse quit(TokenRequest request){
+    System.out.println("quit " + request.getToken());
     Player requester = findPlayer(request.getToken().substring(0,32));
     checkToken(requester, request.getToken().substring(32));
     checkPlayerInGame(requester);
