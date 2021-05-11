@@ -37,6 +37,7 @@ public class PlayerServiceImpl implements PlayerService{
   
   @Override
   public PlayerDTO create(CreatePlayerRequest request){
+    System.out.println("create " + request.getEmail());
     Optional<Player> toFind = playerRepository.findByEmail(request.getEmail());
     if(toFind.isPresent()){
       throw new EmailInUse("The email is already in use");
@@ -49,12 +50,14 @@ public class PlayerServiceImpl implements PlayerService{
   
   @Override
   public PlayerDTO read(ReadPlayerRequest request){
+    System.out.println("read " + request.getPlayerId());
     PlayerDTO player = new PlayerDTO(findPlayer(request.getPlayerId()));
     return player;
   }
 
   @Override
   public TokenResponse update(UpdatePlayerRequest request){
+    System.out.println("update " + request.getToken());
     Player toUpdate = findPlayer(request.getToken().substring(0, 32));
     checkToken(toUpdate, request.getToken().substring(32));
     if(request.getAlias() != null){
@@ -78,6 +81,7 @@ public class PlayerServiceImpl implements PlayerService{
 
   @Override
   public Void delete(DeletePlayerRequest request){
+    System.out.println("delete " + request.getToken());
     Player toDelete = findPlayer(request.getToken().substring(0, 32));
     checkToken(toDelete, request.getToken().substring(32));
     if(!toDelete.getGameId().equals(Player.NONE)){
@@ -89,6 +93,7 @@ public class PlayerServiceImpl implements PlayerService{
 
   @Override
   public AuthenticationResponse authentication(AuthenticationRequest request){
+    System.out.println("authentication " + request.getEmail());
     Optional<Player> toFind = playerRepository.findByEmail(request.getEmail());
     if(!toFind.isPresent()){
       throw new PlayerNotFound("Email does not exist in the system");
@@ -104,6 +109,7 @@ public class PlayerServiceImpl implements PlayerService{
   
   @Override
   public AuthenticationResponse refreshToken(TokenRequest request){
+    System.out.println("refreshToken " + request.getToken());
     Player toRefresh = findPlayer(request.getToken().substring(0, 32));
     checkToken(toRefresh, request.getToken().substring(32));
     String token = toRefresh.getId() + toRefresh.updateSession();
@@ -113,6 +119,7 @@ public class PlayerServiceImpl implements PlayerService{
 
   @Override
   public TokenResponse addFriend(FriendRequest request){
+    System.out.println("addFriend " + request.getToken());
     Player toMakeFriend = findPlayer(request.getToken().substring(0, 32));
     checkToken(toMakeFriend, request.getToken().substring(32));
     Optional<Player> toAdd = playerRepository.findById(request.getFriendId());
@@ -127,6 +134,7 @@ public class PlayerServiceImpl implements PlayerService{
 
   @Override
   public FriendListResponse readFriends(TokenRequest request){
+    System.out.println("readFriends " + request.getToken());
     Player toReadFriends = findPlayer(request.getToken().substring(0, 32));
     checkToken(toReadFriends, request.getToken().substring(32));
     List<String> l = toReadFriends.getFriendList();
@@ -154,6 +162,7 @@ public class PlayerServiceImpl implements PlayerService{
   
   @Override
   public TokenResponse deleteFriend(FriendRequest request){
+    System.out.println("deleteFriend " + request.getToken());
     Player toDeleteFriend = findPlayer(request.getToken().substring(0, 32));
     checkToken(toDeleteFriend, request.getToken().substring(32));
     toDeleteFriend.deleteFriend(request.getFriendId());
@@ -164,6 +173,7 @@ public class PlayerServiceImpl implements PlayerService{
 
   @Override
   public TokenResponse unlock(UnlockRequest request){
+    System.out.println("unlock " + request.getToken());
     Player requester = findPlayer(request.getToken().substring(0, 32));
     checkToken(requester, request.getToken().substring(32));
     requester.unlock(request.getUnlockableId());
@@ -174,6 +184,7 @@ public class PlayerServiceImpl implements PlayerService{
   
   @Override
   public DailyGiftResponse getDailyGift(TokenRequest request){
+    System.out.println("getDailyGift " + request.getToken());
     Player requester = findPlayer(request.getToken().substring(0,32));
     checkToken(requester, request.getToken().substring(32));
     int gift = requester.dailyGift();

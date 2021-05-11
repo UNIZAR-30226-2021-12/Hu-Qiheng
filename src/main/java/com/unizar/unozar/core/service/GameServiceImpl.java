@@ -16,7 +16,6 @@ import com.unizar.unozar.core.entities.Game;
 import com.unizar.unozar.core.entities.Player;
 import com.unizar.unozar.core.exceptions.GameNotFound;
 import com.unizar.unozar.core.exceptions.GameNotFull;
-import com.unizar.unozar.core.exceptions.IncorrectAction;
 import com.unizar.unozar.core.exceptions.InvalidIdentity;
 import com.unizar.unozar.core.exceptions.PlayerIsNotPlaying;
 import com.unizar.unozar.core.exceptions.PlayerIsPlaying;
