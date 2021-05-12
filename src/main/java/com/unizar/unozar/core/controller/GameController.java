@@ -11,7 +11,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.unizar.unozar.core.controller.resources.CreateGameRequest;
 import com.unizar.unozar.core.controller.resources.GameResponse;
-import com.unizar.unozar.core.controller.resources.JoinGameRequest;
+import com.unizar.unozar.core.controller.resources.JoinPrivateGameRequest;
+import com.unizar.unozar.core.controller.resources.JoinPublicGameRequest;
 import com.unizar.unozar.core.controller.resources.PlayCardRequest;
 import com.unizar.unozar.core.controller.resources.RoomResponse;
 import com.unizar.unozar.core.controller.resources.TokenRequest;
@@ -49,10 +50,16 @@ public class GameController{
     return ResponseEntity.ok(gameService.readGame(request));
   }
   
-  @PostMapping(value = "/join")
+  @PostMapping(value = "/joinPublic")
   public ResponseEntity<TokenResponse>
-      join(@RequestBody JoinGameRequest request){
-    return ResponseEntity.ok(gameService.join(request));
+      joinPublic(@RequestBody JoinPublicGameRequest request){
+    return ResponseEntity.ok(gameService.joinPublic(request));
+  }
+  
+  @PostMapping(value = "/joinPrivate")
+  public ResponseEntity<TokenResponse>
+      joinPrivate(@RequestBody JoinPrivateGameRequest request){
+    return ResponseEntity.ok(gameService.joinPrivate(request));
   }
   
   @PostMapping(value = "/start")

@@ -7,7 +7,8 @@ import org.springframework.stereotype.Service;
 import com.unizar.unozar.core.Values;
 import com.unizar.unozar.core.controller.resources.CreateGameRequest;
 import com.unizar.unozar.core.controller.resources.GameResponse;
-import com.unizar.unozar.core.controller.resources.JoinGameRequest;
+import com.unizar.unozar.core.controller.resources.JoinPrivateGameRequest;
+import com.unizar.unozar.core.controller.resources.JoinPublicGameRequest;
 import com.unizar.unozar.core.controller.resources.PlayCardRequest;
 import com.unizar.unozar.core.controller.resources.RoomResponse;
 import com.unizar.unozar.core.controller.resources.TokenRequest;
@@ -99,9 +100,32 @@ public class GameServiceImpl implements GameService{
     playerRepository.save(requester);
     return response;
   }
+  
+  @Override
+  public TokenResponse joinPublic(JoinPublicGameRequest request){
+    System.out.println("join " + request.getToken());
+    Player requester = findPlayer(request.getToken().substring(0,32));
+    checkToken(requester, request.getToken().substring(32));
+    checkPlayerNotInGame(requester);
+    Optional<Game> toFind =  
+        gameRepository.findByIsPrivateAndStatusAndTotalPlayers(false, 
+        Values.NOT_STARTED, request.getNumPlayers());
+    Game toJoin;
+    if(toFind.isPresent()){
+      toJoin = toFind.get();
+    }else{
+      toJoin = new Game(false, request.getNumPlayers(), 0, requester.getId());
+    }
+    toJoin.addPlayer(requester.getId());
+    requester.setGameId(toJoin.getId());
+    gameRepository.save(toJoin);
+    String newToken = requester.getId() + requester.updateSession();
+    playerRepository.save(requester);
+    return new TokenResponse(newToken);
+  }
 
   @Override
-  public TokenResponse join(JoinGameRequest request){
+  public TokenResponse joinPrivate(JoinPrivateGameRequest request){
     System.out.println("join " + request.getToken());
     Player requester = findPlayer(request.getToken().substring(0,32));
     checkToken(requester, request.getToken().substring(32));

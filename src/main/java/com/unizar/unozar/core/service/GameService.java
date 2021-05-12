@@ -2,7 +2,8 @@ package com.unizar.unozar.core.service;
 
 import com.unizar.unozar.core.controller.resources.CreateGameRequest;
 import com.unizar.unozar.core.controller.resources.GameResponse;
-import com.unizar.unozar.core.controller.resources.JoinGameRequest;
+import com.unizar.unozar.core.controller.resources.JoinPrivateGameRequest;
+import com.unizar.unozar.core.controller.resources.JoinPublicGameRequest;
 import com.unizar.unozar.core.controller.resources.PlayCardRequest;
 import com.unizar.unozar.core.controller.resources.RoomResponse;
 import com.unizar.unozar.core.controller.resources.TokenRequest;
@@ -16,7 +17,9 @@ public interface GameService{
 
   public GameResponse readGame(TokenRequest request);
   
-  public TokenResponse join(JoinGameRequest request);
+  public TokenResponse joinPublic(JoinPublicGameRequest request);
+  
+  public TokenResponse joinPrivate(JoinPrivateGameRequest request);
 
   public TokenResponse start(TokenRequest request);
 

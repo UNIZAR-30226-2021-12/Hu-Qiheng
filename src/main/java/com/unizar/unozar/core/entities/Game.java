@@ -107,6 +107,9 @@ public class Game{
     if((!isPrivate) && (numBots > 0)){
       throw new IncorrectAction("You can not create a public game with bots");
     }
+    if(numBots >= totalPlayers){
+      throw new IncorrectAction("Incorrect amount of bots");
+    }
     this.totalPlayers = totalPlayers;
     this.numBots = numBots;
     playersIds = new String[totalPlayers];
