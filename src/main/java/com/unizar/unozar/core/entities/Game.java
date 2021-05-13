@@ -216,6 +216,7 @@ public class Game{
     addNumbers();
     addSpecials();
     shuffleDrawDeck();
+    shuffleDrawDeck();
     for(int j = 0; j < 7; j++){
       switch (totalPlayers){
       case 4:
@@ -412,7 +413,7 @@ public class Game{
   private int previousTurn(){
     int previousTurn = turn;
     if(!normalFlow){
-      previousTurn = (turn + 1) % (totalPlayers - 1);
+      previousTurn = (turn + 1) % totalPlayers;
     }else{
       previousTurn--;
       if(previousTurn == -1){
@@ -425,7 +426,7 @@ public class Game{
   private int nextTurn(){
     int nextTurn = turn;
     if(normalFlow){
-      nextTurn = (turn + 1) % (totalPlayers - 1);
+      nextTurn = (turn + 1) % totalPlayers;
     }else{
       nextTurn--;
       if(nextTurn == -1){
@@ -437,7 +438,7 @@ public class Game{
   
   private void advanceTurn(){
     if(normalFlow){
-      turn = (turn + 1) % (totalPlayers - 1);
+      turn = (turn + 1) % totalPlayers;
     }else{
       turn--;
       if(turn == -1){
