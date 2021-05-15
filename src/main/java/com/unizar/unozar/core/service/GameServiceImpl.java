@@ -88,7 +88,8 @@ public class GameServiceImpl implements GameService{
       }
     }else{
       String id = toRead.updateTurnIfNeeded();
-      if(id != Values.BOT && id != Values.NONE){
+      if((!id.equals(Values.BOT)) && 
+          (!id.equals(Values.NONE))){
         Player afk = findPlayer(id);
         afk.setGameId(Player.NONE);
         playerRepository.save(afk);
@@ -260,7 +261,7 @@ public class GameServiceImpl implements GameService{
   public Player findPlayer(String id){ 
     Optional<Player> toFind = playerRepository.findById(id);
     if(!toFind.isPresent()){
-      throw new PlayerNotFound(id + "Id does not exist in the system");
+      throw new PlayerNotFound(id + ": id does not exist in the system");
     }
     return toFind.get();
   }
