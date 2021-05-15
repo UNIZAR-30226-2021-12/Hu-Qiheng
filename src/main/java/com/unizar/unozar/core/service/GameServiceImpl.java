@@ -260,7 +260,7 @@ public class GameServiceImpl implements GameService{
   public Player findPlayer(String id){ 
     Optional<Player> toFind = playerRepository.findById(id);
     if(!toFind.isPresent()){
-      throw new PlayerNotFound("Id does not exist in the system");
+      throw new PlayerNotFound(id + "Id does not exist in the system");
     }
     return toFind.get();
   }
