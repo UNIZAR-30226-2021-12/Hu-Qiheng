@@ -131,7 +131,7 @@ public class GameServiceImpl implements GameService{
     Player requester = findPlayer(request.getToken().substring(0,32));
     checkToken(requester, request.getToken().substring(32));
     checkPlayerNotInGame(requester);
-    Game toJoin = findGame(requester.getGameId());
+    Game toJoin = findGame(request.getGameId());
     toJoin.addPlayer(requester.getId());
     requester.setGameId(toJoin.getId());
     gameRepository.save(toJoin);
@@ -269,7 +269,7 @@ public class GameServiceImpl implements GameService{
   public Game findGame(String id){
     Optional<Game> toFind = gameRepository.findById(id);
     if(!toFind.isPresent()){
-      throw new GameNotFound("The game does not exists");
+      throw new GameNotFound("The game does not exist");
     }
     return toFind.get();
   }
