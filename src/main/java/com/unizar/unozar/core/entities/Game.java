@@ -676,7 +676,7 @@ public class Game{
     String temp, temp2;
     Random random = new Random();
     for(int i = drawDeck.size() - 1; i > 0; i--){
-      index = random.nextInt(i + 1);
+      index = random.nextInt(i--);
       temp = drawDeck.remove(index);
       temp2 = drawDeck.remove(i);
       drawDeck.add(index, temp2);
