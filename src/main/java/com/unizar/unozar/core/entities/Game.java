@@ -351,8 +351,8 @@ public class Game{
     if(playerNum != turn){
       throw new IncorrectTurn("It is not the player's turn");
     }
-    if(!canPlayCards()){
-      throw new IncorrectAction("You can't draw if you can play a card");
+    if(canPlayCards()){
+      throw new IncorrectAction("You can not draw if you can play a card");
     }
     drawCardsByTurn();
     updateGameStatus(false);
