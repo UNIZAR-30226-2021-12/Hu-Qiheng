@@ -645,6 +645,7 @@ public class Game{
       moveIA();
     }else{
       drawCardsByTurn();
+      updateGameStatus(false);
     }
   }
   
@@ -672,12 +673,13 @@ public class Game{
   
   private void shuffleDrawDeck(){
     int index;
-    String temp;
+    String temp, temp2;
     Random random = new Random();
     for(int i = drawDeck.size() - 1; i > 0; i--){
       index = random.nextInt(i + 1);
-      temp = drawDeck.get(index);
-      drawDeck.add(index, drawDeck.get(i));
+      temp = drawDeck.remove(index);
+      temp2 = drawDeck.remove(i);
+      drawDeck.add(index, temp2);
       drawDeck.add(i, temp);
     }
   }
