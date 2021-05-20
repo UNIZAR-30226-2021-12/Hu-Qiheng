@@ -351,7 +351,7 @@ public class Game{
     if(playerNum != turn){
       throw new IncorrectTurn("It is not the player's turn");
     }
-    if(canPlayCards()){
+    if(canPlayCards() && status == Values.PLAYING){
       throw new IncorrectAction("You can not draw if you can play a card");
     }
     drawCardsByTurn();
@@ -525,7 +525,6 @@ public class Game{
       colorSelected= selectColor();
     }
     playCardNumPlayer(turn, cardToMove, unozar, colorSelected);
-    updateGameStatus(true);
   }
 
   private int findCard(String action){
