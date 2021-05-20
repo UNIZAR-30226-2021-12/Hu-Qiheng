@@ -6,7 +6,7 @@ public class Values{
   
   public final static int GIFTS[] = {10, 20, 30, 50, 100};
   
-  public final static int TURN_TIME = 60;
+  public final static int TURN_TIME = 30;
   public final static int TURN_TIME_IA = 10;
   public final static int PAUSE_EXTRA = 300;
   public static final int DAY_SECONDS = 86400;
