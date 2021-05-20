@@ -648,8 +648,9 @@ public class Game{
     }
   }
   
+  // After updating the turn, update next mark
   private void updateNextMark(){
-    if(playersIds[nextTurn()].equals(Values.BOT)){
+    if(playersIds[turn].equals(Values.BOT)){
       nextMark = (getTodaySeconds() + Values.TURN_TIME_IA) % Values.DAY_SECONDS;
     }else{
       nextMark = (getTodaySeconds() + Values.TURN_TIME) % Values.DAY_SECONDS;

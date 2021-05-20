@@ -70,7 +70,6 @@ public class GameServiceImpl implements GameService{
   
   @Override
   public GameResponse readGame(TokenRequest request){
-    System.out.println("readGame " + request.getToken());
     Player requester = findPlayer(request.getToken().substring(0, 32));
     checkToken(requester, request.getToken().substring(32));
     checkPlayerInGame(requester);
@@ -78,6 +77,7 @@ public class GameServiceImpl implements GameService{
     int playerNum = toRead.getPlayerNum(requester.getId());
     String newToken = requester.getId() + requester.updateSession();
     GameResponse response = new GameResponse(toRead, playerNum, newToken);
+    System.out.println("readGame " + response.topDiscard);
     if(toRead.isGameFinished()){
       toRead.finishPlayer(playerNum);
       requester.setGameId(Player.NONE);
@@ -179,7 +179,7 @@ public class GameServiceImpl implements GameService{
   
   @Override
   public TokenResponse playCard(PlayCardRequest request){
-    System.out.println("playCard " + request.getToken());
+    System.out.println("playCard: " + request.getCardToPlay());
     Player requester = findPlayer(request.getToken().substring(0,32));
     checkToken(requester, request.getToken().substring(32));
     checkPlayerInGame(requester);
