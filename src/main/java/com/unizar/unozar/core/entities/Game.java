@@ -649,7 +649,11 @@ public class Game{
   }
   
   private void updateNextMark(){
-    nextMark = (getTodaySeconds() + Values.TURN_TIME) % Values.DAY_SECONDS;
+    if(playersIds[nextTurn()].equals(Values.BOT)){
+      nextMark = (getTodaySeconds() + Values.TURN_TIME_IA) % Values.DAY_SECONDS;
+    }else{
+      nextMark = (getTodaySeconds() + Values.TURN_TIME) % Values.DAY_SECONDS;
+    }
   }
   
   // Retrieves today's seconds
