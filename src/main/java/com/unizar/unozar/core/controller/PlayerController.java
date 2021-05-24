@@ -100,13 +100,13 @@ public class PlayerController{
     return ResponseEntity.ok(playerService.unlockAvatar(request));
   }
   
-  @PostMapping(value = "/unlockAvatar")
+  @PostMapping(value = "/unlockBoard")
   public ResponseEntity<TokenResponse>
       unlockBoard(@RequestBody UnlockRequest request){
     return ResponseEntity.ok(playerService.unlockBoard(request));
   }
   
-  @PostMapping(value = "/unlockAvatar")
+  @PostMapping(value = "/unlockCards")
   public ResponseEntity<TokenResponse>
       unlockCards(@RequestBody UnlockRequest request){
     return ResponseEntity.ok(playerService.unlockCards(request));
