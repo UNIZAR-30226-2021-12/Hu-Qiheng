@@ -20,13 +20,17 @@ public class RoomResponse{
   @JsonProperty
   public String token;
   
-  public RoomResponse(Game toRead, String token){
+  @JsonProperty
+  public int bet;
+  
+  public RoomResponse(Game toRead, String token, int bet){
     gameId = toRead.getId();
     maxPlayers = toRead.getMaxPlayers();
     gameStarted = toRead.isGameStarted();
     playersIds = new String[maxPlayers];
     playersIds = toRead.getPlayersIds();
     this.token = token;
+    this.bet = bet;
   }
 
 }

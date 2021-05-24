@@ -64,7 +64,7 @@ public class GameServiceImpl implements GameService{
     checkPlayerInGame(requester);
     Game toRead = findGame(requester.getGameId());
     String newToken = requester.getId() + requester.updateSession();
-    RoomResponse response = new RoomResponse(toRead, newToken);
+    RoomResponse response = new RoomResponse(toRead, newToken, toRead.getBet());
     playerRepository.save(requester);
     return response;
   }
