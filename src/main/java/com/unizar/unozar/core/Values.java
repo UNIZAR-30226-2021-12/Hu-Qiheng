@@ -7,10 +7,11 @@ public class Values{
   public final static int BOARD_PRICE = 500;
   public final static int CARD_PRICE = 750;
   // Made so it can be changed the number of unlockables and their price
-  public final static int A_SHOP[] = {AVATAR_PRICE, AVATAR_PRICE, AVATAR_PRICE, 
-                                      AVATAR_PRICE, AVATAR_PRICE, AVATAR_PRICE};
-  public final static int B_SHOP[] = {BOARD_PRICE, BOARD_PRICE};
-  public final static int C_SHOP[] = {CARD_PRICE, CARD_PRICE};
+  public final static int A_SHOP[] = {0, 0, AVATAR_PRICE, AVATAR_PRICE,  
+                                      AVATAR_PRICE, AVATAR_PRICE, AVATAR_PRICE, 
+                                      AVATAR_PRICE};
+  public final static int B_SHOP[] = {0, BOARD_PRICE, BOARD_PRICE};
+  public final static int C_SHOP[] = {0, CARD_PRICE, CARD_PRICE};
 
   public final static int GIFTS[] = {10, 20, 30, 50, 100};
   

@@ -199,7 +199,7 @@ public class Player{
   }
   
   public void unlockAvatar(int unlockableId){
-    if((unlockableId >= Values.A_SHOP.length) || (unlockableId < 0) 
+    if((unlockableId >= Values.A_SHOP.length) || (unlockableId <= 0) 
         || (unlockableId == 1)){
       throw new IncorrectAction("The unlockable does not exist");
     }
