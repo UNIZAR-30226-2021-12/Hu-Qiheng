@@ -223,7 +223,9 @@ public class PlayerServiceImpl implements PlayerService{
     Player requester = findPlayer(request.getToken().substring(0,32));
     checkToken(requester, request.getToken().substring(32));
     int gift = requester.dailyGift();
-    requester.setMoney(requester.getMoney() + gift);
+    int coins = requester.getMoney() + gift;
+    requester.setMoney(coins);
+    System.out.println("MONEY " + coins);
     String token = requester.getId() + requester.updateSession();
     playerRepository.save(requester);
     return new DailyGiftResponse(gift, token);
@@ -248,6 +250,8 @@ public class PlayerServiceImpl implements PlayerService{
   public Void addMoney(TokenRequest request) {
     Player requester = findPlayer(request.getToken().substring(0,32));
     requester.setMoney(requester.getMoney() + 1000);
+    playerRepository.save(requester);
+    System.out.println("MONEYMONEY" + requester.getMoney());
     return null;
   }
 }
