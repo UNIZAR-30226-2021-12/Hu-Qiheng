@@ -221,7 +221,7 @@ public class Player{
     if((unlockableId >= Values.B_SHOP.length) || (unlockableId < 0)){
       throw new IncorrectAction("The unlockable does not exist");
     }
-    if(unlockedAvatars.contains(unlockableId)){
+    if(boardIsUnlocked(unlockableId)){
       throw new IncorrectAction("The user already has the unlockable");
     }
     if(money < Values.B_SHOP[unlockableId]){
@@ -239,7 +239,7 @@ public class Player{
     if((unlockableId >= Values.C_SHOP.length) || (unlockableId < 0)){
       throw new IncorrectAction("The unlockable does not exist");
     }
-    if(unlockedAvatars.contains(unlockableId)){
+    if(cardsIsUnlocked(unlockableId)){
       throw new IncorrectAction("The user already has the unlockable");
     }
     if(money < Values.C_SHOP[unlockableId]){
