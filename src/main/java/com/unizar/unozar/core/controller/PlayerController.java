@@ -117,4 +117,13 @@ public class PlayerController{
       getDailyGift(@RequestBody TokenRequest request){
     return ResponseEntity.ok(playerService.getDailyGift(request));
   }
+  
+  // Use only for testing, adds 1000 coins
+  @PostMapping(value = "/addMoney")
+  public ResponseEntity<TokenResponse>
+      addMoney(@RequestBody TokenRequest request){
+    playerService.addMoney(request);
+    return ResponseEntity.ok().build();
+  }
+  
 }

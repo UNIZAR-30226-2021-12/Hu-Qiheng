@@ -41,5 +41,7 @@ public interface PlayerService{
   public TokenResponse unlockCards(UnlockRequest request);
 
   public DailyGiftResponse getDailyGift(TokenRequest request);
+
+  public Void addMoney(TokenRequest request);
   
 }

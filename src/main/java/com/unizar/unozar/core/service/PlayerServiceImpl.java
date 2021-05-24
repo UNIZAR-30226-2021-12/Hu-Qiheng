@@ -223,6 +223,7 @@ public class PlayerServiceImpl implements PlayerService{
     Player requester = findPlayer(request.getToken().substring(0,32));
     checkToken(requester, request.getToken().substring(32));
     int gift = requester.dailyGift();
+    requester.setMoney(requester.getMoney() + gift);
     String token = requester.getId() + requester.updateSession();
     playerRepository.save(requester);
     return new DailyGiftResponse(gift, token);
@@ -240,6 +241,13 @@ public class PlayerServiceImpl implements PlayerService{
     if(!toCheck.checkSession(token)){
       throw new InvalidIdentity("Invalid token");
     }
+    return null;
+  }
+
+  // Testing
+  public Void addMoney(TokenRequest request) {
+    Player requester = findPlayer(request.getToken().substring(0,32));
+    requester.setMoney(requester.getMoney() + 1000);
     return null;
   }
 }
