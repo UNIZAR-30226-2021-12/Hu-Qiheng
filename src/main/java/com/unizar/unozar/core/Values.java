@@ -2,15 +2,25 @@ package com.unizar.unozar.core;
 
 public class Values{
   
-  public final static int SHOP[] = {100, 200, 300, 600, 1200, 1300};
-  
+  // Shop 
+  public final static int AVATAR_PRICE = 250;
+  public final static int BOARD_PRICE = 500;
+  public final static int CARD_PRICE = 750;
+  // Made so it can be changed the number of unlockables and their price
+  public final static int A_SHOP[] = {AVATAR_PRICE, AVATAR_PRICE, AVATAR_PRICE, 
+                                      AVATAR_PRICE, AVATAR_PRICE, AVATAR_PRICE};
+  public final static int B_SHOP[] = {BOARD_PRICE, BOARD_PRICE};
+  public final static int C_SHOP[] = {CARD_PRICE, CARD_PRICE};
+
   public final static int GIFTS[] = {10, 20, 30, 50, 100};
   
+  // Time constants
   public final static int TURN_TIME = 60;
   public final static int TURN_TIME_IA = 10;
   public final static int PAUSE_EXTRA = 300;
   public static final int DAY_SECONDS = 86400;
   
+  // Game constants
   public final static int NOT_STARTED = -1;
   public final static int PLAYING = 0;
   public final static int HAS_TO_DRAW_TWO = 1;

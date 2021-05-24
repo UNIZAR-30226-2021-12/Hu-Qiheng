@@ -34,8 +34,12 @@ public interface PlayerService{
   
   public TokenResponse deleteFriend(FriendRequest request);
 
-  public TokenResponse unlock(UnlockRequest request);
+  public TokenResponse unlockAvatar(UnlockRequest request);
   
+  public TokenResponse unlockBoard(UnlockRequest request);
+
+  public TokenResponse unlockCards(UnlockRequest request);
+
   public DailyGiftResponse getDailyGift(TokenRequest request);
   
 }

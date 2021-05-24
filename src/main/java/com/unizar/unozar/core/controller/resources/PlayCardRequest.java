@@ -32,6 +32,4 @@ public class PlayCardRequest{
     return colorSelected;
   }
   
-  
-  
 }

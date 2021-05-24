@@ -30,5 +30,9 @@ public interface GameService{
   public TokenResponse pause(TokenRequest request);
   
   public TokenResponse quit(TokenRequest request);
+  
+  //public TokenResponse readChat(TokenRequest request);
+  
+  //public TokenResponse sendMessage(TokenRequest request);
 
 }

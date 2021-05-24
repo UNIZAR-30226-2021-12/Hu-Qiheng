@@ -15,13 +15,25 @@ public class PlayerDTO{
   private int avatarId;
   
   @JsonProperty
+  private int boardId;
+
+  @JsonProperty
+  private int cardsId;
+  
+  @JsonProperty
   private String alias;
   
   @JsonProperty
   private int money;
   
   @JsonProperty
-  private int[] unlockables;
+  private int[] unlockedAvatars;  
+  
+  @JsonProperty
+  private int[] unlockedBoards;  
+  
+  @JsonProperty
+  private int[] unlockedCards;
   
   @JsonProperty
   private boolean giftClaimedToday;
@@ -45,10 +57,14 @@ public class PlayerDTO{
     id = toTransfer.getId();
     email = toTransfer.getEmail();
     avatarId = toTransfer.getAvatarId();
+    boardId = toTransfer.getBoardId();
+    cardsId = toTransfer.getCardsId();
     alias = toTransfer.getAlias();
     money = toTransfer.getMoney();
-    unlockables = toTransfer.getUnlockables().stream().mapToInt(i->i).toArray();
-    giftClaimedToday = toTransfer.isGiftClaimedToday();
+    unlockedAvatars = toTransfer.getUnlockedAvatars().stream().mapToInt(i->i).toArray();
+    unlockedBoards = toTransfer.getUnlockedBoards().stream().mapToInt(i->i).toArray();
+    unlockedCards = toTransfer.getUnlockedCards().stream().mapToInt(i->i).toArray();
+    giftClaimedToday = toTransfer.giftIsClaimedToday();
     gameId = toTransfer.getGameId();
     privateWins = toTransfer.getPrivateWins();
     privateTotal = toTransfer.getPrivateTotal();

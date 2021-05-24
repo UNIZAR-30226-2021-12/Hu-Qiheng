@@ -57,6 +57,7 @@ public class PlayerServiceImpl implements PlayerService{
 
   @Override
   public TokenResponse update(UpdatePlayerRequest request){
+    int newAvatar, newBoard, newCards;
     System.out.println("update " + request.getToken());
     Player toUpdate = findPlayer(request.getToken().substring(0, 32));
     checkToken(toUpdate, request.getToken().substring(32));
@@ -73,6 +74,18 @@ public class PlayerServiceImpl implements PlayerService{
     }
     if(request.getPassword() != null){
       toUpdate.setPassword(request.getPassword());
+    }
+    newAvatar = request.getAvatar();
+    if(toUpdate.avatarIsUnlocked(newAvatar)){
+          toUpdate.setAvatarId(newAvatar);
+    }
+    newBoard = request.getBoard();
+    if(toUpdate.boardIsUnlocked(newBoard)){
+      toUpdate.setBoardId(newBoard);
+    }
+    newCards = request.getCards();
+    if(toUpdate.cardsIsUnlocked(newCards)){
+      toUpdate.setCardsId(newCards);
     }
     String token = toUpdate.getId() + toUpdate.updateSession();
     playerRepository.save(toUpdate);
@@ -172,11 +185,33 @@ public class PlayerServiceImpl implements PlayerService{
   }
 
   @Override
-  public TokenResponse unlock(UnlockRequest request){
+  public TokenResponse unlockAvatar(UnlockRequest request){
     System.out.println("unlock " + request.getToken());
     Player requester = findPlayer(request.getToken().substring(0, 32));
     checkToken(requester, request.getToken().substring(32));
-    requester.unlock(request.getUnlockableId());
+    requester.unlockAvatar(request.getUnlockableId());
+    String token = requester.getId() + requester.updateSession();
+    playerRepository.save(requester);
+    return new TokenResponse(token);
+  }
+  
+  @Override
+  public TokenResponse unlockBoard(UnlockRequest request){
+    System.out.println("unlock " + request.getToken());
+    Player requester = findPlayer(request.getToken().substring(0, 32));
+    checkToken(requester, request.getToken().substring(32));
+    requester.unlockBoard(request.getUnlockableId());
+    String token = requester.getId() + requester.updateSession();
+    playerRepository.save(requester);
+    return new TokenResponse(token);
+  }
+  
+  @Override
+  public TokenResponse unlockCards(UnlockRequest request){
+    System.out.println("unlock " + request.getToken());
+    Player requester = findPlayer(request.getToken().substring(0, 32));
+    checkToken(requester, request.getToken().substring(32));
+    requester.unlockCards(request.getUnlockableId());
     String token = requester.getId() + requester.updateSession();
     playerRepository.save(requester);
     return new TokenResponse(token);

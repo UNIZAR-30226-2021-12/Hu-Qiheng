@@ -94,10 +94,22 @@ public class PlayerController{
     return ResponseEntity.ok(playerService.deleteFriend(request));
   }
   
-  @PostMapping(value = "/unlock")
+  @PostMapping(value = "/unlockAvatar")
   public ResponseEntity<TokenResponse>
-      unlock(@RequestBody UnlockRequest request){
-    return ResponseEntity.ok(playerService.unlock(request));
+      unlockAvatar(@RequestBody UnlockRequest request){
+    return ResponseEntity.ok(playerService.unlockAvatar(request));
+  }
+  
+  @PostMapping(value = "/unlockAvatar")
+  public ResponseEntity<TokenResponse>
+      unlockBoard(@RequestBody UnlockRequest request){
+    return ResponseEntity.ok(playerService.unlockBoard(request));
+  }
+  
+  @PostMapping(value = "/unlockAvatar")
+  public ResponseEntity<TokenResponse>
+      unlockCards(@RequestBody UnlockRequest request){
+    return ResponseEntity.ok(playerService.unlockCards(request));
   }
   
   @PostMapping(value = "/getDailyGift")

@@ -85,6 +85,9 @@ public class Game{
   @Column(name = "END_CHECKED")
   private boolean endChecked[];
   
+  @Column(name = "BET")
+  private int bet;
+  
   public Game(){ // Don't even dare to look at this
     isPrivate = true;
     totalPlayers = 4;
@@ -100,15 +103,23 @@ public class Game{
     nextMark = 0;
     normalFlow = true;
     isPaused = false;
+    bet = 0;
   }
   
-  public Game(boolean isPrivate, int totalPlayers, int numBots, String player){
+  public Game(boolean isPrivate, int totalPlayers, int numBots, String player, 
+      int bet){
     this.isPrivate = isPrivate;
     if((!isPrivate) && (numBots > 0)){
       throw new IncorrectAction("You can not create a public game with bots");
     }
     if(numBots >= totalPlayers){
       throw new IncorrectAction("Incorrect amount of bots");
+    }
+    if((!isPrivate) && (bet > 0)){
+      throw new IncorrectAction("You can not create a public game with bet");
+    }
+    if(bet < 0){
+      throw new IncorrectAction("You can not bet a negative amount");
     }
     this.totalPlayers = totalPlayers;
     this.numBots = numBots;
@@ -220,7 +231,7 @@ public class Game{
     for(int j = 0; j < 7; j++){
       switch (totalPlayers){
       case 4:
-        playerThreeDeck.add(drawCard());        
+        playerThreeDeck.add(drawCard());
       case 3: 
         playerTwoDeck.add(drawCard());
       case 2:
@@ -804,6 +815,10 @@ public class Game{
   // Getters and Setters //
   /////////////////////////
 
+  public int getBet() {
+    return bet;
+  }
+  
   public String getId(){
     return id;
   }

@@ -35,7 +35,13 @@ public class Player{
 
   @Column(name = "AVATAR_ID", nullable = false)
   private int avatarId;
-  
+
+  @Column(name = "BOARD_ID", nullable = false)
+  private int boardId;
+
+  @Column(name = "CARDS_ID", nullable = false)
+  private int cardsId;
+    
   @Column(name = "ALIAS", nullable = false)
   private String alias;
 
@@ -46,7 +52,13 @@ public class Player{
   private int money;
   
   @ElementCollection
-  private List<Integer> unlockables = new ArrayList<Integer>();
+  private List<Integer> unlockedAvatars = new ArrayList<Integer>();
+  
+  @ElementCollection
+  private List<Integer> unlockedBoards = new ArrayList<Integer>();
+  
+  @ElementCollection
+  private List<Integer> unlockedCards = new ArrayList<Integer>();
   
   @Column(name = "LAST_GIFT_DAY", nullable = false)
   private int lastGiftDay;
@@ -76,8 +88,10 @@ public class Player{
     email = "email";
     avatarId = 0;
     alias = "alias";
+    boardId = 0;
+    cardsId = 0;
     password = "password";
-    money = 100; // Yet to decide
+    money = 200; 
     lastGiftDay = 0;
     gameId = NONE;
     session = 0;
@@ -85,14 +99,19 @@ public class Player{
     privateTotal = 0;
     publicWins = 0;
     publicTotal = 0;
+    unlockedAvatars.add(0);
+    unlockedBoards.add(0);
+    unlockedCards.add(0);
   }
   
   public Player(String email, String alias, String password){
     this.email = email;
     avatarId = 0;
+    boardId = 0;
+    cardsId = 0;
     this.alias = alias;
     this.password = password;
-    money = 100; // Yet to decide
+    money = 200; 
     lastGiftDay = 0;
     gameId = NONE;
     session = -601;
@@ -100,6 +119,9 @@ public class Player{
     privateTotal = 0;
     publicWins = 0;
     publicTotal = 0;
+    unlockedAvatars.add(0);
+    unlockedBoards.add(0);
+    unlockedCards.add(0);
   }
   
   // Retrieves today's seconds
@@ -176,30 +198,71 @@ public class Player{
     friendList.remove(friendId);
   }
   
-  public void unlock(int unlockableId){
-    if((unlockableId >= Values.SHOP.length) || (unlockableId < 0)){
+  public void unlockAvatar(int unlockableId){
+    if((unlockableId >= Values.A_SHOP.length) || (unlockableId < 0) 
+        || (unlockableId == 1)){
       throw new IncorrectAction("The unlockable does not exist");
     }
-    if(unlockables.contains(unlockableId)){
+    if(unlockedAvatars.contains(unlockableId)){
       throw new IncorrectAction("The user already has the unlockable");
     }
-    if(money < Values.SHOP[unlockableId]){
+    if(money < Values.A_SHOP[unlockableId]){
       throw new IncorrectAction("The user does not have enough money");
     }
-    unlockables.add(unlockableId);
-    money -= Values.SHOP[unlockableId];
+    unlockedAvatars.add(unlockableId);
+    money -= Values.A_SHOP[unlockableId];
   }
   
+  public boolean avatarIsUnlocked(int unlockableId){
+    return unlockedAvatars.contains(unlockableId);
+  }
+  
+  public void unlockBoard(int unlockableId){
+    if((unlockableId >= Values.B_SHOP.length) || (unlockableId < 0)){
+      throw new IncorrectAction("The unlockable does not exist");
+    }
+    if(unlockedAvatars.contains(unlockableId)){
+      throw new IncorrectAction("The user already has the unlockable");
+    }
+    if(money < Values.B_SHOP[unlockableId]){
+      throw new IncorrectAction("The user does not have enough money");
+    }
+    unlockedBoards.add(unlockableId);
+    money -= Values.B_SHOP[unlockableId];
+  }
+  
+  public boolean boardIsUnlocked(int unlockableId){
+    return unlockedBoards.contains(unlockableId);
+  }
+  
+  public void unlockCards(int unlockableId){
+    if((unlockableId >= Values.C_SHOP.length) || (unlockableId < 0)){
+      throw new IncorrectAction("The unlockable does not exist");
+    }
+    if(unlockedAvatars.contains(unlockableId)){
+      throw new IncorrectAction("The user already has the unlockable");
+    }
+    if(money < Values.C_SHOP[unlockableId]){
+      throw new IncorrectAction("The user does not have enough money");
+    }
+    unlockedCards.add(unlockableId);
+    money -= Values.C_SHOP[unlockableId];
+  }
+  
+  public boolean cardsIsUnlocked(int unlockableId){
+    return unlockedCards.contains(unlockableId);
+  }
+   
   public int dailyGift(){
-    LocalDateTime now = LocalDateTime.now();
-    if(lastGiftDay != now.getDayOfYear()){
+    if(giftIsClaimedToday()){
       throw new IncorrectAction("Player already claimed today's gift");
     }
+    LocalDateTime now = LocalDateTime.now();
     lastGiftDay = now.getDayOfYear();
     return Values.GIFTS[new Random().nextInt(Values.GIFTS.length)];
   }
   
-  public boolean isGiftClaimedToday(){
+  public boolean giftIsClaimedToday(){
     return lastGiftDay == LocalDateTime.now().getDayOfYear();
   }
   
@@ -219,6 +282,14 @@ public class Player{
     return avatarId;
   }
 
+  public int getBoardId(){
+    return boardId;
+  }
+  
+  public int getCardsId(){
+    return cardsId;
+  }
+  
   public String getEmail(){
     return email;
   }
@@ -255,10 +326,18 @@ public class Player{
     return friendList;
   }
   
-  public List<Integer> getUnlockables(){
-    return unlockables;
+  public List<Integer> getUnlockedAvatars(){
+    return unlockedAvatars;
   }
 
+  public List<Integer> getUnlockedBoards(){
+    return unlockedBoards;
+  }
+
+  public List<Integer> getUnlockedCards(){
+    return unlockedCards;
+  }  
+  
   public void setAlias(String alias){
     this.alias = alias;
   }
@@ -266,6 +345,14 @@ public class Player{
   public void setAvatarId(int avatarId){
     this.avatarId = avatarId;
   }
+  
+  public void setBoardId(int boardId){
+    this.boardId = boardId;
+  }  
+  
+  public void setCardsId(int cardsId){
+    this.cardsId = cardsId;
+  }  
   
   public void setEmail(String email){
     this.email = email;

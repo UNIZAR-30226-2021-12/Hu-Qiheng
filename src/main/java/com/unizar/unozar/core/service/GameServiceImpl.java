@@ -17,6 +17,7 @@ import com.unizar.unozar.core.entities.Game;
 import com.unizar.unozar.core.entities.Player;
 import com.unizar.unozar.core.exceptions.GameNotFound;
 import com.unizar.unozar.core.exceptions.GameNotFull;
+import com.unizar.unozar.core.exceptions.IncorrectAction;
 import com.unizar.unozar.core.exceptions.InvalidIdentity;
 import com.unizar.unozar.core.exceptions.PlayerIsNotPlaying;
 import com.unizar.unozar.core.exceptions.PlayerIsPlaying;
@@ -47,7 +48,7 @@ public class GameServiceImpl implements GameService{
     checkToken(owner, request.getToken().substring(32));
     checkPlayerNotInGame(owner);
     Game toCreate = new Game(request.getIsPrivate(), request.getMaxPlayers(),
-        request.getNumBots(), id);
+        request.getNumBots(), id, request.getBet());
     gameRepository.save(toCreate);
     owner.setGameId(toCreate.getId());
     String newToken = id + owner.updateSession(); 
@@ -114,8 +115,11 @@ public class GameServiceImpl implements GameService{
     Game toJoin;
     if(toFind.isPresent()){
       toJoin = toFind.get();
+      if(toJoin.getBet() > requester.getMoney()){
+        toJoin = new Game(false, request.getNumPlayers(), 0, requester.getId(), 0);
+      }
     }else{
-      toJoin = new Game(false, request.getNumPlayers(), 0, requester.getId());
+      toJoin = new Game(false, request.getNumPlayers(), 0, requester.getId(), 0);
     }
     toJoin.addPlayer(requester.getId());
     requester.setGameId(toJoin.getId());
@@ -168,7 +172,12 @@ public class GameServiceImpl implements GameService{
         if(toStart.isPrivate()){
           toUpdateStats.addPrivateTotal();
         }else{
-          toUpdateStats.addPublicTotal();
+          if(toUpdateStats.getMoney() <= toStart.getBet()){
+            toUpdateStats.setMoney(toUpdateStats.getMoney() - toStart.getBet());
+            toUpdateStats.addPublicTotal();
+          }else {
+            throw new IncorrectAction("A player has not enough money to bet");
+          }
         }
         playerRepository.save(toUpdateStats);
       }
@@ -191,6 +200,8 @@ public class GameServiceImpl implements GameService{
       if(toPlay.isPrivate()){
         requester.addPrivateWin();
       }else{
+        requester.setMoney(requester.getMoney() + 
+            (toPlay.getBet() * toPlay.getMaxPlayers()));
         requester.addPublicWin();
       }
     }
