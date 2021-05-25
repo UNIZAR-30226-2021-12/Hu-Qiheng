@@ -115,8 +115,8 @@ public class Game{
     if(numBots >= totalPlayers){
       throw new IncorrectAction("Incorrect amount of bots");
     }
-    if((!isPrivate) && (bet > 0)){
-      throw new IncorrectAction("You can not create a public game with bet");
+    if(isPrivate && (bet > 0)){
+      throw new IncorrectAction("You can not create a private game with bet");
     }
     if(bet < 0){
       throw new IncorrectAction("You can not bet a negative amount");
