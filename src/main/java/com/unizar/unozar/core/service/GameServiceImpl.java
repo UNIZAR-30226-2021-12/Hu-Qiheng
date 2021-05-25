@@ -160,8 +160,6 @@ public class GameServiceImpl implements GameService{
     if(toStart.hasSpace()){
       throw new GameNotFull("Only games with all the players can start");
     }
-    toStart.startGame();
-    gameRepository.save(toStart);
     String newToken = requester.getId() + requester.updateSession();
     String[] playersInGame = toStart.getPlayersIds();
     for(int i = 0; i < playersInGame.length; i++){
@@ -172,7 +170,7 @@ public class GameServiceImpl implements GameService{
         if(toStart.isPrivate()){
           toUpdateStats.addPrivateTotal();
         }else{
-          if(toUpdateStats.getMoney() <= toStart.getBet()){
+          if(toUpdateStats.getMoney() >= toStart.getBet()){
             toUpdateStats.setMoney(toUpdateStats.getMoney() - toStart.getBet());
             toUpdateStats.addPublicTotal();
           }else {
@@ -183,6 +181,8 @@ public class GameServiceImpl implements GameService{
       }
     }
     playerRepository.save(requester);
+    toStart.startGame();
+    gameRepository.save(toStart);
     return new TokenResponse(newToken);
   }
   
