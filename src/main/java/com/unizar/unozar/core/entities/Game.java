@@ -149,7 +149,7 @@ public class Game{
     }
     boolean added = false;
     for(int i = 1 + numBots; i < totalPlayers; i++){
-      if(playersIds[i].equals(Values.EMPTY)){
+      if(playersIds[i].equals(Values.EMPTY) && (!added)){
         playersIds[i] = playerId;
         added = true;
       }
