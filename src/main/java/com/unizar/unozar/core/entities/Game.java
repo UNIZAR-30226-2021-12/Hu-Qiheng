@@ -123,6 +123,7 @@ public class Game{
     }
     this.totalPlayers = totalPlayers;
     this.numBots = numBots;
+    this.bet = bet;
     playersIds = new String[totalPlayers];
     endChecked = new boolean[totalPlayers];
     playersIds[0] = player;
