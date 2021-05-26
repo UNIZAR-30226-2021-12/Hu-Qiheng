@@ -115,12 +115,17 @@ public class GameServiceImpl implements GameService{
     Game toJoin;
     if(toFind.isPresent()){
       toJoin = toFind.get();
+      System.out.println("Ha encontrado juego");
+      System.out.println(toJoin.getId());
+      System.out.println(toJoin.isPrivate());
+      System.out.println(toJoin.getMaxPlayers());
       if(toJoin.getBet() > requester.getMoney()){
         toJoin = new Game(false, request.getNumPlayers(), 0, requester.getId(), 0);
       }else{
         toJoin.addPlayer(requester.getId());
       }
     }else{
+      System.out.println("No ha encontrado nada");
       toJoin = new Game(false, request.getNumPlayers(), 0, requester.getId(), 0);
     }
     requester.setGameId(toJoin.getId());
