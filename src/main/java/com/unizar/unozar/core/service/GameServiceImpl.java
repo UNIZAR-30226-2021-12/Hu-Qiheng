@@ -127,6 +127,9 @@ public class GameServiceImpl implements GameService{
     }else{
       System.out.println("No ha encontrado nada");
       toJoin = new Game(false, request.getNumPlayers(), 0, requester.getId(), 0);
+      System.out.println(toJoin.getId());
+      System.out.println(toJoin.isPrivate());
+      System.out.println(toJoin.getMaxPlayers());
     }
     requester.setGameId(toJoin.getId());
     gameRepository.save(toJoin);
