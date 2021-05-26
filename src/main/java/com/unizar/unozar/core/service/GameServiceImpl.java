@@ -117,11 +117,12 @@ public class GameServiceImpl implements GameService{
       toJoin = toFind.get();
       if(toJoin.getBet() > requester.getMoney()){
         toJoin = new Game(false, request.getNumPlayers(), 0, requester.getId(), 0);
+      }else{
+        toJoin.addPlayer(requester.getId());
       }
     }else{
       toJoin = new Game(false, request.getNumPlayers(), 0, requester.getId(), 0);
     }
-    toJoin.addPlayer(requester.getId());
     requester.setGameId(toJoin.getId());
     gameRepository.save(toJoin);
     String newToken = requester.getId() + requester.updateSession();
