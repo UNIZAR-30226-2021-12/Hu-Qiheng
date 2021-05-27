@@ -167,7 +167,7 @@ public class EndpointAdvice{
   }
   
   @ExceptionHandler({PlayerIsNotPlaying.class})
-  @ResponseStatus(HttpStatus.I_AM_A_TEAPOT) // 418
+  @ResponseStatus(HttpStatus.GONE) // 410
   public String playerIsNotPlaying(PlayerIsNotPlaying e){
     System.out.println(e.getMessage());
     return e.getMessage();
