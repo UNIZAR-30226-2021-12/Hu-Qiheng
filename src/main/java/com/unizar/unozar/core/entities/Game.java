@@ -15,6 +15,7 @@ import javax.persistence.Table;
 import org.hibernate.annotations.GenericGenerator;
 
 import com.unizar.unozar.core.Values;
+import com.unizar.unozar.core.exceptions.CanPlayCard;
 import com.unizar.unozar.core.exceptions.CardNotFound;
 import com.unizar.unozar.core.exceptions.Como;
 import com.unizar.unozar.core.exceptions.DeckFull;
@@ -364,7 +365,7 @@ public class Game{
       throw new IncorrectTurn("It is not the player's turn");
     }
     if(canPlayCards() && status == Values.PLAYING){
-      throw new IncorrectAction("You can not draw if you can play a card");
+      throw new CanPlayCard("You can not draw if you can play a card");
     }
     drawCardsByTurn();
     updateGameStatus(false);

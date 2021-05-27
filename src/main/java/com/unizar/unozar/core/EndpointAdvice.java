@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.http.HttpStatus;
 
 import com.unizar.unozar.core.exceptions.AlreadyFriends;
+import com.unizar.unozar.core.exceptions.CanPlayCard;
 import com.unizar.unozar.core.exceptions.CardNotFound;
 import com.unizar.unozar.core.exceptions.Como;
 import com.unizar.unozar.core.exceptions.DeckFull;
@@ -36,6 +37,13 @@ public class EndpointAdvice{
   @ExceptionHandler({AlreadyFriends.class})
   @ResponseStatus(HttpStatus.I_AM_A_TEAPOT) // 418
   public String alreadyFriends(AlreadyFriends e){
+    System.out.println(e.getMessage());
+    return e.getMessage();
+  }
+  
+  @ExceptionHandler({CanPlayCard.class})
+  @ResponseStatus(HttpStatus.METHOD_NOT_ALLOWED) // 405
+  public String canPlayCard(CanPlayCard e){
     System.out.println(e.getMessage());
     return e.getMessage();
   }

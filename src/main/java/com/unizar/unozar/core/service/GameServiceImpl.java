@@ -262,8 +262,11 @@ public class GameServiceImpl implements GameService{
           if((!playersIds[i].equals(Values.EMPTY)) && 
               (!playersIds[i].equals(Values.BOT))){
             toQuit.toOwner(playersIds[i]);
+            i = maxPlayers;
           }
         }
+        gameRepository.save(toQuit);
+      }else if(toQuit.hasAnyPlayer()){
         gameRepository.save(toQuit);
       }else{
         gameRepository.delete(toQuit);
