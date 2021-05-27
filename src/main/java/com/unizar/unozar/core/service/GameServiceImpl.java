@@ -267,8 +267,25 @@ public class GameServiceImpl implements GameService{
         }
         gameRepository.save(toQuit);
       }else if(toQuit.hasAnyPlayer()){
+        toQuit.makeBot(0);
         gameRepository.save(toQuit);
       }else{
+        gameRepository.delete(toQuit);
+      }
+    }else{
+      // Player who wants to quit is not the owner
+      if(toQuit.hasAnyPlayer() && toQuit.isGameStarted()){
+        // IA substitutes the player
+        int maxPlayers = toQuit.getMaxPlayers();
+        String playersIds[] = new String[maxPlayers];
+        playersIds = toQuit.getPlayersIds();
+        for(int i = 0; i < maxPlayers; i++){
+          if(playersIds[i].equals(Values.EMPTY)){
+            toQuit.makeBot(i);
+          }
+        }
+        gameRepository.save(toQuit);
+      }else if(!toQuit.hasAnyPlayer() && toQuit.isGameStarted()){
         gameRepository.delete(toQuit);
       }
     }

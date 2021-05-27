@@ -388,6 +388,10 @@ public class Game{
     endChecked[playerNum] = true;
   }
   
+  public void makeBot(int playerNum){
+    playersIds[playerNum] = Values.BOT;
+  }
+  
   public boolean isEmpty(){
     for(int i = 0; i < totalPlayers; i++){
       if(endChecked[i] == false){
