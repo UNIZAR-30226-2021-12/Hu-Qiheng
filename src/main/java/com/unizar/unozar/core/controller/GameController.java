@@ -92,4 +92,10 @@ public class GameController{
     return ResponseEntity.ok(gameService.quit(request));
   }
   
+  @PostMapping(value = "/deleteGame")
+  public ResponseEntity<Void>
+      deleteGame(@RequestBody TokenRequest request){
+    gameService.deleteGame(request);
+    return ResponseEntity.ok().build();
+  }
 }

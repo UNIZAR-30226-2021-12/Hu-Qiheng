@@ -332,4 +332,11 @@ public class GameServiceImpl implements GameService{
     return null;
   }
   
+  // Testing, token is the game id
+  public Void deleteGame(TokenRequest request){
+    Game toDelete = findGame(request.getToken());
+    gameRepository.delete(toDelete);
+    return null;
+  }
+  
 }

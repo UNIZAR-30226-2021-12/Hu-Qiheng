@@ -34,5 +34,6 @@ public interface GameService{
   //public TokenResponse readChat(TokenRequest request);
   
   //public TokenResponse sendMessage(TokenRequest request);
-
+  
+  public Void deleteGame(TokenRequest request);
 }
